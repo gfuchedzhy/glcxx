@@ -4,9 +4,7 @@
 
 #include "CApp.hpp"
 
-/// @brief entry point
-int main()
+void CApp::run()
 {
-   CApp app;
-   app.run();
+   sf::sleep(sf::seconds(20));
 }

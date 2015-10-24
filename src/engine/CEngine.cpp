@@ -4,8 +4,7 @@
 
 #include "CEngine.hpp"
 
-
 CEngine::CEngine()
-   : sf::Window(sf::VideoMode(800, 600, sf::Style::Titlebar | sf::Style::Close), "avia")
+   : mWindow(sf::VideoMode(800, 600, sf::Style::Titlebar | sf::Style::Close), APPNAME)
 {
 }

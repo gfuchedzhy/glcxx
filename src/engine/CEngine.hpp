@@ -7,10 +7,16 @@
 
 #include <SFML/Window.hpp>
 
-class CEngine : sf::Window
+/// @brief engine class
+class CEngine
 {
    public:
+      /// @brief constructor
       CEngine();
+
+   protected:
+      /// @brief window object, also holds gl context
+      sf::Window mWindow;
 };
 
 #endif // ENGINE_CENGINE_HPP

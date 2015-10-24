@@ -6,14 +6,16 @@ def configure(cnf):
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
 
 def build(bld):
+    appname = 'avia'
+    bld(features = 'cxx cxxstlib',
+        source   = bld.path.ant_glob('src/engine/*.cpp'),
+        target   = 'engine',
+        defines=['APPNAME="' + appname + '"'],
+        use      = ['sfml'])
 
-    bld(features='cxx cxxstlib',
-        source='src/engine/CEngine.cpp',
-        target='engine',
-        use=['sfml'])
-
-    bld(features='cxx cxxprogram',
-        source='src/app/main.cpp',
-        includes=['src'],
-        target='avia',
-        use=['engine'])
+    bld(features = 'cxx cxxprogram',
+        source   = bld.path.ant_glob('src/app/*.cpp'),
+        includes = ['src'],
+        defines=['APPNAME="' + appname + '"'],
+        target   = appname,
+        use      = ['engine'])
