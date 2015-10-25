@@ -6,5 +6,5 @@
 
 void CApp::run()
 {
-   sf::sleep(sf::seconds(20));
+   CEngine::run();
 }

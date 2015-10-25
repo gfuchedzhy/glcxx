@@ -4,6 +4,7 @@ def options(opt):
 def configure(cnf):
     cnf.load('compiler_cxx')
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
+    cnf.check(features='cxx cxxprogram', lib=['GL'], uselib_store='opengl')
     cnf.check_cxx(cxxflags='-std=c++11', uselib_store='cxxflags')
 
 def build(bld):
@@ -12,7 +13,7 @@ def build(bld):
         source   = bld.path.ant_glob('src/engine/*.cpp'),
         target   = 'engine',
         defines=['APPNAME="' + appname + '"'],
-        use      = ['sfml', 'cxxflags'])
+        use      = ['sfml', 'cxxflags', 'opengl'])
 
     bld(features = 'cxx cxxprogram',
         source   = bld.path.ant_glob('src/app/*.cpp'),

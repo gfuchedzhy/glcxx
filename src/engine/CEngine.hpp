@@ -14,6 +14,9 @@ class CEngine
       /// @brief constructor
       CEngine();
 
+      /// @brief main loop
+      void run();
+
    protected:
       /// @brief window object, also holds gl context
       sf::Window mWindow;
