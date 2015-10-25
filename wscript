@@ -12,7 +12,7 @@ def build(bld):
     bld(features = 'cxx cxxstlib',
         source   = bld.path.ant_glob('src/engine/*.cpp'),
         target   = 'engine',
-        defines=['APPNAME="' + appname + '"'],
+        defines=['APPNAME="' + appname + '"', 'GL_GLEXT_PROTOTYPES'],
         use      = ['sfml', 'cxxflags', 'opengl'])
 
     bld(features = 'cxx cxxprogram',

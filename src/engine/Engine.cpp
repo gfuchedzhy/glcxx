@@ -2,10 +2,9 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include <SFML/OpenGL.hpp>
-
 #include "Engine.hpp"
 #include "Log.hpp"
+#include "GL.hpp"
 
 CEngine::CEngine()
    : mWindow(sf::VideoMode(800, 600), APPNAME, sf::Style::Titlebar | sf::Style::Close)
