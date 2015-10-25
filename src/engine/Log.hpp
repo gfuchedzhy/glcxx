@@ -16,22 +16,22 @@ namespace Log
    }
 
    template<std::ostream& s, typename TArg1, typename... TRestArgs>
-   inline void output(const TArg1& arg1, const TRestArgs&... restArgs)
+   inline void output(TArg1&& arg1, TRestArgs&&... restArgs)
    {
       s << arg1;
-      output<s>(restArgs...);
+      output<s>(std::forward<TRestArgs>(restArgs)...);
    }
 
    template<typename... TArgs>
-   inline void msg(const TArgs&... args)
+   inline void msg(TArgs&&... args)
    {
-      output<std::cout>(args...);
+      output<std::cout>(std::forward<TArgs>(args)...);
    }
 
    template<typename... TArgs>
-   inline void err(const TArgs&... args)
+   inline void err(TArgs&&... args)
    {
-      output<std::cerr>(args...);
+      output<std::cerr>(std::forward<TArgs>(args)...);
    }
 }
 
