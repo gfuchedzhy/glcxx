@@ -5,6 +5,6 @@
 #include "CEngine.hpp"
 
 CEngine::CEngine()
-   : mWindow(sf::VideoMode(800, 600, sf::Style::Titlebar | sf::Style::Close), APPNAME)
+   : mWindow(sf::VideoMode(800, 600), APPNAME, sf::Style::Titlebar | sf::Style::Close)
 {
 }
