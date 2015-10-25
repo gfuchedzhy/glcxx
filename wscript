@@ -4,6 +4,7 @@ def options(opt):
 def configure(cnf):
     cnf.load('compiler_cxx')
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
+    cnf.check_cxx(cxxflags='-std=c++11', uselib_store='cxxflags')
 
 def build(bld):
     appname = 'avia'
@@ -11,11 +12,11 @@ def build(bld):
         source   = bld.path.ant_glob('src/engine/*.cpp'),
         target   = 'engine',
         defines=['APPNAME="' + appname + '"'],
-        use      = ['sfml'])
+        use      = ['sfml', 'cxxflags'])
 
     bld(features = 'cxx cxxprogram',
         source   = bld.path.ant_glob('src/app/*.cpp'),
+        target   = appname,
         includes = ['src'],
         defines=['APPNAME="' + appname + '"'],
-        target   = appname,
-        use      = ['engine'])
+        use      = ['engine', 'cxxflags'])
