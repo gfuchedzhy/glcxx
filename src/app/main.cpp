@@ -2,7 +2,7 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "CApp.hpp"
+#include "App.hpp"
 #include "engine/Log.hpp"
 
 /// @brief entry point

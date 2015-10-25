@@ -2,8 +2,8 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef ENGINE_CENGINE_HPP
-#define ENGINE_CENGINE_HPP
+#ifndef ENGINE_ENGINE_HPP
+#define ENGINE_ENGINE_HPP
 
 #include <SFML/Window.hpp>
 
@@ -22,4 +22,4 @@ class CEngine
       sf::Window mWindow;
 };
 
-#endif // ENGINE_CENGINE_HPP
+#endif // ENGINE_ENGINE_HPP

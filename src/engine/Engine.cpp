@@ -4,7 +4,7 @@
 
 #include <SFML/OpenGL.hpp>
 
-#include "CEngine.hpp"
+#include "Engine.hpp"
 #include "Log.hpp"
 
 CEngine::CEngine()

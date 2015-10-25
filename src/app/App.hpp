@@ -2,10 +2,10 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef CAPP_HPP
-#define CAPP_HPP
+#ifndef APP_HPP
+#define APP_HPP
 
-#include "engine/CEngine.hpp"
+#include "engine/Engine.hpp"
 
 /// @brief application class
 class CApp : public CEngine
@@ -15,4 +15,4 @@ class CApp : public CEngine
       void run();
 };
 
-#endif // CAPP_HPP
+#endif // APP_HPP
