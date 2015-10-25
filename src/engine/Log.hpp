@@ -2,37 +2,51 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef LOG_HPP
-#define LOG_HPP
+#ifndef ENGINE_LOG_HPP
+#define ENGINE_LOG_HPP
 
 #include <iostream>
+#include <sstream>
 
 namespace Log
 {
-   template<std::ostream& s>
-   inline void output()
+   /// @brief termination template for helper variadic template for concatWithDelim
+   template<typename TArg>
+   inline void addToStream(std::ostringstream& stream, const std::string& delimiter, TArg&& arg)
    {
-      s << std::endl;
+      stream << std::forward<TArg>(arg);
    }
 
-   template<std::ostream& s, typename TArg1, typename... TRestArgs>
-   inline void output(TArg1&& arg1, TRestArgs&&... restArgs)
+   /// @brief helper variadic template for concatWithDelim
+   template<typename TArg1, typename... TRestArgs>
+   inline void addToStream(std::ostringstream& stream, const std::string& delimiter, TArg1&& arg1, TRestArgs&&... restArgs)
    {
-      s << arg1;
-      output<s>(std::forward<TRestArgs>(restArgs)...);
+      stream << std::forward<TArg1>(arg1) << delimiter;
+      addToStream(stream, delimiter, std::forward<TRestArgs>(restArgs)...);
    }
 
+   /// @brief concatanates parameters separated by delimiter into single string
+   template<typename... TArgs>
+   inline std::string concatWithDelim(const std::string& delimiter, TArgs&&... args)
+   {
+      std::ostringstream stream;
+      addToStream(stream, delimiter, std::forward<TArgs>(args)...);
+      return stream.str();
+   }
+
+   /// @brief log message
    template<typename... TArgs>
    inline void msg(TArgs&&... args)
    {
-      output<std::cout>(std::forward<TArgs>(args)...);
+      std::cout << concatWithDelim("", std::forward<TArgs>(args)...) << std::endl;
    }
 
+   /// @brief log error
    template<typename... TArgs>
    inline void err(TArgs&&... args)
    {
-      output<std::cerr>(std::forward<TArgs>(args)...);
+      std::cerr << "ERROR: " << concatWithDelim("", std::forward<TArgs>(args)...) << std::endl;
    }
 }
 
-#endif // LOG_HPP
+#endif // ENGINE_LOG_HPP
