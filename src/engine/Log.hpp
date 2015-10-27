@@ -17,6 +17,12 @@ namespace Log
       stream << std::forward<TArg>(arg);
    }
 
+   /// @brief second termination template for helper variadic template for
+   /// concatWithDelim for case of no arguments
+   inline void addToStream(std::ostringstream& stream, const std::string& delimiter)
+   {
+   }
+
    /// @brief helper variadic template for concatWithDelim
    template<typename TArg1, typename... TRestArgs>
    inline void addToStream(std::ostringstream& stream, const std::string& delimiter, TArg1&& arg1, TRestArgs&&... restArgs)
