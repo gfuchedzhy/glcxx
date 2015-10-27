@@ -5,7 +5,7 @@ def configure(cnf):
     cnf.load('compiler_cxx')
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
     cnf.check(features='cxx cxxprogram', lib=['GL'], uselib_store='opengl')
-    cnf.check_cxx(cxxflags='-std=c++11', uselib_store='cxxflags')
+    cnf.check_cxx(cxxflags='-std=c++14', uselib_store='cxxflags')
 
 def build(bld):
     appname = 'avia'
