@@ -23,21 +23,20 @@ void CEngine::run()
    };
    static const GLubyte indices[] = {0, 1, 3, 2};
 
-   CProgram p = CProgram::create(
-R"(\
+   TProgramPtr p = CProgram::create(CShader::createVertexShader(R"(\
 attribute vec3 vertex;
 void main()
 {
    gl_Position.xyz = vertex;
    gl_Position.w = 1.0;
 }
-)",
-R"(\
+)"),
+                                 CShader::createFragmentShader(R"(\
 void main()
 {
    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
 }
-)");
+)"));
 
    GLuint vertexBuffer;
    gl(glGenBuffers, 1, &vertexBuffer);
@@ -62,7 +61,7 @@ void main()
 
       // clear the buffers
       gl(glClear, GL_COLOR_BUFFER_BIT);
-      p.bind();
+      p->bind();
       gl(glEnableVertexAttribArray, 0);
       gl(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
       gl(glVertexAttribPointer,

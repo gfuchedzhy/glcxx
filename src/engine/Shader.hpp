@@ -7,21 +7,24 @@
 
 #include "GL.hpp"
 #include <string>
+#include <memory>
 
 class CProgram;
+class CShader;
+
+/// @brief shader ptr
+typedef std::shared_ptr<CShader> TShaderPtr;
 
 /// @brief shader holder
 class CShader
 {
    public:
-      /// @brief factory method returning shader
-      static CShader create(const std::string& src, GLenum shaderType);
+      /// @brief factory methods returning shader
+      static TShaderPtr createVertexShader(const std::string& src)   { return create(src, GL_VERTEX_SHADER);}
+      static TShaderPtr createFragmentShader(const std::string& src) { return create(src, GL_FRAGMENT_SHADER);}
 
-      /// @brief move constructor
-      CShader(CShader&& other);
-
-      /// @brief move assignment
-      CShader& operator=(CShader&& other);
+      /// @brief default constructor
+      CShader() = default;
 
       /// @brief destructor
       ~CShader();
@@ -30,16 +33,16 @@ class CShader
       bool isValid() const;
 
    private:
-      /// @brief private stuff
-      CShader() = default;
-      CShader(const CShader&) = default;
-      CShader& operator=(const CShader& other) = default;
+      /// @brief disabled stuff
+      CShader(const CShader&) = delete;
+      CShader& operator=(const CShader& other) = delete;
 
-      /// @brief release shader associated with this object
-      void destroy();
+      /// @brief factory method returning shader
+      static TShaderPtr create(const std::string& src, GLenum shaderType);
 
       /// @brief shader object id
       GLuint mObject = 0;
+
       friend class CProgram;
 };
 

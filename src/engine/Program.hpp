@@ -7,17 +7,19 @@
 
 #include "Shader.hpp"
 
+class CProgram;
+
+/// @brief program ptr
+typedef std::unique_ptr<CProgram> TProgramPtr;
+
 class CProgram
 {
    public:
       /// @brief factory method returning program
-      static CProgram create(const std::string& vertexSrc, const std::string& fragmentSrc);
+      static TProgramPtr create(TShaderPtr vertex, TShaderPtr fragment);
 
-      /// @brief move constructor
-      CProgram(CProgram&& other);
-
-      /// @brief move assignment
-      CProgram& operator=(CProgram&& other);
+      /// @brief constuctor
+      CProgram(TShaderPtr vertex, TShaderPtr fragment);
 
       /// @brief destructor
       ~CProgram();
@@ -30,16 +32,15 @@ class CProgram
 
    private:
       /// @brief disabled stuff
-      CProgram() = default;
-      CProgram(const CProgram&) = default;
-      CProgram& operator=(const CProgram& other) = default;
+      CProgram(const CProgram&) = delete;
+      CProgram& operator=(const CProgram& other) = delete;
 
-      /// @brief release program associated with this object
-      void destroy();
-
+      /// @brief program object id
       GLuint mObject = 0;
-      CShader mVertexShader;
-      CShader mFragmentShader;
+
+      /// @brief shaders
+      TShaderPtr mVertexShader;
+      TShaderPtr mFragmentShader;
 };
 
 inline bool CProgram::isValid() const
