@@ -8,6 +8,17 @@
 #include <SFML/OpenGL.hpp>
 #include "Log.hpp"
 
+/// @brief compile time conversion between glsl types and c++ types
+template<GLenum type> struct TGLSLToCPPType {};
+template<> struct TGLSLToCPPType<GL_FLOAT>          { typedef float          type; };
+template<> struct TGLSLToCPPType<GL_DOUBLE>         { typedef double         type; };
+template<> struct TGLSLToCPPType<GL_BYTE>           { typedef signed char    type; };
+template<> struct TGLSLToCPPType<GL_UNSIGNED_BYTE>  { typedef unsigned char  type; };
+template<> struct TGLSLToCPPType<GL_SHORT>          { typedef signed short   type; };
+template<> struct TGLSLToCPPType<GL_UNSIGNED_SHORT> { typedef unsigned short type; };
+template<> struct TGLSLToCPPType<GL_INT>            { typedef signed int     type; };
+template<> struct TGLSLToCPPType<GL_UNSIGNED_INT>   { typedef unsigned int   type; };
+
 template<typename TFunction, typename... TArgs>
 inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
    typename std::enable_if<std::is_void<decltype(glFunc(args...))>::value, int>::type
