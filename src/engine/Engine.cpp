@@ -33,20 +33,20 @@ void CEngine::run()
    static const GLubyte indices[] = {0, 1, 3, 2};
 
    TProgramPtr p = CProgram::create(CShader::createVertexShader(R"(\
-attribute vec4 vertex;
-attribute vec3 a_color;
-varying vec3 color;
+attribute vec4 aVertex;
+attribute vec3 aColor;
+varying vec3 vColor;
 void main()
 {
-   gl_Position = vertex;
-   color = a_color;
+   gl_Position = aVertex;
+   vColor = aColor;
 }
 )"),
                                     CShader::createFragmentShader(R"(\
-varying vec3 color;
+varying vec3 vColor;
 void main()
 {
-   gl_FragColor.xyz = color;
+   gl_FragColor.xyz = vColor;
    gl_FragColor.w = 1.0;
 }
 )"));
