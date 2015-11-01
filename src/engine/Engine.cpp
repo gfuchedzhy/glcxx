@@ -5,6 +5,7 @@
 #include "Engine.hpp"
 #include "Log.hpp"
 #include "Program.hpp"
+#include "BufferObject.hpp"
 
 CEngine::CEngine()
    : mWindow(sf::VideoMode(800, 600), APPNAME, sf::Style::Titlebar | sf::Style::Close)
@@ -15,33 +16,40 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   static const GLfloat vertexBufferData[] = {
-      -0.5f,-0.5f, 0.0f,
-       0.5f,-0.5f, 0.0f,
-       0.5f, 0.5f, 0.0f,
-      -0.5f, 0.5f, 0.0f,
+   using tPosition = TAttributeData<GL_FLOAT, 3>;
+   using tColor    = TAttributeData<GL_FLOAT, 3>;
+   using tAttributePack = TAttributeDataPack<tPosition, tColor>;
+
+   static const tAttributePack vertexBufferData[] = {
+      { {-0.5f,-0.5f, 0.0f}, {1.f, 1.f, 0.f} },
+      { { 0.5f,-0.5f, 0.0f}, {0.f, 1.f, 0.f} },
+      { { 0.5f, 0.5f, 0.0f}, {0.f, 1.f, 1.f} },
+      { {-0.5f, 0.5f, 0.0f}, {1.f, 1.f, 0.f} }
    };
+
+   TBufferObject<tAttributePack> buf;
+   buf.bindData(vertexBufferData, 4);
+
    static const GLubyte indices[] = {0, 1, 3, 2};
 
    TProgramPtr p = CProgram::create(CShader::createVertexShader(R"(\
-attribute vec3 vertex;
+attribute vec4 vertex;
+attribute vec3 a_color;
+varying vec3 color;
 void main()
 {
-   gl_Position.xyz = vertex;
-   gl_Position.w = 1.0;
+   gl_Position = vertex;
+   color = a_color;
 }
 )"),
-                                 CShader::createFragmentShader(R"(\
+                                    CShader::createFragmentShader(R"(\
+varying vec3 color;
 void main()
 {
-   gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+   gl_FragColor.xyz = color;
+   gl_FragColor.w = 1.0;
 }
 )"));
-
-   GLuint vertexBuffer;
-   gl(glGenBuffers, 1, &vertexBuffer);
-   gl(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
-   gl(glBufferData, GL_ARRAY_BUFFER, sizeof(vertexBufferData), vertexBufferData, GL_STATIC_DRAW);
 
    while (true)
    {
@@ -63,18 +71,13 @@ void main()
       gl(glClear, GL_COLOR_BUFFER_BIT);
       p->bind();
       gl(glEnableVertexAttribArray, 0);
-      gl(glBindBuffer, GL_ARRAY_BUFFER, vertexBuffer);
-      gl(glVertexAttribPointer,
-         0, // ?
-         3, // size
-         GL_FLOAT, // type
-         GL_FALSE, // not normalized?
-         0, // stride
-         (void*)0 // offset
-         );
+      gl(glEnableVertexAttribArray, 1);
+
+      buf.bind({0, 1});
 
       gl(glDrawElements, GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
       gl(glDisableVertexAttribArray, 0);
+      gl(glDisableVertexAttribArray, 1);
       // end the current frame (internally swaps the front and back buffers)
       mWindow.display();
    }
