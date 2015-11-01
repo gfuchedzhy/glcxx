@@ -107,6 +107,10 @@ class TBufferObject
                            ), 0)...};
       }
 
+      /// @brief disabled stuff
+      TBufferObject(const TBufferObject&) = delete;
+      TBufferObject& operator=(const TBufferObject& other) = delete;
+
    private:
       /// @brief buffer id
       GLuint mID;
