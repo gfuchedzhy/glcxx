@@ -6,6 +6,7 @@ def configure(cnf):
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
     cnf.check(features='cxx cxxprogram', lib=['GL'], uselib_store='opengl')
     cnf.check_cxx(cxxflags='-std=c++14', uselib_store='cxxflags')
+    cnf.check_cxx(header_name='glm/glm.hpp')
 
 def build(bld):
     appname = 'avia'
