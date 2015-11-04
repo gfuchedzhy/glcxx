@@ -39,7 +39,7 @@ inline auto callGL(TFunction   glFunc,
                    const char* glFuncName,
                    const char* filename,
                    int         line,
-                   TArgs&&...  args) -> decltype(glFunc(args...))
+                   TArgs&&...  args)
 {
    // Log::msg(glFuncName, '(', Log::concatWithDelim(", ", std::forward<TArgs>(args)...), ')');
    auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
@@ -55,4 +55,3 @@ inline auto callGL(TFunction   glFunc,
 #define gl(glFunc, ...) callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
 
 #endif // ENGINE_GL_HPP
-
