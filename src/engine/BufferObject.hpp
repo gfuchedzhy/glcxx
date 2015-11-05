@@ -58,11 +58,25 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       {}
 };
 
+/// @brief forward declaration
+template<typename TAttributeDataPack>
+class TBufferObject;
+
+/// @brief buffer ptr
+template<typename TAttributeDataPack>
+using TBufferObjectPtr = std::shared_ptr<TBufferObject<TAttributeDataPack>>;
+
 /// @brief buffer object
 template<typename TAttributeDataPack>
 class TBufferObject
 {
    public:
+      /// @brief factory method returning buffer objects
+      static TBufferObjectPtr<TAttributeDataPack> create()
+      {
+         return std::make_shared<TBufferObject>();
+      }
+
       /// @brief creates buffer
       TBufferObject()
       {
@@ -76,27 +90,34 @@ class TBufferObject
       }
 
       /// @brief upload data to buffer
-      void bindData(const TAttributeDataPack* attr, size_t size)
+      void upload(const TAttributeDataPack* attr, size_t size)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
          gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(TAttributeDataPack), attr, GL_STATIC_DRAW);
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
 
-      /// @brief binds attribute data to given locations
-      void bind(std::array<GLuint, TAttributeDataPack::attributeNum()> locations)
+      /// @brief attaches attribute data to given locations
+      void attach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
-         doBind(locations, std::make_index_sequence<TAttributeDataPack::attributeNum()>());
+         doAttach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum()>{});
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
 
+      /// @brief detaches attribute data
+      void detach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations)
+      {
+         doDetach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum()>{});
+      }
+
    private:
-      /// @brief calls attrib pointer function for every attribute
+      /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
-      void doBind(std::array<GLuint, TAttributeDataPack::attributeNum()> locations, std::index_sequence<I...>)
+      void doAttach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations, std::index_sequence<I...>)
       {
          using swallow = int[];
+         (void)swallow{(gl(glEnableVertexAttribArray, I), 0)...};
          (void)swallow{(gl(glVertexAttribPointer,
                            locations[I], 
                            std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size(),
@@ -105,6 +126,14 @@ class TBufferObject
                            sizeof(TAttributeDataPack), // stride
                            (void*)TAttributeDataPack::template attributeOffset<I>() // offset
                            ), 0)...};
+      }
+
+      /// @brief disables every attribute
+      template<size_t... I>
+      void doDetach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations, std::index_sequence<I...>)
+      {
+         using swallow = int[];
+         (void)swallow{(gl(glDisableVertexAttribArray, I), 0)...};
       }
 
       /// @brief disabled stuff
