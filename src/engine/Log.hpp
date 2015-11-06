@@ -5,6 +5,7 @@
 #ifndef ENGINE_LOG_HPP
 #define ENGINE_LOG_HPP
 
+#include "Utils.hpp"
 #include <iostream>
 #include <tuple>
 
@@ -23,8 +24,7 @@ namespace std
       inline void ostreamTupleHelper(ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
       {
          stream << '(' << std::get<0>(t);
-         using swallow = int[];
-         (void)swallow{((stream << ',' << std::get<I+1>(t)), 0)..., 0};
+         (void)(int[]){((stream << ',' << std::get<I+1>(t)), 0)..., 0};
          stream << ')';
       }
    }
@@ -46,8 +46,7 @@ namespace Log
       template<typename... TArgs>
       inline void streamLog(std::ostream& s, TArgs&&... args)
       {
-         using swallow = int[];
-         (void)swallow{(s << args, 0)...};
+         swallow(s << args);
          s << std::endl;
       }
    }

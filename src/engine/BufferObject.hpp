@@ -3,7 +3,7 @@
  */
 
 #include "GL.hpp"
-#include <tuple>
+#include "Utils.hpp"
 
 /// @brief single attribute, sentinel used to differ types that are logically
 /// different but have same properties
@@ -116,24 +116,22 @@ class TBufferObject
       template<size_t... I>
       void doAttach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
       {
-         using swallow = int[];
-         (void)swallow{(gl(glEnableVertexAttribArray, I), 0)...};
-         (void)swallow{(gl(glVertexAttribPointer,
-                           locations[I], 
-                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size,
-                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::glTypeID,
-                           GL_FALSE, // not normalized
-                           sizeof(TAttributeDataPack), // stride
-                           TAttributeDataPack::template offsetof<I>::value // offset
-                           ), 0)...};
+         swallow(gl(glEnableVertexAttribArray, I));
+         swallow(gl(glVertexAttribPointer,
+                    locations[I],
+                    std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size,
+                    std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::glTypeID,
+                    GL_FALSE, // not normalized
+                    sizeof(TAttributeDataPack), // stride
+                    TAttributeDataPack::template offsetof<I>::value // offset
+                    ));
       }
 
       /// @brief disables every attribute
       template<size_t... I>
       void doDetach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
       {
-         using swallow = int[];
-         (void)swallow{(gl(glDisableVertexAttribArray, I), 0)...};
+         swallow(gl(glDisableVertexAttribArray, I));
       }
 
       /// @brief disabled stuff
