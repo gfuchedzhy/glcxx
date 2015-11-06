@@ -19,39 +19,43 @@ template<> struct TGLSLToCPPType<GL_UNSIGNED_SHORT> { typedef unsigned short typ
 template<> struct TGLSLToCPPType<GL_INT>            { typedef signed int     type; };
 template<> struct TGLSLToCPPType<GL_UNSIGNED_INT>   { typedef unsigned int   type; };
 
-template<typename TFunction, typename... TArgs>
-inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
-   typename std::enable_if<std::is_void<decltype(glFunc(args...))>::value, int>::type
+namespace detail
 {
-   glFunc(std::forward<TArgs>(args)...);
-   return 0;
-}
-
-template<typename TFunction, typename... TArgs>
-inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
-   typename std::enable_if<!std::is_void<decltype(glFunc(args...))>::value, decltype(glFunc(args...))>::type
-{
-   return glFunc(std::forward<TArgs>(args)...);
-}
-
-template<typename TFunction, typename... TArgs>
-inline auto callGL(TFunction   glFunc,
-                   const char* glFuncName,
-                   const char* filename,
-                   int         line,
-                   TArgs...  args)
-{
-   // Log::msg(glFuncName, '(', Log::concatWithDelim(", ", std::forward<TArgs>(args)...), ')');
-   auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
-   const GLenum err = glGetError();
-   if (GL_NO_ERROR != err)
+   template<typename TFunction, typename... TArgs>
+   inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
+      typename std::enable_if<std::is_void<decltype(glFunc(args...))>::value, int>::type
    {
-      Log::err("gl error code ", err, " in ", glFuncName,
-               '(', Log::concatWithDelim(", ", std::forward<TArgs>(args)...), ") at ", filename, ':', line);
+      glFunc(std::forward<TArgs>(args)...);
+      return 0;
    }
-   return static_cast<decltype(glFunc(args...))>(retVal);
+
+   template<typename TFunction, typename... TArgs>
+   inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
+      typename std::enable_if<!std::is_void<decltype(glFunc(args...))>::value, decltype(glFunc(args...))>::type
+   {
+      return glFunc(std::forward<TArgs>(args)...);
+   }
+
+   template<typename TFunction, typename... TArgs>
+   inline auto callGL(TFunction   glFunc,
+                      const char* glFuncName,
+                      const char* filename,
+                      int         line,
+                      TArgs...  args)
+   {
+      auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
+      const GLenum err = glGetError();
+      if (GL_NO_ERROR != err)
+      {
+         Log::err("gl error code ", err, " in ",
+                  glFuncName, std::make_tuple(std::forward<TArgs>(args)...),
+                  " at ", filename + 1, // +1 to convert ../path to ./path
+                  ':', line);
+      }
+      return static_cast<decltype(glFunc(args...))>(retVal);
+   }
 }
 
-#define gl(glFunc, ...) callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
+#define gl(glFunc, ...) detail::callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
 
 #endif // ENGINE_GL_HPP

@@ -6,52 +6,65 @@
 #define ENGINE_LOG_HPP
 
 #include <iostream>
-#include <sstream>
+#include <tuple>
+
+namespace std
+{
+   /// @brief stream empty tuple
+   inline ostream& operator<<(ostream& stream, const std::tuple<>&)
+   {
+      return stream << "()";
+   }
+
+   namespace detail
+   {
+      /// @brief helper to stream non empty tuple
+      template<typename TArg1, typename... TArgs, size_t... I>
+      inline void ostreamTupleHelper(ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
+      {
+         stream << '(' << std::get<0>(t);
+         using swallow = int[];
+         (void)swallow{((stream << ',' << std::get<I+1>(t)), 0)..., 0};
+         stream << ')';
+      }
+   }
+
+   /// @brief stream non empty tuple
+   template<typename TArg1, typename... TArgs, size_t... I>
+   inline ostream& operator<<(ostream& stream, const std::tuple<TArg1, TArgs...>& t)
+   {
+      detail::ostreamTupleHelper(stream, t, std::make_index_sequence<sizeof...(TArgs)>{});
+      return stream;
+   }
+}
 
 namespace Log
 {
-   /// @brief termination template for helper variadic template for concatWithDelim
-   template<typename TArg>
-   inline void addToStream(std::ostringstream& stream, const std::string& delimiter, TArg&& arg)
+   namespace detail
    {
-      stream << std::forward<TArg>(arg);
-   }
-
-   /// @brief second termination template for helper variadic template for
-   /// concatWithDelim for case of no arguments
-   inline void addToStream(std::ostringstream& stream, const std::string& delimiter)
-   {
-   }
-
-   /// @brief helper variadic template for concatWithDelim
-   template<typename TArg1, typename... TRestArgs>
-   inline void addToStream(std::ostringstream& stream, const std::string& delimiter, TArg1&& arg1, TRestArgs&&... restArgs)
-   {
-      stream << std::forward<TArg1>(arg1) << delimiter;
-      addToStream(stream, delimiter, std::forward<TRestArgs>(restArgs)...);
-   }
-
-   /// @brief concatanates parameters separated by delimiter into single string
-   template<typename... TArgs>
-   inline std::string concatWithDelim(const std::string& delimiter, TArgs&&... args)
-   {
-      std::ostringstream stream;
-      addToStream(stream, delimiter, std::forward<TArgs>(args)...);
-      return stream.str();
-   }
-
-   /// @brief log message
-   template<typename... TArgs>
-   inline void msg(TArgs&&... args)
-   {
-      std::cout << concatWithDelim("", std::forward<TArgs>(args)...) << std::endl;
+      /// @brief log message to given stream
+      template<typename... TArgs>
+      inline void streamLog(std::ostream& s, TArgs&&... args)
+      {
+         using swallow = int[];
+         (void)swallow{(s << args, 0)...};
+         s << std::endl;
+      }
    }
 
    /// @brief log error
    template<typename... TArgs>
    inline void err(TArgs&&... args)
    {
-      std::cerr << "ERROR: " << concatWithDelim("", std::forward<TArgs>(args)...) << std::endl;
+      std::cerr << "ERROR: ";
+      detail::streamLog(std::cerr, std::forward<TArgs>(args)...);
+   }
+
+   /// @brief log message
+   template<typename... TArgs>
+   inline void msg(TArgs&&... args)
+   {
+      detail::streamLog(std::cout, std::forward<TArgs>(args)...);
    }
 }
 
