@@ -39,7 +39,7 @@ inline auto callGL(TFunction   glFunc,
                    const char* glFuncName,
                    const char* filename,
                    int         line,
-                   TArgs&&...  args)
+                   TArgs...  args)
 {
    // Log::msg(glFuncName, '(', Log::concatWithDelim(", ", std::forward<TArgs>(args)...), ')');
    auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);

@@ -16,10 +16,10 @@ struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
       using tBaseArray = std::array<typename TGLSLToCPPType<glType>::type, N>;
 
       /// @brief return glType id
-      static constexpr GLenum glTypeID() { return glType; }
+      static constexpr GLenum glTypeID = glType;
 
-      /// @brief return glType id
-      static constexpr size_t size() { return N; }
+      /// @brief return attribute size
+      static constexpr size_t size = N;
 
       /// @brief default constructor
       TAttributeData() = default;
@@ -40,14 +40,14 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       using tBaseTuple = std::tuple<TAttributes...>;
 
       /// @brief return attribute number
-      static constexpr size_t attributeNum() { return sizeof...(TAttributes); }
+      static constexpr size_t attributeNum = sizeof...(TAttributes);
 
       /// @brief returns offset of given attribute in attribute pack
       template<int index>
-      static constexpr size_t attributeOffset()
+      struct offsetof
       {
-         return size_t((char*)(&std::get<index>(*(tBaseTuple*)(0))));
-      }
+            static constexpr void* value = (void*)((char*)(&std::get<index>(*(tBaseTuple*)(0))));
+      };
 
       /// @brief default constructor
       TAttributeDataPack() = default;
@@ -98,39 +98,39 @@ class TBufferObject
       }
 
       /// @brief attaches attribute data to given locations
-      void attach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations)
+      void attach(std::array<GLuint, TAttributeDataPack::attributeNum> locations)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
-         doAttach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum()>{});
+         doAttach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
 
       /// @brief detaches attribute data
-      void detach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations)
+      void detach(std::array<GLuint, TAttributeDataPack::attributeNum> locations)
       {
-         doDetach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum()>{});
+         doDetach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
       }
 
    private:
       /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
-      void doAttach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations, std::index_sequence<I...>)
+      void doAttach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
       {
          using swallow = int[];
          (void)swallow{(gl(glEnableVertexAttribArray, I), 0)...};
          (void)swallow{(gl(glVertexAttribPointer,
                            locations[I], 
-                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size(),
-                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::glTypeID(),
+                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size,
+                           std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::glTypeID,
                            GL_FALSE, // not normalized
                            sizeof(TAttributeDataPack), // stride
-                           (void*)TAttributeDataPack::template attributeOffset<I>() // offset
+                           TAttributeDataPack::template offsetof<I>::value // offset
                            ), 0)...};
       }
 
       /// @brief disables every attribute
       template<size_t... I>
-      void doDetach(std::array<GLuint, TAttributeDataPack::attributeNum()> locations, std::index_sequence<I...>)
+      void doDetach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
       {
          using swallow = int[];
          (void)swallow{(gl(glDisableVertexAttribArray, I), 0)...};
