@@ -2,6 +2,9 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
+#ifndef ENGINE_UTILS_HPP
+#define ENGINE_UTILS_HPP
+
 #include <utility>
 
 /// @brief ct stands for compile time
@@ -54,3 +57,5 @@ namespace ct
 #define make_ctstring_helper32(str, offset) make_ctstring_helper16(str, offset), make_ctstring_helper16(str, offset+16)
 #define make_ctstring_helper64(str, offset) make_ctstring_helper32(str, offset), make_ctstring_helper32(str, offset+32)
 #define ctstring(str) ct::string_strip_char<'\0', ct::string<make_ctstring_helper64(str, 0)>>
+
+#endif // ENGINE_UTILS_HPP
