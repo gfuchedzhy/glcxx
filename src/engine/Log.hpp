@@ -11,6 +11,16 @@
 
 namespace std
 {
+   /// @brief stream array
+   template<typename T, size_t N>
+   inline ostream& operator<<(ostream& stream, const std::array<T, N>& arr)
+   {
+      stream << '[';
+      for (size_t i = 0; i < N; ++i)
+         stream << arr[i] << (i+1 < N ? ", " : "]");
+      return stream;
+   }
+
    /// @brief stream empty tuple
    inline ostream& operator<<(ostream& stream, const std::tuple<>&)
    {
