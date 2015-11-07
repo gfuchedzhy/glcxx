@@ -16,10 +16,10 @@ class CProgram
 {
    public:
       /// @brief factory method returning program
-      static TProgramPtr create(TShaderPtr vertex, TShaderPtr fragment);
+      static TProgramPtr create(const std::string& vertexSrc, const std::string& fragmentSrc);
 
       /// @brief constuctor
-      CProgram(TShaderPtr vertex, TShaderPtr fragment);
+      CProgram() = default;
 
       /// @brief destructor
       ~CProgram();

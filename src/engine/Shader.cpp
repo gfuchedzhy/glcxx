@@ -16,9 +16,9 @@ CShader::~CShader()
 
 TShaderPtr CShader::create(const std::string& src, const GLenum shaderType)
 {
-   Log::msg("creating shader");
-   auto sh = std::make_shared<CShader>();
+   auto sh = std::make_unique<CShader>();
    sh->mObject = gl(glCreateShader, shaderType);
+   Log::msg("creating shader ", sh->mObject);
    const GLint length = src.length();
    const GLchar* source = src.c_str();
    gl(glShaderSource, sh->mObject, 1, &source, &length);

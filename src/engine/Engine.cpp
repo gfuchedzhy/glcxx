@@ -19,9 +19,8 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tPosition = TAttributeData<GL_FLOAT, 3, ctstring("aPosition")>;
-   using tColor    = TAttributeData<GL_FLOAT, 3, ctstring("aColor")>;
-   using tAttributePack = TAttributeDataPack<tPosition, tColor>;
+   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, ctstring("aPosition")>,
+                                             TAttributeData<GL_FLOAT, 3, ctstring("aColor")>>;
 
    static const tAttributePack vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },
@@ -42,7 +41,7 @@ void CEngine::run()
                                      6, 3, 3, 7, 0, 4
 };
 
-   TProgramPtr p = CProgram::create(CShader::createVertexShader(R"(\
+   TProgramPtr p = CProgram::create(R"(\
 attribute vec4 aVertex;
 attribute vec3 aColor;
 uniform mat4 uModel;
@@ -52,15 +51,15 @@ void main()
    gl_Position = uModel*aVertex;
    vColor = aColor;
 }
-)"),
-                                    CShader::createFragmentShader(R"(\
+)",
+R"(\
 varying vec3 vColor;
 void main()
 {
    gl_FragColor.xyz = vColor;
    gl_FragColor.w = 1.0;
 }
-)"));
+)");
 
    const float aspect = mWindow.getSize().x / float(mWindow.getSize().y);
    const glm::mat4 proj = glm::perspective(45.0f, aspect, 0.1f, 100.f);

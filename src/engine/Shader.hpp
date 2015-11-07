@@ -13,7 +13,7 @@ class CProgram;
 class CShader;
 
 /// @brief shader ptr
-typedef std::shared_ptr<CShader> TShaderPtr;
+typedef std::unique_ptr<CShader> TShaderPtr;
 
 /// @brief shader holder
 class CShader
