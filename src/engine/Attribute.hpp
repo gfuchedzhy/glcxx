@@ -55,6 +55,22 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
             static constexpr void* value = (void*)((char*)(&std::get<index>(*(tBaseTuple*)(0))));
       };
 
+      /// @brief type holding locations for attribute pack
+      using tLocations = std::array<GLint, attributeNum>;
+
+      /// @brief returns locations of attributes for given program
+      static inline tLocations getLocations(GLuint program)
+      {
+         return doGetLocations(program, std::make_index_sequence<attributeNum>{});
+      }
+
+      /// @brief implementation of location getter
+      template<size_t... I>
+      static inline tLocations doGetLocations(GLuint program, std::index_sequence<I...>)
+      {
+         return {gl(glGetAttribLocation, program, std::tuple_element<I, tBaseTuple>::type::tName::chars)...};
+      }
+
       /// @brief default constructor
       TAttributeDataPack() = default;
 

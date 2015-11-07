@@ -47,7 +47,7 @@ class TBufferObject
       }
 
       /// @brief attaches attribute data to given locations
-      void attach(std::array<GLuint, TAttributeDataPack::attributeNum> locations)
+      void attach(const typename TAttributeDataPack::tLocations& locations)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
          doAttach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
@@ -55,7 +55,7 @@ class TBufferObject
       }
 
       /// @brief detaches attribute data
-      void detach(std::array<GLuint, TAttributeDataPack::attributeNum> locations)
+      void detach(const typename TAttributeDataPack::tLocations& locations)
       {
          doDetach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
       }
@@ -63,7 +63,7 @@ class TBufferObject
    private:
       /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
-      void doAttach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
+      void doAttach(const typename TAttributeDataPack::tLocations& locations, std::index_sequence<I...>)
       {
          swallow(gl(glEnableVertexAttribArray, I));
          swallow(gl(glVertexAttribPointer,
@@ -78,7 +78,7 @@ class TBufferObject
 
       /// @brief disables every attribute
       template<size_t... I>
-      void doDetach(std::array<GLuint, TAttributeDataPack::attributeNum> locations, std::index_sequence<I...>)
+      void doDetach(const typename TAttributeDataPack::tLocations& locations, std::index_sequence<I...>)
       {
          swallow(gl(glDisableVertexAttribArray, I));
       }

@@ -42,13 +42,13 @@ void CEngine::run()
 };
 
    TProgramPtr p = CProgram::create(R"(\
-attribute vec4 aVertex;
+attribute vec4 aPosition;
 attribute vec3 aColor;
 uniform mat4 uModel;
 varying vec3 vColor;
 void main()
 {
-   gl_Position = uModel*aVertex;
+   gl_Position = uModel*aPosition;
    vColor = aColor;
 }
 )",
