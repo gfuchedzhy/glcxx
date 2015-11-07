@@ -1,0 +1,100 @@
+/*
+ * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ */
+
+#ifndef ENGINE_ATTRIBUTE_HPP
+#define ENGINE_ATTRIBUTE_HPP
+
+#include "GL.hpp"
+#include "Utils.hpp"
+
+/// @brief single attribute, TName is compile time string representing name of
+/// attribute
+template<GLenum glType, size_t N, typename TName>
+struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
+{
+      static_assert(N >= 1 && N <= 4, "attribute number should be in range [1,4]");
+
+      /// @brief base typedef
+      using tBaseArray = std::array<typename TGLSLToCPPType<glType>::type, N>;
+
+      /// @brief ctstring containing name of current attribute
+      using tName = TName;
+
+      /// @brief return glType id
+      static constexpr GLenum glTypeID = glType;
+
+      /// @brief return attribute size
+      static constexpr size_t size = N;
+
+      /// @brief default constructor
+      TAttributeData() = default;
+
+      /// @brief constructor allowing initialization from {...}
+      template<typename... T>
+      TAttributeData(const T&... args)
+         : tBaseArray({args...})
+      {
+         static_assert(sizeof...(T) == N, "wrong number of initializers passed to attribute");
+      }
+};
+
+template<typename... TAttributes>
+struct TAttributeDataPack : std::tuple<TAttributes...>
+{
+      /// @brief base typedef
+      using tBaseTuple = std::tuple<TAttributes...>;
+
+      /// @brief return attribute number
+      static constexpr size_t attributeNum = sizeof...(TAttributes);
+
+      /// @brief returns offset of given attribute in attribute pack
+      template<int index>
+      struct offsetof
+      {
+            static constexpr void* value = (void*)((char*)(&std::get<index>(*(tBaseTuple*)(0))));
+      };
+
+      /// @brief default constructor
+      TAttributeDataPack() = default;
+
+      /// @brief constructor allowing initialization from {...}
+      TAttributeDataPack(const TAttributes&... attributes)
+         : std::tuple<TAttributes...>(attributes...)
+      {}
+
+      /// @brief get index of named attribute in compile time
+      template<typename TName, int index = sizeof...(TAttributes) - 1>
+         static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
+      {
+         return std::is_same<TName, typename std::tuple_element<index, tBaseTuple>::type::tName>::value ? index :
+            indexByName(TName{},std::integral_constant<int, index-1>{});
+      }
+
+      /// @brief terminator for attribute index calculator
+      template<typename TName>
+      static constexpr int indexByName(TName, std::integral_constant<int, -1>)
+      {
+         return -1;
+      }
+
+      /// @brief get attribute by compile time name
+      template<typename TName>
+      auto& get()
+      {
+         constexpr int index = indexByName(TName{});
+         static_assert(-1 != index, "attribute name not found");
+         return std::get<index>(*this);
+      }
+
+      /// @brief get attribute by compile time name
+      template<typename TName>
+      const auto& get() const
+      {
+         constexpr int index = indexByName(TName{});
+         static_assert(-1 != index, "attribute name not found");
+         return std::get<index>(*this);
+      }
+};
+
+#endif // ENGINE_ATTRIBUTE_HPP
