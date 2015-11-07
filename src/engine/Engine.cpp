@@ -19,8 +19,8 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, ctstring("aPosition")>,
-                                             TAttributeData<GL_FLOAT, 3, ctstring("aColor")>>;
+   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, cts("aPosition")>,
+                                             TAttributeData<GL_FLOAT, 3, cts("aColor")>>;
 
    static const tAttributePack vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },

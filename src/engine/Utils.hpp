@@ -59,6 +59,6 @@ namespace ct
 #define make_ctstring_helper16(str, offset) make_ctstring_helper8(str, offset), make_ctstring_helper8(str, offset+8)
 #define make_ctstring_helper32(str, offset) make_ctstring_helper16(str, offset), make_ctstring_helper16(str, offset+16)
 #define make_ctstring_helper64(str, offset) make_ctstring_helper32(str, offset), make_ctstring_helper32(str, offset+32)
-#define ctstring(str) ct::string_strip_char<'\0', ct::string<make_ctstring_helper64(str, 0)>>
+#define cts(str) ct::string_strip_char<'\0', ct::string<make_ctstring_helper64(str, 0)>>
 
 #endif // ENGINE_UTILS_HPP
