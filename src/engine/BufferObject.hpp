@@ -7,13 +7,16 @@
 
 /// @brief single attribute, sentinel used to differ types that are logically
 /// different but have same properties
-template<GLenum glType, size_t N, int sentinel = 0>
+template<GLenum glType, size_t N, typename TName>
 struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
 {
       static_assert(N >= 1 && N <= 4, "attribute number should be in range [1,4]");
 
       /// @brief base typedef
       using tBaseArray = std::array<typename TGLSLToCPPType<glType>::type, N>;
+
+      /// @brief ctstring containing name of current attribute
+      using tName = TName;
 
       /// @brief return glType id
       static constexpr GLenum glTypeID = glType;
@@ -48,6 +51,39 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       {
             static constexpr void* value = (void*)((char*)(&std::get<index>(*(tBaseTuple*)(0))));
       };
+
+      /// @brief get index of named attribute in compile time
+      template<typename TName, int index = sizeof...(TAttributes) - 1>
+      static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
+      {
+         return std::is_same<TName, typename std::tuple_element<index, tBaseTuple>::type::tName>::value ? index :
+            indexByName(TName{},std::integral_constant<int, index-1>{});
+      }
+
+      /// @brief terminator for attribute index calculator
+      template<typename TName>
+      static constexpr int indexByName(TName, std::integral_constant<int, -1>)
+      {
+         return -1;
+      }
+
+      /// @brief get attribute by compile time name
+      template<typename TName>
+      auto& get()
+      {
+         constexpr int index = indexByName(TName{});
+         static_assert(-1 != index, "attribute name not found");
+         return std::get<index>(*this);
+      }
+
+      /// @brief get attribute by compile time name
+      template<typename TName>
+      const auto& get() const
+      {
+         constexpr int index = indexByName(TName{});
+         static_assert(-1 != index, "attribute name not found");
+         return std::get<index>(*this);
+      }
 
       /// @brief default constructor
       TAttributeDataPack() = default;
