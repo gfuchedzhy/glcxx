@@ -2,11 +2,11 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "Program.hpp"
+#include "ProgramObject.hpp"
 #include <cassert>
 #include <memory>
 
-CProgram::~CProgram()
+CProgramObject::~CProgramObject()
 {
    if (isValid())
    {
@@ -17,9 +17,9 @@ CProgram::~CProgram()
    }
 }
 
-TProgramPtr CProgram::create(const std::string& vertexSrc, const std::string& fragmentSrc)
+TProgramObjectPtr CProgramObject::create(const std::string& vertexSrc, const std::string& fragmentSrc)
 {
-   auto p = std::make_unique<CProgram>();
+   auto p = std::make_unique<CProgramObject>();
    if (!(p->mVertexShader = CShader::createVertexShader(vertexSrc)) ||
        !(p->mFragmentShader = CShader::createFragmentShader(fragmentSrc)))
    {

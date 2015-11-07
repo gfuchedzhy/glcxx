@@ -41,7 +41,7 @@ void CEngine::run()
                                      6, 3, 3, 7, 0, 4
 };
 
-   TProgramPtr p = CProgram::create(R"(\
+   auto p = CProgramObject::create(R"(\
 attribute vec4 aPosition;
 attribute vec3 aColor;
 uniform mat4 uModel;

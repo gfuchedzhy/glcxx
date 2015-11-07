@@ -43,7 +43,7 @@ class CShader
       /// @brief shader object id
       GLuint mObject = 0;
 
-      friend class CProgram;
+      friend class CProgramObject;
 };
 
 inline bool CShader::isValid() const
