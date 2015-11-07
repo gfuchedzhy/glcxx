@@ -7,26 +7,12 @@
 
 #include "Attribute.hpp"
 
-/// @brief forward declaration
-template<typename TAttributeDataPack>
-class TBufferObject;
-
-/// @brief buffer ptr
-template<typename TAttributeDataPack>
-using TBufferObjectPtr = std::shared_ptr<TBufferObject<TAttributeDataPack>>;
-
 /// @brief buffer object
 template<typename TAttributeDataPack>
 class TBufferObject
 {
    public:
       using tData = TAttributeDataPack;
-
-      /// @brief factory method returning buffer objects
-      static TBufferObjectPtr<tData> create()
-      {
-         return std::make_shared<TBufferObject>();
-      }
 
       /// @brief creates buffer
       TBufferObject()

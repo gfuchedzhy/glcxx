@@ -33,15 +33,15 @@ void CEngine::run()
       { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
    };
 
-   auto buf = TBufferObject<tAttributePack>::create();
-   buf->upload(vertexBufferData, 8);
+   TBufferObject<tAttributePack> buf;
+   buf.upload(vertexBufferData, 8);
 
    static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                                      1, 5, 2, 6,
                                      6, 3, 3, 7, 0, 4
 };
 
-   auto p = CProgramObject::create(R"(\
+   CProgramObject p(R"(\
 attribute vec4 aPosition;
 attribute vec3 aColor;
 uniform mat4 uModel;
@@ -90,13 +90,13 @@ void main()
       angle = angle > 360.f ? angle - 360 : angle;
       // clear the buffers
       gl(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      p->bind();
+      p.bind();
 
-      buf->attach({0, 1});
+      buf.attach({0, 1});
       glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
       gl(glUniformMatrix4fv, 0, 1, GL_FALSE, &result[0][0]);
       gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
-      buf->detach({0, 1});
+      buf.detach({0, 1});
       // end the current frame (internally swaps the front and back buffers)
       mWindow.display();
    }
