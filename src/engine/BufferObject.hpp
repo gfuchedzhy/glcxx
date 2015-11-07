@@ -5,6 +5,9 @@
 #include "GL.hpp"
 #include "Utils.hpp"
 
+#ifndef ENGINE_BUFFEROBJECT_HPP
+#define ENGINE_BUFFEROBJECT_HPP
+
 /// @brief single attribute, sentinel used to differ types that are logically
 /// different but have same properties
 template<GLenum glType, size_t N, typename TName>
@@ -178,3 +181,5 @@ class TBufferObject
       /// @brief buffer id
       GLuint mID;
 };
+
+#endif // ENGINE_BUFFEROBJECT_HPP
