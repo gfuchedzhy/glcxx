@@ -20,8 +20,10 @@ template<typename TAttributeDataPack>
 class TBufferObject
 {
    public:
+      using tData = TAttributeDataPack;
+
       /// @brief factory method returning buffer objects
-      static TBufferObjectPtr<TAttributeDataPack> create()
+      static TBufferObjectPtr<tData> create()
       {
          return std::make_shared<TBufferObject>();
       }
@@ -39,46 +41,46 @@ class TBufferObject
       }
 
       /// @brief upload data to buffer
-      void upload(const TAttributeDataPack* attr, size_t size)
+      void upload(const tData* attr, size_t size)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
-         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(TAttributeDataPack), attr, GL_STATIC_DRAW);
+         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(tData), attr, GL_STATIC_DRAW);
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
 
       /// @brief attaches attribute data to given locations
-      void attach(const typename TAttributeDataPack::tLocations& locations)
+      void attach(const typename tData::tLocations& locations)
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, mID);
-         doAttach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
+         doAttach(locations, std::make_index_sequence<tData::attributeNum>{});
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
 
       /// @brief detaches attribute data
-      void detach(const typename TAttributeDataPack::tLocations& locations)
+      void detach(const typename tData::tLocations& locations)
       {
-         doDetach(locations, std::make_index_sequence<TAttributeDataPack::attributeNum>{});
+         doDetach(locations, std::make_index_sequence<tData::attributeNum>{});
       }
 
    private:
       /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
-      void doAttach(const typename TAttributeDataPack::tLocations& locations, std::index_sequence<I...>)
+      void doAttach(const typename tData::tLocations& locations, std::index_sequence<I...>)
       {
          swallow(gl(glEnableVertexAttribArray, I));
          swallow(gl(glVertexAttribPointer,
                     locations[I],
-                    std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::size,
-                    std::tuple_element<I, typename TAttributeDataPack::tBaseTuple>::type::glTypeID,
+                    std::tuple_element<I, typename tData::tBaseTuple>::type::size,
+                    std::tuple_element<I, typename tData::tBaseTuple>::type::glTypeID,
                     GL_FALSE, // not normalized
-                    sizeof(TAttributeDataPack), // stride
-                    TAttributeDataPack::template offsetof<I>::value // offset
+                    sizeof(tData), // stride
+                    tData::template offsetof<I>::value // offset
                     ));
       }
 
       /// @brief disables every attribute
       template<size_t... I>
-      void doDetach(const typename TAttributeDataPack::tLocations& locations, std::index_sequence<I...>)
+      void doDetach(const typename tData::tLocations& locations, std::index_sequence<I...>)
       {
          swallow(gl(glDisableVertexAttribArray, I));
       }
