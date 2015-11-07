@@ -19,8 +19,27 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, cts("aPosition")>,
-                                             TAttributeData<GL_FLOAT, 3, cts("aColor")>>;
+   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, 1, cts("aPosition")>,
+                                             TAttributeData<GL_FLOAT, 3, 0, cts("aColor")>>;
+
+   Log::msg(TBufferObject<tAttributePack>::tData::tDeclaration::chars);
+   TProgram<TBufferObject<tAttributePack>> prog(R"(\
+uniform mat4 uModel;
+varying vec3 vColor;
+void main()
+{
+   gl_Position = uModel*aPosition;
+   vColor = aColor;
+}
+)",
+                    R"(\
+varying vec3 vColor;
+void main()
+{
+   gl_FragColor.xyz = vColor;
+   gl_FragColor.w = 1.0;
+}
+)");
 
    static const tAttributePack vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },

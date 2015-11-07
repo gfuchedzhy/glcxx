@@ -7,6 +7,7 @@
 
 #include "Shader.hpp"
 
+/// @brief resource holder for opengl program object
 class CProgramObject
 {
    public:
@@ -30,6 +31,8 @@ class CProgramObject
       /// @brief shaders
       CShader mVertexShader;
       CShader mFragmentShader;
+
+      template<typename...> friend class TProgram;
 };
 
 inline void CProgramObject::bind() const

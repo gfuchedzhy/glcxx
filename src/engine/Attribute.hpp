@@ -8,18 +8,26 @@
 #include "GL.hpp"
 #include "Utils.hpp"
 
-/// @brief single attribute, TName is compile time string representing name of
-/// attribute
-template<GLenum glType, size_t N, typename TName>
+/// @brief single attribute
+/// @tparam glType gl enum like GL_FLOAT
+/// @tparam N number of glType components in memory layout
+/// @tparam EXTRA number of extra components filled with default values, for
+/// example N=3, EXTRA=1 (x,y,z) position in memory will be translated to vec4
+/// with extra component filled with default value (x,y,z,1)
+/// @tparam TName is compile time string representing name of attribute
+template<GLenum glType, size_t N, size_t EXTRA, typename TName>
 struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
 {
-      static_assert(N >= 1 && N <= 4, "attribute number should be in range [1,4]");
+      static_assert(N >= 1 && N + EXTRA <= 4, "attribute number should be in range [1,4]");
 
       /// @brief base typedef
       using tBaseArray = std::array<typename TGLSLToCPPType<glType>::type, N>;
 
-      /// @brief ctstring containing name of current attribute
+      /// @brief ctstring containing name of attribute
       using tName = TName;
+
+      /// @brief ctstring containing glsl declaration of attribute
+      using tDeclaration = ct::string_cat<cts("attribute vec"), ct::string<'0' + N + EXTRA, ' '>, tName, cts(";")>;
 
       /// @brief return glType id
       static constexpr GLenum glTypeID = glType;
@@ -47,6 +55,9 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
 
       /// @brief return attribute number
       static constexpr size_t attributeNum = sizeof...(TAttributes);
+
+      /// @brief ctstring containing glsl declaration of attributes
+      using tDeclaration = ct::string_cat<typename TAttributes::tDeclaration...>;
 
       /// @brief returns offset of given attribute in attribute pack
       template<int index>
