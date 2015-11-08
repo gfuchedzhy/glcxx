@@ -48,6 +48,19 @@ namespace ct
    /// @brief shortcut
    template<char c, typename TString>
    using string_strip_char = typename string_strip_char_impl<c, TString>::type;
+
+   /// @brief returns substring [start,end]
+   template<size_t start, size_t end, size_t...I, char...str>
+   auto string_substring_helper(string<str...>, std::index_sequence<I...>)
+      -> string_cat<typename std::conditional< (I<start) || (I>end), string<>, string<str>>::type...>;
+
+   /// @brief shortcut
+   template<size_t start, size_t end, typename TString>
+   using string_substring = decltype(string_substring_helper<start, end>(TString{}, std::make_index_sequence<TString::length>{}));
+
+   /// @brief shortcut, returns range [start,length]
+   template<size_t start, typename TString>
+   using string_substring_from = decltype(string_substring_helper<start, TString::length>(TString{}, std::make_index_sequence<TString::length>{}));
 }
 
 /// @brief macros to generate compile time string type, maximum length supported
