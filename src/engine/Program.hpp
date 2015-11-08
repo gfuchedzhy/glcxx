@@ -10,7 +10,7 @@
 #include <memory>
 
 template<typename... TProgramInput>
-class TProgram
+class TProgram : public CProgramObject
 {
    public:
       /// @brief ctstring containing glsl declaration of all program input
@@ -27,7 +27,7 @@ class TProgram
 
       /// @brief constructor
       TProgram(const std::string& vertexSrc, const std::string& fragmentSrc)
-         : mObject(tDeclaration::chars + vertexSrc, fragmentSrc)
+         : CProgramObject(tDeclaration::chars + vertexSrc, fragmentSrc)
       {
          retrieveLocations(std::make_index_sequence<inputNum>{});
          Log::msg(mLocations);
@@ -37,7 +37,7 @@ class TProgram
       template<size_t... I>
       void retrieveLocations(std::index_sequence<I...>)
       {
-         swallow(std::get<I>(mLocations) = TProgramInput::tData::getLocations(mObject.mObject));
+         swallow(std::get<I>(mLocations) = TProgramInput::tData::getLocations(mObject));
       }
 
       /// @brief get index of named program input at compile time
@@ -63,9 +63,6 @@ class TProgram
       }
 
    private:
-      /// @brief program object
-      CProgramObject mObject;
-
       /// @brief locations for all program input
       std::tuple<typename TProgramInput::tData::tLocations...> mLocations;
 

@@ -25,14 +25,13 @@ class CProgramObject
       CProgramObject(const CProgramObject&) = delete;
       CProgramObject& operator=(const CProgramObject& other) = delete;
 
-      /// @brief program object id
-      GLuint mObject = 0;
-
       /// @brief shaders
       CShader mVertexShader;
       CShader mFragmentShader;
 
-      template<typename...> friend class TProgram;
+   protected:
+      /// @brief program object id
+      GLuint mObject = 0;
 };
 
 inline void CProgramObject::bind() const
