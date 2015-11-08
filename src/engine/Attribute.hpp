@@ -95,7 +95,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
          : std::tuple<TAttributes...>(attributes...)
       {}
 
-      /// @brief get index of named attribute in compile time
+      /// @brief get index of named attribute at compile time
       template<typename TName, int index = sizeof...(TAttributes) - 1>
          static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
       {
@@ -103,7 +103,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
             indexByName(TName{},std::integral_constant<int, index-1>{});
       }
 
-      /// @brief terminator for attribute index calculator
+      /// @brief terminator for compile time attribute index calculator
       template<typename TName>
       static constexpr int indexByName(TName, std::integral_constant<int, -1>)
       {
