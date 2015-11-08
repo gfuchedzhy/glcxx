@@ -77,7 +77,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       {
          tLocations locations = doGetLocations(program, std::make_index_sequence<attributeNum>{});
          Log::msg("attribute locations ", tName::chars, "=", locations);
-         return doGetLocations(program, std::make_index_sequence<attributeNum>{});
+         return locations;
       }
 
       /// @brief attaches attribute data to given locations, ptr = 0 for buffered attributes
