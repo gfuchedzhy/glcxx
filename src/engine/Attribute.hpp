@@ -56,6 +56,9 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       /// @brief return attribute number
       static constexpr size_t attributeNum = sizeof...(TAttributes);
 
+      /// @brief ctstring containing combined name of attributes
+      using tName = ct::string_substring_from<1, ct::string_cat<ct::string_cat<cts(","), typename TAttributes::tName>...>>;
+
       /// @brief ctstring containing glsl declaration of attributes
       using tDeclaration = ct::string_cat<typename TAttributes::tDeclaration...>;
 
@@ -72,6 +75,8 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       /// @brief returns locations of attributes for given program
       static inline tLocations getLocations(GLuint program)
       {
+         tLocations locations = doGetLocations(program, std::make_index_sequence<attributeNum>{});
+         Log::msg("attribute locations ", tName::chars, "=", locations);
          return doGetLocations(program, std::make_index_sequence<attributeNum>{});
       }
 
