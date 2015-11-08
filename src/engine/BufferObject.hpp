@@ -53,7 +53,7 @@ class TBufferObject
       template<size_t... I>
       void doAttach(const typename tData::tLocations& locations, std::index_sequence<I...>)
       {
-         swallow(gl(glEnableVertexAttribArray, I));
+         swallow(gl(glEnableVertexAttribArray, locations[I]));
          swallow(gl(glVertexAttribPointer,
                     locations[I],
                     std::tuple_element<I, typename tData::tBaseTuple>::type::size,
@@ -68,7 +68,7 @@ class TBufferObject
       template<size_t... I>
       void doDetach(const typename tData::tLocations& locations, std::index_sequence<I...>)
       {
-         swallow(gl(glDisableVertexAttribArray, I));
+         swallow(gl(glDisableVertexAttribArray, locations[I]));
       }
 
       /// @brief disabled stuff
