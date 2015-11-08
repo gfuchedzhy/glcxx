@@ -112,7 +112,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
 
       /// @brief get attribute by compile time name
       template<typename TName>
-      auto& get()
+      auto&& get()
       {
          constexpr int index = indexByName(TName{});
          static_assert(-1 != index, "attribute name not found");
@@ -121,7 +121,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
 
       /// @brief get attribute by compile time name
       template<typename TName>
-      const auto& get() const
+      auto&& get() const
       {
          constexpr int index = indexByName(TName{});
          static_assert(-1 != index, "attribute name not found");
