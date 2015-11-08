@@ -31,13 +31,6 @@ class TProgram : public CProgramObject
          retrieveLocations(std::make_index_sequence<inputNum>{});
       }
 
-      /// @brief queries and saves locations for all program input
-      template<size_t... I>
-      void retrieveLocations(std::index_sequence<I...>)
-      {
-         swallow(std::get<I>(mLocations) = TProgramInput::tData::getLocations(mObject));
-      }
-
       /// @brief get index of named program input at compile time
       template<typename TName, int index = sizeof...(TProgramInput) - 1>
          static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
@@ -85,6 +78,39 @@ class TProgram : public CProgramObject
          doSelect(std::make_index_sequence<inputNum>{});
       }
 
+   private:
+      /// @brief locations for all program input
+      std::tuple<typename TProgramInput::tData::tLocations...> mLocations;
+
+      /// @brief program input associated with program
+      tProgramInputTuple mProgramInput;
+
+      /// @brief program input scheduled for detach
+      tProgramInputTuple mProgramInputDetach;
+
+      /// @brief true if program input is currently attached
+      std::array<bool, inputNum> mAttached = {}; // false
+
+   private: // impl
+      /// @brief queries and saves locations for all program input
+      template<size_t... I>
+      void retrieveLocations(std::index_sequence<I...>)
+      {
+         swallow(std::get<I>(mLocations) = TProgramInput::tData::getLocations(mObject));
+      }
+
+      /// @brief if @param state true attach, otherwise detach
+      template<size_t I>
+      void attach(const bool state)
+      {
+         if (auto& input = std::get<I>(mProgramInput))
+         {
+            const auto& locations = std::get<I>(mLocations);
+            state ? input->attach(locations) : input->detach(locations);
+            mAttached[I] = state;
+         }
+      }
+
       /// @brief select impl
       template<size_t... I>
       void doSelect(std::index_sequence<I...>)
@@ -107,31 +133,6 @@ class TProgram : public CProgramObject
             mAttached[I] = true;
          }
       }
-
-   private:
-      /// @brief if @param state true attach, otherwise detach
-      template<size_t I>
-      void attach(const bool state)
-      {
-         if (auto& input = std::get<I>(mProgramInput))
-         {
-            const auto& locations = std::get<I>(mLocations);
-            state ? input->attach(locations) : input->detach(locations);
-            mAttached[I] = state;
-         }
-      }
-
-      /// @brief locations for all program input
-      std::tuple<typename TProgramInput::tData::tLocations...> mLocations;
-
-      /// @brief program input associated with program
-      tProgramInputTuple mProgramInput;
-
-      /// @brief program input scheduled for detach
-      tProgramInputTuple mProgramInputDetach;
-
-      /// @brief true if program input is currently attached
-      std::array<bool, inputNum> mAttached = {}; // false
 };
 
 #endif // ENGINE_PROGRAM_HPP
