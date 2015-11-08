@@ -66,25 +66,30 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       template<int index>
       struct offsetof
       {
-            static constexpr void* value = (void*)((char*)(&std::get<index>(*(tBaseTuple*)(0))));
+            static constexpr void* value = &std::get<index>(*(tBaseTuple*)(0));
       };
 
       /// @brief type holding locations for attribute pack
       using tLocations = std::array<GLint, attributeNum>;
 
       /// @brief returns locations of attributes for given program
-      static inline tLocations getLocations(GLuint program)
+      static tLocations getLocations(GLuint program)
       {
          tLocations locations = doGetLocations(program, std::make_index_sequence<attributeNum>{});
          Log::msg("attribute locations ", tName::chars, "=", locations);
          return doGetLocations(program, std::make_index_sequence<attributeNum>{});
       }
 
-      /// @brief implementation of location getter
-      template<size_t... I>
-      static inline tLocations doGetLocations(GLuint program, std::index_sequence<I...>)
+      /// @brief attaches attribute data to given locations, ptr = 0 for buffered attributes
+      static void attach(const tLocations& locations, TAttributeDataPack* ptr = nullptr)
       {
-         return {gl(glGetAttribLocation, program, std::tuple_element<I, tBaseTuple>::type::tName::chars)...};
+         doAttach(locations, ptr, std::make_index_sequence<attributeNum>{});
+      }
+
+      /// @brief detaches attribute data
+      static void detach(const tLocations& locations)
+      {
+         doDetach(locations, std::make_index_sequence<attributeNum>{});
       }
 
       /// @brief default constructor
@@ -126,6 +131,36 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
          constexpr int index = indexByName(TName{});
          static_assert(-1 != index, "attribute name not found");
          return std::get<index>(*this);
+      }
+
+   private: // impl
+      /// @brief implementation of location getter
+      template<size_t... I>
+      static tLocations doGetLocations(GLuint program, std::index_sequence<I...>)
+      {
+         return {gl(glGetAttribLocation, program, std::tuple_element<I, tBaseTuple>::type::tName::chars)...};
+      }
+
+      /// @brief enables every attribute, then calls attrib pointer for each one
+      template<size_t... I>
+      static void doAttach(const tLocations& locations, TAttributeDataPack* ptr, std::index_sequence<I...>)
+      {
+         swallow(gl(glEnableVertexAttribArray, locations[I]));
+         swallow(gl(glVertexAttribPointer,
+                    locations[I],
+                    std::tuple_element<I, tBaseTuple>::type::size,
+                    std::tuple_element<I, tBaseTuple>::type::glTypeID,
+                    GL_FALSE, // not normalized
+                    sizeof(TAttributeDataPack), // stride
+                    (char*)ptr + size_t(offsetof<I>::value) // offset
+                    ));
+      }
+
+      /// @brief disables every attribute
+      template<size_t... I>
+      static void doDetach(const tLocations& locations, std::index_sequence<I...>)
+      {
+         swallow(gl(glDisableVertexAttribArray, locations[I]));
       }
 };
 
