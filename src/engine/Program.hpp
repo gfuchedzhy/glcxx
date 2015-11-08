@@ -29,7 +29,6 @@ class TProgram : public CProgramObject
          : CProgramObject(tDeclaration::chars + vertexSrc, fragmentSrc)
       {
          retrieveLocations(std::make_index_sequence<inputNum>{});
-         Log::msg(mLocations);
       }
 
       /// @brief queries and saves locations for all program input
