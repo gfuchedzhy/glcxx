@@ -7,7 +7,6 @@
 
 #include "ProgramObject.hpp"
 #include <tuple>
-#include <memory>
 
 template<typename... TProgramInput>
 class TProgram : public CProgramObject
@@ -60,6 +59,20 @@ class TProgram : public CProgramObject
       void set(typename std::tuple_element<I, tProgramInputTuple>::type input)
       {
          std::get<I>(mProgramInput) = input;
+      }
+
+      /// @brief @see CProgramObject::select
+      void select() override
+      {
+         CProgramObject::select();
+         doSelect(std::make_index_sequence<inputNum>{});
+      }
+
+      /// @brief todo
+      template<size_t... I>
+      void doSelect(std::index_sequence<I...>)
+      {
+         swallow(std::get<I>(mProgramInput)->attach(std::get<I>(mLocations)));
       }
 
    private:

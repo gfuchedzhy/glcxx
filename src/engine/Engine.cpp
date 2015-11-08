@@ -22,25 +22,6 @@ void CEngine::run()
    using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, 1, cts("aPosition")>,
                                              TAttributeData<GL_FLOAT, 3, 0, cts("aColor")>>;
 
-   Log::msg(TBufferObject<tAttributePack>::tData::tDeclaration::chars);
-   TProgram<TBufferObject<tAttributePack>> prog(R"(\
-uniform mat4 uModel;
-varying vec3 vColor;
-void main()
-{
-   gl_Position = uModel*aPosition;
-   vColor = aColor;
-}
-)",
-                    R"(\
-varying vec3 vColor;
-void main()
-{
-   gl_FragColor.xyz = vColor;
-   gl_FragColor.w = 1.0;
-}
-)");
-
    static const tAttributePack vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },
       { { 0.5f,-0.5f, 0.5f}, {0.f, 1.f, 0.f} },
@@ -52,35 +33,32 @@ void main()
       { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
    };
 
-   auto buf = std::make_shared<TBufferObject<tAttributePack>>();
-   buf->upload(vertexBufferData, 8);
-
-   prog.set<cts("aPosition,aColor")>(buf);
-
-   static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
-                                     1, 5, 2, 6,
-                                     6, 3, 3, 7, 0, 4
-};
-
-   CProgramObject p(R"(\
-attribute vec4 aPosition;
-attribute vec3 aColor;
+   auto prog = std::make_shared<TProgram<TBufferObject<tAttributePack>>>(
+      R"(\
 uniform mat4 uModel;
 varying vec3 vColor;
 void main()
 {
    gl_Position = uModel*aPosition;
    vColor = aColor;
-}
-)",
-R"(\
+})",
+      R"(\
 varying vec3 vColor;
 void main()
 {
    gl_FragColor.xyz = vColor;
    gl_FragColor.w = 1.0;
-}
-)");
+})");
+
+   auto buf = std::make_shared<TBufferObject<tAttributePack>>();
+   buf->upload(vertexBufferData, 8);
+
+   prog->set<cts("aPosition,aColor")>(buf);
+   CProgramObject::select(prog);
+
+   static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
+                                     1, 5, 2, 6,
+                                     6, 3, 3, 7, 0, 4};
 
    const float aspect = mWindow.getSize().x / float(mWindow.getSize().y);
    const glm::mat4 proj = glm::perspective(45.0f, aspect, 0.1f, 100.f);
@@ -111,13 +89,10 @@ void main()
       angle = angle > 360.f ? angle - 360 : angle;
       // clear the buffers
       gl(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      p.bind();
 
-      buf->attach({0, 1});
       glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
       gl(glUniformMatrix4fv, 0, 1, GL_FALSE, &result[0][0]);
       gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
-      buf->detach({0, 1});
       // end the current frame (internally swaps the front and back buffers)
       mWindow.display();
    }

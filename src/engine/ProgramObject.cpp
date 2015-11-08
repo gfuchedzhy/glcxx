@@ -3,7 +3,8 @@
  */
 
 #include "ProgramObject.hpp"
-#include <memory>
+
+TProgramPtr CProgramObject::current = nullptr;
 
 CProgramObject::CProgramObject(const std::string& vertexSrc, const std::string& fragmentSrc)
    : mVertexShader(vertexSrc, GL_VERTEX_SHADER)
