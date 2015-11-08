@@ -57,7 +57,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       static constexpr size_t attributeNum = sizeof...(TAttributes);
 
       /// @brief ctstring containing combined name of attributes
-      using tName = ct::string_substring_from<1, ct::string_cat<ct::string_cat<cts(","), typename TAttributes::tName>...>>;
+      using tName = ct::string_sub_from<1, ct::string_cat<ct::string_cat<cts(","), typename TAttributes::tName>...>>;
 
       /// @brief ctstring containing glsl declaration of attributes
       using tDeclaration = ct::string_cat<typename TAttributes::tDeclaration...>;
