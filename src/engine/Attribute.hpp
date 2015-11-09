@@ -87,7 +87,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       }
 
       /// @brief attaches attribute data to given locations, ptr = 0 for buffered attributes
-      static void attach(const tLocations& locations, TAttributeDataPack* ptr = nullptr)
+      static void attach(const tLocations& locations, const TAttributeDataPack* ptr = nullptr)
       {
          doAttach(locations, ptr, std::make_index_sequence<attributeNum>{});
       }
@@ -142,7 +142,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
    private: // impl
       /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
-      static void doAttach(const tLocations& locations, TAttributeDataPack* ptr, std::index_sequence<I...>)
+      static void doAttach(const tLocations& locations, const TAttributeDataPack* ptr, std::index_sequence<I...>)
       {
          swallow(gl(glEnableVertexAttribArray, locations[I]));
          swallow(gl(glVertexAttribPointer,
@@ -151,7 +151,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
                     std::tuple_element<I, tBaseTuple>::type::glTypeID,
                     GL_FALSE, // not normalized
                     sizeof(TAttributeDataPack), // stride
-                    (char*)ptr + size_t(offsetof<I>::value) // offset
+                    (const char*)ptr + size_t(offsetof<I>::value) // offset
                     ));
       }
 
