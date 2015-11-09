@@ -27,7 +27,7 @@ struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
       using tName = TName;
 
       /// @brief ctstring containing glsl declaration of attribute
-      using tDeclaration = ct::string_cat<cts("attribute vec"), ct::string<'0' + N + EXTRA, ' '>, tName, cts(";")>;
+      using tDeclaration = ct::string_cat<cts("attribute vec"), ct::string_from<size_t, N + EXTRA>, cts(" "), tName, cts(";")>;
 
       /// @brief return glType id
       static constexpr GLenum glTypeID = glType;

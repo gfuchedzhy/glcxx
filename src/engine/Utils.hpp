@@ -6,6 +6,7 @@
 #define ENGINE_UTILS_HPP
 
 #include <utility>
+#include <cmath>
 
 /// @brief evaluate expression for every element of expansion pack in order
 #define swallow(expression) (void)(int[]){0, ((expression), 0)...}
@@ -61,6 +62,34 @@ namespace ct
    /// @brief shortcut, returns range [start,length]
    template<size_t start, typename TString>
    using string_sub_from = decltype(string_sub_helper<start, TString::length>(TString{}, std::make_index_sequence<TString::length>{}));
+
+   /// @brief string from impl
+   template<typename T, T val> struct string_from_impl;
+
+   /// @brief string from insigned
+   template<size_t val> struct string_from_impl<size_t, val>
+   {
+         using type = string_cat<typename std::conditional<0==val/10,
+                                                           string<>,
+                                                           typename string_from_impl<size_t, val/10>::type>::type,
+                                 string<'0' + (val%10)>>;
+   };
+   template<>
+   struct string_from_impl<size_t, 0u>
+   {
+         using type = string<'0'>;
+   };
+
+   /// @brief string from signed
+   template<int val> struct string_from_impl<int, val>
+   {
+         using type = string_cat<typename std::conditional< val>=0, string<>, string<'-'>>::type,
+                                 typename string_from_impl<size_t, size_t(std::abs(val))>::type>;
+   };
+
+   /// @brief string from shortcut
+   template<typename T, T val>
+   using string_from = typename string_from_impl<T, val>::type;
 }
 
 /// @brief macros to generate compile time string type, maximum length supported
