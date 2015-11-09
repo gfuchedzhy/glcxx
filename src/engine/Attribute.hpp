@@ -45,6 +45,12 @@ struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
       {
          static_assert(sizeof...(T) == N, "wrong number of initializers passed to attribute");
       }
+
+      /// @brief returns location of attribute for given program
+      static GLint getLocation(GLuint program)
+      {
+         return gl(glGetAttribLocation, program, tName::chars);
+      }
 };
 
 template<typename... TAttributes>
@@ -75,7 +81,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       /// @brief returns locations of attributes for given program
       static tLocations getLocations(GLuint program)
       {
-         tLocations locations = doGetLocations(program, std::make_index_sequence<attributeNum>{});
+         tLocations locations = {TAttributes::getLocation(program)...};
          Log::msg("attribute locations ", tName::chars, "=", locations);
          return locations;
       }
@@ -134,13 +140,6 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
       }
 
    private: // impl
-      /// @brief implementation of location getter
-      template<size_t... I>
-      static tLocations doGetLocations(GLuint program, std::index_sequence<I...>)
-      {
-         return {gl(glGetAttribLocation, program, std::tuple_element<I, tBaseTuple>::type::tName::chars)...};
-      }
-
       /// @brief enables every attribute, then calls attrib pointer for each one
       template<size_t... I>
       static void doAttach(const tLocations& locations, TAttributeDataPack* ptr, std::index_sequence<I...>)
