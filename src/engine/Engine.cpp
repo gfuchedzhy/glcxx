@@ -6,6 +6,7 @@
 #include "Log.hpp"
 #include "Program.hpp"
 #include "BufferObjectProgramInput.hpp"
+#include "UniformProgramInput.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -19,9 +20,9 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, 1, cts("aPosition")>,
+   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, 1, cts("aPos")>,
                                              TAttributeData<GL_FLOAT, 3, 0, cts("aColor")>>;
-
+   using tUniform = TUniform<glm::mat4, cts("uModel")>;
    static const tAttributePack vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },
       { { 0.5f,-0.5f, 0.5f}, {0.f, 1.f, 0.f} },
@@ -33,13 +34,13 @@ void CEngine::run()
       { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
    };
 
-   auto prog = std::make_shared<TProgram<TBufferObject<tAttributePack>>>(
+   auto prog = std::make_shared<TProgram<TBufferObjectProgramInput<tAttributePack>,
+                                         TUniformProgramInput<tUniform>>>(
       R"(\
-uniform mat4 uModel;
 varying vec3 vColor;
 void main()
 {
-   gl_Position = uModel*aPosition;
+   gl_Position = uModel*aPos;
    vColor = aColor;
 })",
       R"(\
@@ -52,8 +53,7 @@ void main()
 
    auto buf = std::make_shared<TBufferObject<tAttributePack>>();
    buf->upload(vertexBufferData, 8);
-
-   prog->set<cts("aPosition,aColor")>(buf);
+   prog->set<cts("aPos,aColor")>(buf);
    CProgramObject::select(prog);
 
    static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
@@ -91,7 +91,7 @@ void main()
       gl(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
-      gl(glUniformMatrix4fv, 0, 1, GL_FALSE, &result[0][0]);
+      prog->set<cts("uModel")>(result);
       gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
       // end the current frame (internally swaps the front and back buffers)
       mWindow.display();
