@@ -151,7 +151,7 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
                     std::tuple_element<I, tBaseTuple>::type::glTypeID,
                     GL_FALSE, // not normalized
                     sizeof(TAttributeDataPack), // stride
-                    (const char*)ptr + size_t(offsetof<I>::value) // offset
+                    (void*)((const char*)ptr + size_t(offsetof<I>::value)) // offset
                     ));
       }
 
