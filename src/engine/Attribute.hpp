@@ -27,26 +27,11 @@ struct TAttribPack : std::tuple<typename TAttribTraits::tData...>
          : tBaseTuple(attributes...)
       {}
 
-      /// @brief get index of named attribute at compile time
-      template<typename TName, int index = attributeNum>
-      static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
-      {
-         return std::is_same<TName, typename std::tuple_element<index, tBaseTuple>::type::tName>::value ? index :
-            indexByName(TName{},std::integral_constant<int, index-1>{});
-      }
-
-      /// @brief terminator for compile time attribute index calculator
-      template<typename TName>
-      static constexpr int indexByName(TName, std::integral_constant<int, -1>)
-      {
-         return -1;
-      }
-
       /// @brief get attribute by compile time name
       template<typename TName>
       auto&& get()
       {
-         constexpr int index = indexByName(TName{});
+         constexpr int index = ct::TTupleTraits<std::tuple<TAttribTraits...>>::indexByName(TName{});
          static_assert(-1 != index, "attribute name not found");
          return std::get<index>(*this);
       }
@@ -55,7 +40,7 @@ struct TAttribPack : std::tuple<typename TAttribTraits::tData...>
       template<typename TName>
       auto&& get() const
       {
-         constexpr int index = indexByName(TName{});
+         constexpr int index = ct::TTupleTraits<std::tuple<TAttribTraits...>>::indexByName(TName{});
          static_assert(-1 != index, "attribute name not found");
          return std::get<index>(*this);
       }

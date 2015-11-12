@@ -22,6 +22,9 @@ class TBufferObjectProgramInput
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
 
+      /// @brief buffer object underlying attribute name
+      using tName = typename TAttribTraits::tName;
+
       /// @brief constructor
       TBufferObjectProgramInput(const GLuint program)
          : mLocation(tTypeTraits::getLocation(program))

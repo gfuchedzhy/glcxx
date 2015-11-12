@@ -14,6 +14,26 @@
 /// @brief ct stands for compile time
 namespace ct
 {
+   /// @brief tuple traits
+   template<typename NamedTuple>
+   struct TTupleTraits
+   {
+         /// @brief get index of named tuple at compile time
+         template<typename TName, int index = std::tuple_size<NamedTuple>::value - 1>
+         static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
+         {
+            return std::is_same<TName, typename std::tuple_element<index, NamedTuple>::type::tName>::value ? index :
+               indexByName(TName{}, std::integral_constant<int, index-1>{});
+         }
+
+         /// @brief terminator indexByName
+         template<typename TName>
+         static constexpr int indexByName(TName, std::integral_constant<int, -1>)
+         {
+            return -1;
+         }
+   };
+
    /// @brief compile time string
    template<char... s>
    struct string

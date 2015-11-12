@@ -16,8 +16,11 @@ class TUniformProgramInput
       /// @brief uniform datatype this program input accepts
       using tValueType = const typename TUniformTraits::tData&;
 
-      /// @brief buffer object underlying data type
+      /// @brief underlying uniform data type
       using tTypeTraits = TUniformTraits;
+
+      /// @brief underlying unform name
+      using tName = typename TUniformTraits::tName;
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program)
