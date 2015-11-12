@@ -34,7 +34,8 @@ void CEngine::run()
       { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
    };
 
-   auto prog = std::make_shared<TProgram<TBufferObjectProgramInput<tAttribPackTraits>,
+   auto prog = std::make_shared<TProgram<cts("he"),
+                                         TBufferObjectProgramInput<tAttribPackTraits>,
                                          TUniformProgramInput<tUniform>>>(
       R"(\
 varying vec3 vColor;

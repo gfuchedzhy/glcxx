@@ -8,10 +8,13 @@
 #include "ProgramObject.hpp"
 #include <tuple>
 
-template<typename... TProgramInput>
+template<typename TProgramName, typename... TProgramInput>
 class TProgram : public CProgramObject
 {
    public:
+      /// @brief program name
+      using tName = TProgramName;
+
       /// @brief ctstring containing glsl declaration of all program input
       using tDeclaration = ct::string_cat<typename TProgramInput::tTypeTraits::tDeclaration...>;
 
