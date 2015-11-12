@@ -8,7 +8,7 @@
 #include "Attribute.hpp"
 
 /// @brief buffer object
-template<typename TAttributeDataPack>
+template<typename TAttribTraits>
 class TBufferObject
 {
    public:
@@ -37,10 +37,10 @@ class TBufferObject
       }
 
       /// @brief upload data to buffer
-      void upload(const TAttributeDataPack* attr, size_t size)
+      void upload(const typename TAttribTraits::tData* attr, size_t size)
       {
          bind();
-         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(TAttributeDataPack), attr, GL_STATIC_DRAW);
+         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(typename TAttribTraits::tData), attr, GL_STATIC_DRAW);
          unBind();
       }
 

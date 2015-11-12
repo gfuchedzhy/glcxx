@@ -13,7 +13,7 @@ class TProgram : public CProgramObject
 {
    public:
       /// @brief ctstring containing glsl declaration of all program input
-      using tDeclaration = ct::string_cat<typename TProgramInput::tData::tDeclaration...>;
+      using tDeclaration = ct::string_cat<typename TProgramInput::tTypeTraits::tDeclaration...>;
 
       /// @brief tuple containing all program input
       using tProgramInputTuple = std::tuple<TProgramInput...>;
@@ -32,7 +32,7 @@ class TProgram : public CProgramObject
       template<typename TName, int index = sizeof...(TProgramInput) - 1>
          static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
       {
-         return std::is_same<TName, typename std::tuple_element<index, tProgramInputTuple>::type::tData::tName>::value ? index :
+         return std::is_same<TName, typename std::tuple_element<index, tProgramInputTuple>::type::tTypeTraits::tName>::value ? index :
             indexByName(TName{}, std::integral_constant<int, index-1>{});
       }
 

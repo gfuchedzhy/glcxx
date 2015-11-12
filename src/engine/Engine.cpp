@@ -7,7 +7,6 @@
 #include "Program.hpp"
 #include "BufferObjectProgramInput.hpp"
 #include "UniformProgramInput.hpp"
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 CEngine::CEngine()
@@ -20,10 +19,11 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tAttributePack = TAttributeDataPack<TAttributeData<GL_FLOAT, 3, 1, cts("aPos")>,
-                                             TAttributeData<GL_FLOAT, 3, 0, cts("aColor")>>;
-   using tUniform = TUniform<glm::mat4, cts("uModel")>;
-   static const tAttributePack vertexBufferData[] = {
+   using tAttribPackTraits = TAttribPackTraits<TAttrib<cts("aPos"),   glm::tvec3, float, float, 1>,
+                                               TAttrib<cts("aColor"), glm::tvec3, float>>;
+   using tUniform = TUniform<cts("uModel"), glm::tmat4x4, float>;
+
+   static const typename tAttribPackTraits::tData vertexBufferData[] = {
       { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },
       { { 0.5f,-0.5f, 0.5f}, {0.f, 1.f, 0.f} },
       { { 0.5f, 0.5f, 0.5f}, {1.f, 1.f, 0.f} },
@@ -34,7 +34,7 @@ void CEngine::run()
       { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
    };
 
-   auto prog = std::make_shared<TProgram<TBufferObjectProgramInput<tAttributePack>,
+   auto prog = std::make_shared<TProgram<TBufferObjectProgramInput<tAttribPackTraits>,
                                          TUniformProgramInput<tUniform>>>(
       R"(\
 varying vec3 vColor;
@@ -51,10 +51,11 @@ void main()
    gl_FragColor.w = 1.0;
 })");
 
-   auto buf = std::make_shared<TBufferObject<tAttributePack>>();
+   CProgramObject::select(prog);
+
+   auto buf = std::make_shared<TBufferObject<tAttribPackTraits>>();
    buf->upload(vertexBufferData, 8);
    prog->set<cts("aPos,aColor")>(buf);
-   CProgramObject::select(prog);
 
    static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                                      1, 5, 2, 6,
@@ -90,7 +91,7 @@ void main()
       // clear the buffers
       gl(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
+      const glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
       prog->set<cts("uModel")>(result);
       gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
       // end the current frame (internally swaps the front and back buffers)

@@ -5,23 +5,23 @@
 #ifndef ENGINE_UNIFORMPROGRAMINPUT_HPP
 #define ENGINE_UNIFORMPROGRAMINPUT_HPP
 
-#include "Uniform.hpp"
+#include "GLSLInputVariable.hpp"
 
 /// @brief holds state of program's uniform, use it as TProgram template
 /// parameter
-template<typename TUniform>
+template<typename TUniformTraits>
 class TUniformProgramInput
 {
    public:
       /// @brief uniform datatype this program input accepts
-      using tValueType = const TUniform&;
+      using tValueType = const typename TUniformTraits::tData&;
 
       /// @brief buffer object underlying data type
-      using tData = TUniform;
+      using tTypeTraits = TUniformTraits;
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program)
-         : mLocation(TUniform::getLocation(program))
+         : mLocation(TUniformTraits::getLocation(program))
       {}
 
       /// @brief set new buffer object as program input, isSelected should be
@@ -34,7 +34,7 @@ class TUniformProgramInput
             // it is allowed to attach only if current program is selected
             if (isSelected)
             {
-               mUniformData.attach(mLocation);
+               TUniformTraits::attach(mLocation, mUniformData);
             }
             mIsAttached = isSelected;
          }
@@ -46,19 +46,19 @@ class TUniformProgramInput
       {
          if (!mIsAttached)
          {
-            mUniformData.attach(mLocation);
+            TUniformTraits::attach(mLocation, mUniformData);
          }
       }
 
    private:
-      /// @brief locations of program input inside program
-      typename tData::tLocation mLocation;
+      /// @brief location of program input inside program
+      typename tTypeTraits::tLocation mLocation;
 
-      /// @brief true if this program input is currently attached to a program
+      /// @brief true if this program input is currently qattached to a program
       bool mIsAttached = false;
 
       /// @brief holds actual buffer
-      TUniform mUniformData;
+      typename TUniformTraits::tData mUniformData;
 };
 
 #endif // ENGINE_BUFFEROBJECTPROGRAMINPUT_HPP

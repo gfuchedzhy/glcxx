@@ -6,109 +6,30 @@
 #define ENGINE_ATTRIBUTE_HPP
 
 #include "GL.hpp"
-#include "Utils.hpp"
+#include "GLSLInputVariable.hpp"
 
-/// @brief single attribute
-/// @tparam glType gl enum like GL_FLOAT
-/// @tparam N number of glType components in memory layout
-/// @tparam EXTRA number of extra components filled with default values, for
-/// example N=3, EXTRA=1 (x,y,z) position in memory will be translated to vec4
-/// with extra component filled with default value (x,y,z,1)
-/// @tparam TName is compile time string representing name of attribute
-template<GLenum glType, size_t N, size_t EXTRA, typename TName>
-struct TAttributeData : std::array<typename TGLSLToCPPType<glType>::type, N>
-{
-      static_assert(N >= 1 && N + EXTRA <= 4, "attribute number should be in range [1,4]");
-
-      /// @brief base typedef
-      using tBaseArray = std::array<typename TGLSLToCPPType<glType>::type, N>;
-
-      /// @brief ctstring containing name of attribute
-      using tName = TName;
-
-      /// @brief ctstring containing glsl declaration of attribute
-      using tDeclaration = ct::string_cat<cts("attribute vec"), ct::string_from<size_t, N + EXTRA>, cts(" "), tName, cts(";")>;
-
-      /// @brief return glType id
-      static constexpr GLenum glTypeID = glType;
-
-      /// @brief return attribute size
-      static constexpr size_t size = N;
-
-      /// @brief default constructor
-      TAttributeData() = default;
-
-      /// @brief constructor allowing initialization from {...}
-      template<typename... T>
-      TAttributeData(const T&... args)
-         : tBaseArray({args...})
-      {
-         static_assert(sizeof...(T) == N, "wrong number of initializers passed to attribute");
-      }
-
-      /// @brief returns location of attribute for given program
-      static GLint getLocation(GLuint program)
-      {
-         return gl(glGetAttribLocation, program, tName::chars);
-      }
-};
-
-template<typename... TAttributes>
-struct TAttributeDataPack : std::tuple<TAttributes...>
+/// @brief generic structure containing arbitrary number of arbitrary unifoms,
+/// e.g. tuple<glm::vec3, glm::vec2, int>
+template<typename... TAttribTraits>
+struct TAttribPack : std::tuple<typename TAttribTraits::tData...>
 {
       /// @brief base typedef
-      using tBaseTuple = std::tuple<TAttributes...>;
+      using tBaseTuple = std::tuple<typename TAttribTraits::tData...>;
 
-      /// @brief return attribute number
-      static constexpr size_t attributeNum = sizeof...(TAttributes);
-
-      /// @brief ctstring containing combined name of attributes
-      using tName = ct::string_sub_from<1, ct::string_cat<ct::string_cat<cts(","), typename TAttributes::tName>...>>;
-
-      /// @brief ctstring containing glsl declaration of attributes
-      using tDeclaration = ct::string_cat<typename TAttributes::tDeclaration...>;
-
-      /// @brief returns offset of given attribute in attribute pack
-      template<int index>
-      struct offsetof
-      {
-            static constexpr void* value = &std::get<index>(*(tBaseTuple*)(0));
-      };
-
-      /// @brief type holding locations for attribute pack
-      using tLocations = std::array<GLint, attributeNum>;
-
-      /// @brief returns locations of attributes for given program
-      static tLocations getLocations(GLuint program)
-      {
-         tLocations locations = {TAttributes::getLocation(program)...};
-         Log::msg("attribute locations ", tName::chars, "=", locations);
-         return locations;
-      }
-
-      /// @brief attaches attribute data to given locations, ptr = 0 for buffered attributes
-      static void attach(const tLocations& locations, const TAttributeDataPack* ptr = nullptr)
-      {
-         doAttach(locations, ptr, std::make_index_sequence<attributeNum>{});
-      }
-
-      /// @brief detaches attribute data
-      static void detach(const tLocations& locations)
-      {
-         doDetach(locations, std::make_index_sequence<attributeNum>{});
-      }
+      /// @brief attribute number
+      static constexpr size_t attributeNum = sizeof...(TAttribTraits);
 
       /// @brief default constructor
-      TAttributeDataPack() = default;
+      TAttribPack() = default;
 
       /// @brief constructor allowing initialization from {...}
-      TAttributeDataPack(const TAttributes&... attributes)
-         : std::tuple<TAttributes...>(attributes...)
+      TAttribPack(const typename TAttribTraits::tData&... attributes)
+         : tBaseTuple(attributes...)
       {}
 
       /// @brief get index of named attribute at compile time
-      template<typename TName, int index = sizeof...(TAttributes) - 1>
-         static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
+      template<typename TName, int index = attributeNum>
+      static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
       {
          return std::is_same<TName, typename std::tuple_element<index, tBaseTuple>::type::tName>::value ? index :
             indexByName(TName{},std::integral_constant<int, index-1>{});
@@ -138,29 +59,76 @@ struct TAttributeDataPack : std::tuple<TAttributes...>
          static_assert(-1 != index, "attribute name not found");
          return std::get<index>(*this);
       }
+};
+
+/// @brief traits for attribute pack
+template<typename... TAttributeTraits>
+struct TAttribPackTraits
+{
+      /// @brief data typedef
+      using tData = TAttribPack<TAttributeTraits...>;
+
+      /// @brief ctstring containing combined name of attributes, e.g. "aPos,aColor"
+      using tName = ct::string_sub_from<1, ct::string_cat<ct::string_cat<cts(","), typename TAttributeTraits::tName>...>>;
+
+      /// @brief attribute number
+      static constexpr size_t attributeNum = sizeof...(TAttributeTraits);
+
+      /// @brief ctstring containing glsl declaration of attributes
+      using tDeclaration = ct::string_cat<typename TAttributeTraits::tDeclaration...>;
+
+      /// @brief returns offset of given attribute in attribute pack
+      template<int index>
+      struct offsetof
+      {
+            /// @todo this is not entirely standard conformant, but currently it
+            /// works for gcc
+            static constexpr void* value = &std::get<index>(*(tData*)(0));
+      };
+
+      /// @brief type holding locations for attribute pack
+      using tLocation = std::array<GLint, attributeNum>;
+
+      /// @brief returns locations of attributes for given program
+      static tLocation getLocation(GLuint program)
+      {
+         return {TAttributeTraits::getLocation(program)...};
+      }
+
+      /// @brief attaches attribute data to given location, ptr = 0 for buffered attributes
+      static void attach(const tLocation& location, const TAttribPackTraits::tData* ptr = nullptr)
+      {
+         doAttach(location, ptr, std::make_index_sequence<attributeNum>{});
+      }
+
+      /// @brief detaches attribute data
+      static void detach(const tLocation& location)
+      {
+         doDetach(location, std::make_index_sequence<attributeNum>{});
+      }
 
    private: // impl
-      /// @brief enables every attribute, then calls attrib pointer for each one
+      /// @brief impl of attach
       template<size_t... I>
-      static void doAttach(const tLocations& locations, const TAttributeDataPack* ptr, std::index_sequence<I...>)
+      static void doAttach(const tLocation& location, const TAttribPackTraits::tData* ptr, std::index_sequence<I...>)
       {
-         swallow(gl(glEnableVertexAttribArray, locations[I]));
-         swallow(gl(glVertexAttribPointer,
-                    locations[I],
-                    std::tuple_element<I, tBaseTuple>::type::size,
-                    std::tuple_element<I, tBaseTuple>::type::glTypeID,
-                    GL_FALSE, // not normalized
-                    sizeof(TAttributeDataPack), // stride
-                    (void*)((const char*)ptr + size_t(offsetof<I>::value)) // offset
-                    ));
+         swallow((TAttributeTraits::attach(location[I],
+                                           sizeof(TAttribPackTraits::tData),
+                                           (size_t)(offsetof<I>::value),
+                                           reinterpret_cast<const typename TAttributeTraits::tData*>(ptr))));
       }
 
-      /// @brief disables every attribute
+      /// @brief impl of detach
       template<size_t... I>
-      static void doDetach(const tLocations& locations, std::index_sequence<I...>)
+      static void doDetach(const tLocation& location, std::index_sequence<I...>)
       {
-         swallow(gl(glDisableVertexAttribArray, locations[I]));
+         swallow(TAttributeTraits::detach(location[I]));
       }
 };
+
+/// @brief this definition is required if we want to odr-use this constexpr
+template<typename... TAttributeTraits>
+template<int index>
+constexpr void* TAttribPackTraits<TAttributeTraits...>::offsetof<index>::value;
 
 #endif // ENGINE_ATTRIBUTE_HPP
