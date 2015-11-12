@@ -66,7 +66,7 @@ namespace ct
    /// @brief string from impl
    template<typename T, T val> struct string_from_impl;
 
-   /// @brief string from insigned
+   /// @brief string from unsigned
    template<size_t val> struct string_from_impl<size_t, val>
    {
          using type = string_cat<typename std::conditional<0==val/10,
