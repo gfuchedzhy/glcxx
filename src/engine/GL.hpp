@@ -43,6 +43,7 @@ namespace detail
                       int         line,
                       TArgs...  args)
    {
+      // Log::msg(glFuncName, std::make_tuple(std::forward<TArgs>(args)...));
       auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
       const GLenum err = glGetError();
       if (GL_NO_ERROR != err)
@@ -57,5 +58,6 @@ namespace detail
 }
 
 #define gl(glFunc, ...) detail::callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
+// #define gl(glFunc, ...) glFunc(__VA_ARGS__)
 
 #endif // ENGINE_GL_HPP
