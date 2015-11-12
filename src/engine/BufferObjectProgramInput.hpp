@@ -6,6 +6,7 @@
 #define ENGINE_BUFFEROBJECTPROGRAMINPUT_HPP
 
 #include "BufferObject.hpp"
+#include <memory>
 
 /// @brief holds state of program's buffer object, use it as TProgram template
 /// parameter
@@ -16,18 +17,20 @@ class TBufferObjectProgramInput
       /// @brief type of buffer objects this program input accepts
       using tValueType = std::shared_ptr<TBufferObject<TAttribTraits>>;
 
-      /// @brief traits
-      using tTypeTraits = TAttribTraits;
-
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
 
       /// @brief buffer object underlying attribute name
       using tName = typename TAttribTraits::tName;
 
+      /// @brief ctstring containing glsl declaration of variable, attributes
+      /// declarations go to vertex shader only
+      using tVertexShaderDeclaration = typename TAttribTraits::tDeclaration;
+      using tFragmentShaderDeclaration = cts("");
+
       /// @brief constructor
       TBufferObjectProgramInput(const GLuint program)
-         : mLocation(tTypeTraits::getLocation(program))
+         : mLocation(TAttribTraits::getLocation(program))
       {}
 
       /// @brief set new buffer object as program input, isSelected should be
@@ -61,7 +64,7 @@ class TBufferObjectProgramInput
       {
          if (mBufferForDelayedDetach)
          {
-            tTypeTraits::detach(mLocation);
+            TAttribTraits::detach(mLocation);
             mIsAttached = false;
             mBufferForDelayedDetach = nullptr;
          }
@@ -89,7 +92,7 @@ class TBufferObjectProgramInput
          if (mBuffer && !mIsAttached)
          {
             mBuffer->bind();
-            tTypeTraits::attach(mLocation);
+            TAttribTraits::attach(mLocation);
             mBuffer->unBind();
             mIsAttached = true;
          }
@@ -100,7 +103,7 @@ class TBufferObjectProgramInput
       {
          if (mBuffer && mIsAttached)
          {
-            tTypeTraits::detach(mLocation);
+            TAttribTraits::detach(mLocation);
             mIsAttached = false;
          }
       }

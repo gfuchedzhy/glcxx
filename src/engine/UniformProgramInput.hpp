@@ -7,20 +7,35 @@
 
 #include "GLSLInputVariable.hpp"
 
+/// @brief tags
+namespace tag
+{
+   struct vertex;
+   struct fragment;
+   struct all;
+}
+
 /// @brief holds state of program's uniform, use it as TProgram template
-/// parameter
-template<typename TUniformTraits>
+/// parameter, todo add comments
+template<typename DeclarationTag, typename TUniformTraits>
 class TUniformProgramInput
 {
    public:
       /// @brief uniform datatype this program input accepts
       using tValueType = const typename TUniformTraits::tData&;
 
-      /// @brief underlying uniform data type
-      using tTypeTraits = TUniformTraits;
-
       /// @brief underlying unform name
       using tName = typename TUniformTraits::tName;
+
+      /// @brief ctstring containing glsl declaration of variable
+      using tVertexShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::vertex>::value
+                                                                 || std::is_same<DeclarationTag, tag::all>::value,
+                                                                 typename TUniformTraits::tDeclaration,
+                                                                 cts("")>::type;
+      using tFragmentShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::fragment>::value
+                                                                   || std::is_same<DeclarationTag, tag::all>::value,
+                                                                   typename TUniformTraits::tDeclaration,
+                                                                   cts("")>::type;
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program)
@@ -55,7 +70,7 @@ class TUniformProgramInput
 
    private:
       /// @brief location of program input inside program
-      typename tTypeTraits::tLocation mLocation;
+      typename TUniformTraits::tLocation mLocation;
 
       /// @brief true if this program input is currently qattached to a program
       bool mIsAttached = false;

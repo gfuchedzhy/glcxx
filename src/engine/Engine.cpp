@@ -4,9 +4,7 @@
 
 #include "Engine.hpp"
 #include "Log.hpp"
-#include "Program.hpp"
-#include "BufferObjectProgramInput.hpp"
-#include "UniformProgramInput.hpp"
+#include "Programs.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 CEngine::CEngine()
@@ -19,44 +17,22 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   using tAttribPackTraits = TAttribPackTraits<TAttrib<cts("aPos"),   glm::tvec3, float, float, 1>,
-                                               TAttrib<cts("aColor"), glm::tvec3, float>>;
-   using tUniform = TUniform<cts("uModel"), glm::tmat4x4, float>;
-
-   static const typename tAttribPackTraits::tData vertexBufferData[] = {
-      { {-0.5f,-0.5f, 0.5f}, {0.f, 1.f, 1.f} },
-      { { 0.5f,-0.5f, 0.5f}, {0.f, 1.f, 0.f} },
-      { { 0.5f, 0.5f, 0.5f}, {1.f, 1.f, 0.f} },
-      { {-0.5f, 0.5f, 0.5f}, {1.f, 0.f, 0.f} },
-      { {-0.5f,-0.5f,-0.5f}, {1.f, 1.f, 0.f} },
-      { { 0.5f,-0.5f,-0.5f}, {0.f, 1.f, 0.f} },
-      { { 0.5f, 0.5f,-0.5f}, {0.f, 1.f, 1.f} },
-      { {-0.5f, 0.5f,-0.5f}, {0.f, 0.f, 1.f} }
+   static const typename tPosAttrib::tData vertexBufferData[] = {
+      {-0.5f,-0.5f, 0.5f},
+      { 0.5f,-0.5f, 0.5f},
+      { 0.5f, 0.5f, 0.5f},
+      {-0.5f, 0.5f, 0.5f},
+      {-0.5f,-0.5f,-0.5f},
+      { 0.5f,-0.5f,-0.5f},
+      { 0.5f, 0.5f,-0.5f},
+      {-0.5f, 0.5f,-0.5f}
    };
 
-   auto prog = std::make_shared<TProgram<cts("he"),
-                                         TBufferObjectProgramInput<tAttribPackTraits>,
-                                         TUniformProgramInput<tUniform>>>(
-      R"(\
-varying vec3 vColor;
-void main()
-{
-   gl_Position = uModel*aPos;
-   vColor = aColor;
-})",
-      R"(\
-varying vec3 vColor;
-void main()
-{
-   gl_FragColor.xyz = vColor;
-   gl_FragColor.w = 1.0;
-})");
-
-   CProgramObject::select(prog);
-
-   auto buf = std::make_shared<TBufferObject<tAttribPackTraits>>();
+   auto prog = gProgramList.get<cts("coloredPolygon")>();
+   auto buf = std::make_shared<tPosAttribBuffer>();
    buf->upload(vertexBufferData, 8);
-   prog->set<cts("aPos,aColor")>(buf);
+   prog->set<cts("uColor")>({1.0, 1.0, 0.0});
+   prog->set<cts("aPos")>(buf);
 
    static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                                      1, 5, 2, 6,

@@ -26,18 +26,15 @@ class CProgramObject
       /// @brief destructor
       virtual ~CProgramObject();
 
-      /// @brief select program
-      static void select(TProgramPtr p);
-
-   protected:
-      /// @brief make this program object current
+      /// @brief selects program
       virtual void select();
 
-      /// @brief returns true if current program selected
-      bool isSelected() const;
+      /// @brief deselects program
+      virtual void deselect();
 
-      /// @brief current program ptr
-      static TProgramPtr current;
+   protected:
+      /// @brief returns true if current program selected
+      bool mIsSelected = false;
 
       /// @brief program object id
       GLuint mObject = 0;
@@ -48,24 +45,16 @@ class CProgramObject
       CShader mFragmentShader;
 };
 
-inline void CProgramObject::select(TProgramPtr p)
-{
-   if (p != current)
-   {
-      current = p;
-      if (current)
-         current->select();
-   }
-}
-
 inline void CProgramObject::select()
 {
    gl(glUseProgram, mObject);
+   mIsSelected = true;
 }
 
-inline bool CProgramObject::isSelected() const
+inline void CProgramObject::deselect()
 {
-   return current.get() == this;
+   gl(glUseProgram, 0);
+   mIsSelected = false;
 }
 
 #endif // ENGINE_PROGRAMOBJECT_HPP

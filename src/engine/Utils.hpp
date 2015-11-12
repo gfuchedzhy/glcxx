@@ -34,6 +34,18 @@ namespace ct
          }
    };
 
+   /// @brief tuple traits
+   template<typename T, typename... Types>
+   struct TTypeIndexInPack
+   {
+         template<typename Type>
+         struct TNamedType
+         {
+               using tName = Type;
+         };
+         static constexpr int value = TTupleTraits<std::tuple<TNamedType<Types>...>>::indexByName(T{});
+   };
+
    /// @brief compile time string
    template<char... s>
    struct string
