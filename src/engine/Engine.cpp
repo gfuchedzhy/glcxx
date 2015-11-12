@@ -5,6 +5,7 @@
 #include "Engine.hpp"
 #include "Log.hpp"
 #include "Programs.hpp"
+#include "Box.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 CEngine::CEngine()
@@ -17,26 +18,7 @@ CEngine::CEngine()
 
 void CEngine::run()
 {
-   static const typename tPosAttrib::tData vertexBufferData[] = {
-      {-0.5f,-0.5f, 0.5f},
-      { 0.5f,-0.5f, 0.5f},
-      { 0.5f, 0.5f, 0.5f},
-      {-0.5f, 0.5f, 0.5f},
-      {-0.5f,-0.5f,-0.5f},
-      { 0.5f,-0.5f,-0.5f},
-      { 0.5f, 0.5f,-0.5f},
-      {-0.5f, 0.5f,-0.5f}
-   };
-
-   auto prog = gProgramList.get<cts("coloredPolygon")>();
-   auto buf = std::make_shared<tPosAttribBuffer>();
-   buf->upload(vertexBufferData, 8);
-   prog->set<cts("uColor")>({1.0, 1.0, 0.0});
-   prog->set<cts("aPos")>(buf);
-
-   static const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
-                                     1, 5, 2, 6,
-                                     6, 3, 3, 7, 0, 4};
+   CBox b({0.f, 1.f, 0.f});
 
    const float aspect = mWindow.getSize().x / float(mWindow.getSize().y);
    const glm::mat4 proj = glm::perspective(45.0f, aspect, 0.1f, 100.f);
@@ -69,8 +51,8 @@ void CEngine::run()
       gl(glClear, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       const glm::mat4 result = projTransRotX*glm::rotate(glm::mat4(), angle, glm::vec3(0.f, 1.f, 0.f));
-      prog->set<cts("uModel")>(result);
-      gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+      b.setModel(result);
+      b.draw();
       // end the current frame (internally swaps the front and back buffers)
       mWindow.display();
    }
