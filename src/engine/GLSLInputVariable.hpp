@@ -123,12 +123,12 @@ namespace glsl
    using tTypeName = typename TTypeTraits<TypeTo, EXTRA, THolder>::tTypeName;
 
    /// @brief functions to attach uniforms
-   void attachUniform(GLint location, float val)
+   inline void attachUniform(GLint location, float val)
    {
       gl(glUniform1f, location, val);
    }
    template<size_t N>
-   void attachUniform(GLint location, const std::array<float, N>& val)
+   inline void attachUniform(GLint location, const std::array<float, N>& val)
    {
       for (int i = 0; i < N; ++i)
       {
@@ -136,33 +136,33 @@ namespace glsl
       }
    }
    template<glm::precision P>
-   void attachUniform(GLint location, const glm::tvec2<float, P>& val)
+   inline void attachUniform(GLint location, const glm::tvec2<float, P>& val)
    {
       gl(glUniform2f, location, val.x, val.y);
    }
    template<glm::precision P>
-   void attachUniform(GLint location, const glm::tvec3<float, P>& val)
+   inline void attachUniform(GLint location, const glm::tvec3<float, P>& val)
    {
       gl(glUniform3f, location, val.x, val.y, val.z);
    }
    template<glm::precision P>
-   void attachUniform(GLint location, const glm::tvec4<float, P>& val)
+   inline void attachUniform(GLint location, const glm::tvec4<float, P>& val)
    {
       gl(glUniform4f, location, val.x, val.y, val.z, val.w);
    }
    template<glm::precision P>
-   void attachUniform(GLint location, const glm::tmat4x4<float, P>& val)
+   inline void attachUniform(GLint location, const glm::tmat4x4<float, P>& val)
    {
       gl(glUniformMatrix4fv, location, 1, GL_FALSE, &val[0][0]);
    }
    template<size_t N, glm::precision P>
-   void attachUniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
+   inline void attachUniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
    {
       gl(glUniformMatrix4fv, location, N, GL_FALSE, &val[0][0][0]);
    }
    /// @brief array version
    template<size_t N, typename T>
-   void attachUniform(GLint location, const std::array<T, N>& val)
+   inline void attachUniform(GLint location, const std::array<T, N>& val)
    {
       for (size_t i = 0; i < N; ++i)
       {

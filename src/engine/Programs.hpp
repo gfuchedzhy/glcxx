@@ -15,7 +15,7 @@ using tModelUniform    = TUniform<cts("uModel"), glm::tmat4x4, float>;
 using tViewProjUniform = TUniform<cts("uViewProj"), glm::tmat4x4, float>;
 using tColorUniform    = TUniform<cts("uColor"), glm::tvec3, float>;
 
-auto make_program(cts("coloredPolygon"))
+inline auto make_program(cts("coloredPolygon"))
 {
    return std::make_shared<TProgram<TBufferObjectProgramInput<tPosAttrib>,
                                     TUniformProgramInput<tag::vertex, tModelUniform>,
@@ -34,6 +34,6 @@ void main()
 }
 
 #include "ProgramList.hpp"
-TProgramList<cts("coloredPolygon")> gProgramList;
+extern TProgramList<cts("coloredPolygon")> gProgramList;
 
 #endif // ENGINE_PROGRAMS_HPP
