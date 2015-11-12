@@ -22,6 +22,9 @@ class TProgramList
       /// @brief searches given program by name in compile time, creates it if
       /// it is not created, deselects previously selected program, selecs new
       /// one
+      /// @note that it is disallowed to cache returned value, because it will
+      /// be invalidated as soon as get for different program will be called,
+      /// thats why this function returns raw pointer
       template<typename TName>
       auto get()
       {
@@ -38,7 +41,7 @@ class TProgramList
             mCurrent = p;
             mCurrent->select();
          }
-         return p;
+         return p.get();
       }
 
    private:
