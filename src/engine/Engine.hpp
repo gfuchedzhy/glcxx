@@ -30,6 +30,9 @@ class CEngine
       /// @brief window object, also holds gl context
       sf::Window mWindow;
 
+      /// @brief aspect ratio
+      float mAspect;
+
       /// @brief absolute time in seconds
       double mAbsTime;
 };

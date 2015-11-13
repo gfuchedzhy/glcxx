@@ -10,6 +10,7 @@
 CEngine::CEngine(const size_t width, const size_t height)
    : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close,
              sf::ContextSettings(24, 0, 0, 3, 0))
+   , mAspect(width/float(height))
 {
    sf::ContextSettings settings = mWindow.getSettings();
    Log::msg("openGL ", settings.majorVersion, '.', settings.minorVersion,  " version loaded");

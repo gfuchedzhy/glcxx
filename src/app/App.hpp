@@ -7,19 +7,18 @@
 
 #include "Engine.hpp"
 #include "Box.hpp"
+#include "Camera.hpp"
 #include <vector>
 #include <memory>
 
 /// @brief application class
 class CApp : public CEngine
 {
+      CCamera mCamera;
       CBox mBox;
    public:
       /// @brief constructor
       CApp();
-
-      /// @brief main loop
-      void run() override;
 
       /// @brief update
       void update(float timeDelta) override;
