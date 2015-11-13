@@ -3,7 +3,7 @@
  */
 
 #include "App.hpp"
-#include "engine/Log.hpp"
+#include "Log.hpp"
 
 /// @brief entry point
 int main()

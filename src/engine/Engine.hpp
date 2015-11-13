@@ -12,14 +12,26 @@ class CEngine
 {
    public:
       /// @brief constructor
-      CEngine();
+      CEngine(const size_t width, const size_t height);
+
+      /// @brief destructor
+      virtual ~CEngine() = default;
+
+      /// @brief draw
+      virtual void update(float timeDelta) = 0;
+
+      /// @brief draw
+      virtual void draw() const = 0;
 
       /// @brief main loop
-      void run();
+      virtual void run();
 
    protected:
       /// @brief window object, also holds gl context
       sf::Window mWindow;
+
+      /// @brief absolute time in seconds
+      double mAbsTime;
 };
 
 #endif // ENGINE_ENGINE_HPP

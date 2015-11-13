@@ -34,6 +34,6 @@ def build(bld):
     bld(features = 'cxx cxxprogram strip',
         source   = bld.path.ant_glob('src/app/*.cpp'),
         target   = appname + '.out',
-        includes = ['src'],
+        includes = ['src/engine'],
         defines=['APPNAME="' + appname + '"'],
         use      = ['engine', 'cxxflags'])
