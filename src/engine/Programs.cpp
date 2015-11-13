@@ -4,4 +4,4 @@
 
 #include "Programs.hpp"
 
-TProgramList<cts("coloredPolygon")> gProgramList;
+tRenderer gRenderer;

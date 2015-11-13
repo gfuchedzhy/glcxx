@@ -37,7 +37,7 @@ CBox::CBox(const glm::vec3& color)
 
 void CBox::draw() const
 {
-   auto p = gProgramList.get<cts("coloredPolygon")>();
+   auto p = gRenderer.getAndSelect<cts("coloredPolygon")>();
    p->set<cts("aPos")>(vertexBuffer);
    p->set<cts("uModel")>(mModel);
    p->set<cts("uColor")>(mColor);

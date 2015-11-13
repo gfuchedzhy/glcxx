@@ -12,12 +12,11 @@
 using tPosAttrib       = TAttrib<cts("aPos"),   glm::tvec3, float, float, 1>;
 using tPosAttribBuffer = TBufferObject<tPosAttrib>;
 using tModelUniform    = TUniform<cts("uModel"), glm::tmat4x4, float>;
-using tViewProjUniform = TUniform<cts("uViewProj"), glm::tmat4x4, float>;
 using tColorUniform    = TUniform<cts("uColor"), glm::tvec3, float>;
 
 inline auto make_program(cts("coloredPolygon"))
 {
-   return std::make_shared<TProgram<TBufferObjectProgramInput<tPosAttrib>,
+   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosAttrib>,
                                     TUniformProgramInput<tag::vertex, tModelUniform>,
                                     TUniformProgramInput<tag::fragment, tColorUniform>>
                            >(R"(\
@@ -33,7 +32,8 @@ void main()
 })");
 }
 
-#include "ProgramList.hpp"
-extern TProgramList<cts("coloredPolygon")> gProgramList;
+#include "Renderer.hpp"
+using tRenderer = TRenderer<cts("coloredPolygon")>;
+extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP

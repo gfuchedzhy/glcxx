@@ -8,11 +8,6 @@
 #include "Shader.hpp"
 #include <memory>
 
-class CProgramObject;
-
-/// @brief program ptr
-using TProgramPtr = std::shared_ptr<CProgramObject>;
-
 /// @brief resource holder for opengl program object
 class CProgramObject
 {
