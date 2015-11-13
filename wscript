@@ -25,15 +25,16 @@ def configure(cnf):
 
 def build(bld):
     appname = 'avia'
+    defines = ['APPNAME="' + appname + '"', 'GL_GLEXT_PROTOTYPES']
     bld(features = 'cxx cxxstlib',
         source   = bld.path.ant_glob('src/engine/*.cpp'),
         target   = 'engine',
-        defines=['APPNAME="' + appname + '"', 'GL_GLEXT_PROTOTYPES'],
+        defines  = defines,
         use      = ['sfml', 'cxxflags', 'opengl'])
 
     bld(features = 'cxx cxxprogram strip',
         source   = bld.path.ant_glob('src/app/*.cpp'),
         target   = appname + '.out',
         includes = ['src/engine'],
-        defines=['APPNAME="' + appname + '"'],
-        use      = ['engine', 'cxxflags'])
+        defines  = defines,
+        use      = ['engine', 'cxxflags', 'sfml'])

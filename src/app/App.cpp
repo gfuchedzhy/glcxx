@@ -5,6 +5,7 @@
 #include "App.hpp"
 #include "Log.hpp"
 #include "Box.hpp"
+#include "Programs.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 CApp::CApp()
