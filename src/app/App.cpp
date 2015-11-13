@@ -23,7 +23,8 @@ void CApp::update(float timeDelta)
    float angle = mAbsTime*angularSpeed;
    angle -= (int(angle)/360)*360;
    mCamera.orientation(angle);
-   mBox.setModel(mCamera.viewProj());
+   auto p = gRenderer.get<cts("coloredPolygon")>();
+   p->set<cts("uViewProj")>(mCamera.viewProj());
 }
 
 void CApp::draw() const
