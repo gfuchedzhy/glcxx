@@ -5,14 +5,21 @@
 #ifndef ENGINE_BOX_HPP
 #define ENGINE_BOX_HPP
 
-#include <glm/glm.hpp>
-#include "RenderableModel.hpp"
+#include <glm/gtx/transform.hpp>
+#include "Model.hpp"
 
-class CBox : public IRenderableModel
+class CBox : public IRenderableModel, protected ICachedModel
 {
       glm::vec3 mColor;
+      glm::vec3 mDimensions;
+
+      void updateCachedModel(glm::mat4& cachedModel) const override
+      {
+         cachedModel = mModel * glm::scale(mDimensions);
+      }
+
    public:
-      CBox(const glm::vec3& color);
+      CBox(const glm::vec3& color, const glm::vec3& dimensions = glm::vec3(1.f, 1.f, 1.f));
       void draw() const override;
 };
 
