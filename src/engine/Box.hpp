@@ -6,10 +6,9 @@
 #define ENGINE_BOX_HPP
 
 #include <glm/glm.hpp>
-#include "Renderable.hpp"
-#include "Model.hpp"
+#include "RenderableModel.hpp"
 
-class CBox : IRenderable, public CModel
+class CBox : public IRenderableModel
 {
       glm::vec3 mColor;
    public:
