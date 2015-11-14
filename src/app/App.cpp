@@ -4,22 +4,20 @@
 
 #include "App.hpp"
 #include "Log.hpp"
-#include "Box.hpp"
 #include "Programs.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 CApp::CApp()
    : CEngine(800, 600)
-   , mBox({0.f, 1.f, 1.f})
 {
-   mCamera.perspective(35.f, mAspect, 0.1f, 1e2f);
-   mCamera.eyeDistance(10.f);
+   mCamera.perspective(35.f, mAspect, 0.1f, 1e3f);
+   mCamera.eyeDistance(50.f);
    mCamera.pitch(30.f);
 }
 
 void CApp::update(float timeDelta)
 {
-   static const float angularSpeed = 90.f;
+   static const float angularSpeed = 10.f;
    float angle = mAbsTime*angularSpeed;
    angle -= (int(angle)/360)*360;
    mCamera.orientation(angle);
@@ -29,5 +27,5 @@ void CApp::update(float timeDelta)
 
 void CApp::draw() const
 {
-   mBox.draw();
+   mAircraft.draw();
 }

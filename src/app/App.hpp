@@ -6,7 +6,7 @@
 #define APP_HPP
 
 #include "Engine.hpp"
-#include "Box.hpp"
+#include "Aircraft.hpp"
 #include "Camera.hpp"
 #include <vector>
 #include <memory>
@@ -15,7 +15,7 @@
 class CApp : public CEngine
 {
       CCamera mCamera;
-      CBox mBox;
+      CAircraft mAircraft;
    public:
       /// @brief constructor
       CApp();
@@ -25,7 +25,6 @@ class CApp : public CEngine
 
       /// @brief draw
       void draw() const override;
-
 };
 
 #endif // APP_HPP
