@@ -21,7 +21,10 @@ class CComplexRenderable : public IRenderableModel
       /// @brief object list, itself might be complex renderable
       std::vector<tObject> mObjects;
 
-      /// @brief flags if children models should be updated
+      /// @brief flags if current corresponding children model should be updated
+      mutable std::vector<bool> mIsObjectsMatrixDirty;
+
+      /// @brief flags if all children models should be updated
       mutable bool mIsMatrixDirty = true;
 
    public:
@@ -29,12 +32,27 @@ class CComplexRenderable : public IRenderableModel
       CComplexRenderable() = default;
       CComplexRenderable(std::initializer_list<tObject> list)
          : mObjects(list)
+         , mIsObjectsMatrixDirty(list.size(), true)
       {}
 
       /// @brief appends objects to list
       void append(std::initializer_list<tObject> list)
       {
          mObjects.insert(mObjects.end(), list.begin(), list.end());
+         mIsObjectsMatrixDirty.insert(mIsObjectsMatrixDirty.end(), list.size(), true);
+      }
+
+      /// @brief appends objects to list
+      const glm::mat4& subObjectModel(size_t idx)
+      {
+         return mObjects[idx].first;
+      }
+
+      /// @brief appends objects to list
+      void subObjectModel(size_t idx, const glm::mat4& m)
+      {
+         mObjects[idx].first = m;
+         mIsObjectsMatrixDirty[idx] = true;
       }
 
       /// @brief sets model matrix, marks dirty
