@@ -19,10 +19,34 @@ void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
 
-   static const float angularSpeed = 10.f;
-   float angle = mAbsTime*angularSpeed;
-   angle -= (int(angle)/360)*360;
-   mCamera.orientation(angle);
+   const float cameraSpeed = 70.f;
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+   {
+      mCamera.orientation(std::min(120.f, mCamera.orientation() + timeDelta*cameraSpeed));
+   }
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+   {
+      mCamera.orientation(std::max(-120.f, mCamera.orientation() - timeDelta*cameraSpeed));
+   }
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+   {
+      mCamera.pitch(std::min(90.f, mCamera.pitch() + timeDelta*cameraSpeed));
+   }
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+   {
+      mCamera.pitch(std::max(-30.f, mCamera.pitch() - timeDelta*cameraSpeed));
+   }
+
+   const float cameraEyeDistanceSpeed = 40.f;
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+   {
+      mCamera.eyeDistance(std::max(30.f, mCamera.eyeDistance() - timeDelta*cameraEyeDistanceSpeed));
+   }
+   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+   {
+      mCamera.eyeDistance(std::min(300.f, mCamera.eyeDistance() + timeDelta*cameraEyeDistanceSpeed));
+   }
+
    auto p = gRenderer.get<cts("coloredPolygon")>();
    p->set<cts("uViewProj")>(mCamera.viewProj());
 }
