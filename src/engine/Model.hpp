@@ -22,22 +22,29 @@ class IRenderableModel : public IRenderable
       auto& getModel() const { return mModel; }
 };
 
-class ICachedModel
+class IRenderableCachedModel : public IRenderableModel
 {
+   protected:
       mutable glm::mat4 mCachedModel;
-      mutable bool mIsDirty = true;
+      mutable bool mIsCachedModelDirty = true;
    public:
+      void setModel(const glm::mat4& model) override
+      {
+         IRenderableModel::setModel(model);
+         markDirty();
+      }
+
       void markDirty() const
       {
-         mIsDirty = true;
+         mIsCachedModelDirty = true;
       }
 
       const glm::mat4& getCachedModel() const
       {
-         if (mIsDirty)
+         if (mIsCachedModelDirty)
          {
             updateCachedModel(mCachedModel);
-            mIsDirty = false;
+            mIsCachedModelDirty = false;
          }
          return mCachedModel;
       }

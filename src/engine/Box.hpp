@@ -8,7 +8,7 @@
 #include <glm/gtx/transform.hpp>
 #include "Model.hpp"
 
-class CBox : public IRenderableModel, protected ICachedModel
+class CBox : public IRenderableCachedModel
 {
       glm::vec3 mColor;
       glm::vec3 mDimensions;
