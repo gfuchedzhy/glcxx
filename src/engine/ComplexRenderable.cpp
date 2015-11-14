@@ -14,7 +14,7 @@ void CComplexRenderable::draw() const
       assert(p.second);
       if (mIsMatrixDirty || mIsObjectsMatrixDirty[i])
       {
-         p.second->setModel(mModel * p.first);
+         p.second->model(mModel * p.first);
          mIsObjectsMatrixDirty[i] = false;
       }
       p.second->draw();

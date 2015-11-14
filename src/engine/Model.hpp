@@ -18,8 +18,8 @@ class IRenderableModel : public IRenderable
       {}
 
       /// @brief setter/getter
-      virtual void setModel(const glm::mat4& model) { mModel = model; }
-      auto& getModel() const { return mModel; }
+      virtual void model(const glm::mat4& model) { mModel = model; }
+      auto& model() const { return mModel; }
 };
 
 class IRenderableCachedModel : public IRenderableModel
@@ -28,9 +28,9 @@ class IRenderableCachedModel : public IRenderableModel
       mutable glm::mat4 mCachedModel;
       mutable bool mIsCachedModelDirty = true;
    public:
-      void setModel(const glm::mat4& model) override
+      void model(const glm::mat4& model) override
       {
-         IRenderableModel::setModel(model);
+         IRenderableModel::model(model);
          markDirty();
       }
 

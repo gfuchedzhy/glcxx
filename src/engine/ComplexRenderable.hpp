@@ -55,10 +55,12 @@ class CComplexRenderable : public IRenderableModel
          mIsObjectsMatrixDirty[idx] = true;
       }
 
+      using IRenderableModel::model;
+
       /// @brief sets model matrix, marks dirty
-      void setModel(const glm::mat4& model) override
+      void model(const glm::mat4& model) override
       {
-         IRenderableModel::setModel(model);
+         IRenderableModel::model(model);
          mIsMatrixDirty = true;
       }
 
