@@ -17,6 +17,8 @@ CApp::CApp()
 
 void CApp::update(float timeDelta)
 {
+   mAircraft.update(timeDelta);
+
    static const float angularSpeed = 10.f;
    float angle = mAbsTime*angularSpeed;
    angle -= (int(angle)/360)*360;

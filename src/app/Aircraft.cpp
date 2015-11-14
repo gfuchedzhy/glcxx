@@ -53,15 +53,26 @@ CAircraft::CAircraft()
 
    auto wholeBody = make_shared<CComplexRenderable>(std::initializer_list<CComplexRenderable::tObject>
       {
+         make_pair(translate(vec3(0.f, 0.5f, 0.f)), prop),
          make_pair(mat4(), body),
          make_pair(translate(vec3(0.f, -length, 0.f)), tail),
-         make_pair(translate(vec3(0.f, -length/3, 0.f)), wings),
-         make_pair(translate(vec3(0.f, 0.5f, 0.f)), prop)
+         make_pair(translate(vec3(0.f, -length/3, 0.f)), wings)
       });
+
+   mBody = wholeBody.get();
 
    auto cabin = make_box({1.f, 0.f, 0.f}, {1.5f, 3.f, 2.f});
 
    append( {make_pair(mat4(), cabin),
             make_pair(translate(vec3(0.f, length*0.2f, -thickness/2)), wholeBody)
             });
+}
+
+void CAircraft::update(float timeDelta)
+{
+   static const float angularSpeed = 3000.f;
+   assert(mBody);
+   float angle = timeDelta*angularSpeed;
+   // first component of body is propeller
+   mBody->subObjectModel(0, glm::rotate(glm::radians(angle), glm::vec3(0.f, 1.f, 0.f)) * mBody->subObjectModel(0));
 }

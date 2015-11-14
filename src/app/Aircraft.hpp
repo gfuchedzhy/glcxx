@@ -9,8 +9,13 @@
 
 class CAircraft : public CComplexRenderable
 {
+      /// @brief propeller, we need this field separately to apply animation to it
+      CComplexRenderable* mBody;
+
    public:
       CAircraft();
+
+      void update(float timeDelta);
 };
 
 #endif // AIRCRAFT_HPP
