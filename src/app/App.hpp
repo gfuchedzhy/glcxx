@@ -20,6 +20,7 @@ class CApp : public CEngine
       CAircraft mAircraft;
       CSky mSky;
       CTexturedRect mGround;
+      std::array<CBillboard, 7> mBillboards;
    public:
       /// @brief constructor
       CApp();

@@ -39,3 +39,23 @@ void CTexturedRect::draw() const
 
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }
+
+CBillboard::CBillboard()
+{
+   if (!vertexBuffer)
+   {
+      vertexBuffer = std::make_shared<tPosUVAttribBuffer>();
+      vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
+   }
+}
+
+void CBillboard::draw() const
+{
+   auto p = gRenderer.getAndSelect<cts("billboard")>();
+   p->set<cts("aPos,aUV")>(vertexBuffer);
+   p->set<cts("uPos")>(mPos);
+   p->set<cts("uSize")>(mSize);
+   p->set<cts("uTexture")>(mTexture);
+
+   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+}

@@ -16,6 +16,17 @@ CApp::CApp()
    mGround.texture(std::make_shared<CTexture>("ground.jpg"));
    mGround.scale(glm::vec3(200, 200, 200));
    mGround.pos(glm::vec3(0, 0, -0.25f*200));
+
+   auto cloudTexture = std::make_shared<CTexture>("cloud.png");
+   float angle = 0;
+   const float bbRadius = 100.f;
+   for (auto&& b : mBillboards)
+   {
+      b.texture(cloudTexture);
+      b.size(glm::vec2(30, 15));
+      b.pos(glm::vec3(bbRadius*sin(angle), bbRadius*cos(angle), 0));
+      angle += 2*M_PI/mBillboards.size();
+   }
 }
 
 template<typename Get, typename Set>
@@ -66,6 +77,11 @@ void CApp::update(float timeDelta)
    p->set<cts("uViewProj")>(mCamera.viewProj());
    auto p2 = gRenderer.get<cts("texturedPolygon")>();
    p2->set<cts("uViewProj")>(mCamera.viewProj());
+   auto p3 = gRenderer.get<cts("billboard")>();
+   p3->set<cts("uViewProj")>(mCamera.viewProj());
+   p3->set<cts("uUp")>(mCamera.up());
+   p3->set<cts("uRight")>(mCamera.right());
+
 }
 
 void CApp::draw() const
@@ -74,5 +90,9 @@ void CApp::draw() const
    mSky.draw();
    mGround.draw();
    gl(glEnable, GL_DEPTH_TEST);
+
+   for (auto&& b : mBillboards)
+      b.draw();
+
    mAircraft.draw();
 }

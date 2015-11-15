@@ -15,6 +15,10 @@ using tPosAttribBuffer = TBufferObject<tPosAttrib>;
 using tModelUniform    = TUniform<cts("uModel"), glm::tmat4x4, float>;
 using tViewProjUniform = TUniform<cts("uViewProj"), glm::tmat4x4, float>;
 using tColorUniform    = TUniform<cts("uColor"), glm::tvec3, float>;
+using tPosUniform      = TUniform<cts("uPos"), glm::tvec3, float>;
+using tSizeUniform     = TUniform<cts("uSize"), glm::tvec2, float>;
+using tRightUniform    = TUniform<cts("uRight"), glm::tvec3, float>;
+using tUpUniform       = TUniform<cts("uUp"), glm::tvec3, float>;
 
 using tUVAttrib        = TAttrib<cts("aUV"), glm::tvec2, float>;
 using tPosUVAttrib     = TAttribPackTraits<tPosAttrib, tUVAttrib>;
@@ -60,8 +64,35 @@ void main()
 })");
 }
 
+inline auto make_program(cts("billboard"))
+{
+   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
+                                    TUniformProgramInput<tag::vertex, tPosUniform>,
+                                    TUniformProgramInput<tag::vertex, tSizeUniform>,
+                                    TUniformProgramInput<tag::vertex, tRightUniform>,
+                                    TUniformProgramInput<tag::vertex, tUpUniform>,
+                                    TUniformProgramInput<tag::vertex, tViewProjUniform>,
+                                    TTextureProgramInput<cts("uTexture")>>
+                           >(R"(\
+varying vec2 vUV;
+void main()
+{
+   vec4 pos;
+   pos.xyz = uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp;
+   pos.w = 1.0;
+   gl_Position = uViewProj*pos;
+   vUV = aUV;
+})",
+                             R"(\
+varying vec2 vUV;
+void main()
+{
+   gl_FragColor = texture2D(uTexture, vUV);
+})");
+}
+
 #include "Renderer.hpp"
-using tRenderer = TRenderer<cts("coloredPolygon"), cts("texturedPolygon")>;
+using tRenderer = TRenderer<cts("coloredPolygon"), cts("texturedPolygon"), cts("billboard")>;
 extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP

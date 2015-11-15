@@ -17,4 +17,17 @@ class CTexturedRect : public IRenderableModel
       void draw() const override;
 };
 
+class CBillboard : public IRenderable
+{
+      std::shared_ptr<CTexture> mTexture;
+      glm::vec3 mPos;
+      glm::vec2 mSize;
+   public:
+      CBillboard();
+      void pos(const glm::vec3& pos) { mPos = pos; }
+      void size(const glm::vec2& size) { mSize = size; }
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+      void draw() const override;
+};
+
 #endif
