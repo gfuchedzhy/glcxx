@@ -66,7 +66,7 @@ const glm::mat4& CModel::model() const
       mCache.mModel = glm::translate(mExternalModel, mPos);
       mCache.mModel = glm::rotate(mCache.mModel, glm::radians(mYaw), glm::vec3{0.f, 0.f, 1.f});
       mCache.mModel = glm::rotate(mCache.mModel, glm::radians(mPitch), glm::vec3{1.f, 0.f, 0.f});
-      mCache.mModel = glm::rotate(mCache.mModel, glm::radians(-mRoll), glm::vec3{0.f, 1.f, 0.f});
+      mCache.mModel = glm::rotate(mCache.mModel, glm::radians(mRoll), glm::vec3{0.f, 1.f, 0.f});
       mCache.mModel = glm::scale(mCache.mModel, mScale);
       mCache.mIsDirty = false;
    }
