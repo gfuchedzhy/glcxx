@@ -44,7 +44,6 @@ class TRenderer
          auto p = get<TName>();
          if (p != mCurrent)
          {
-            Log::msg("selecting program: ", TName::chars);
             if(mCurrent)
                mCurrent->deselect();
             mCurrent = p;
