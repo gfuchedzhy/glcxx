@@ -55,7 +55,7 @@ void CApp::update(float timeDelta)
 
    animate([this]{return mCamera.orientation();},
            [this](float val){mCamera.orientation(val);},
-           timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -120.f, 120.f);
+           timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -180.f, 180.f);
 
    animate([this]{return mCamera.pitch();},
            [this](float val){mCamera.pitch(val);},
