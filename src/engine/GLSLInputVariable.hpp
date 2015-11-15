@@ -123,6 +123,10 @@ namespace glsl
    using tTypeName = typename TTypeTraits<TypeTo, EXTRA, THolder>::tTypeName;
 
    /// @brief functions to attach uniforms
+   inline void attachUniform(GLint location, int val)
+   {
+      gl(glUniform1i, location, val);
+   }
    inline void attachUniform(GLint location, float val)
    {
       gl(glUniform1f, location, val);
