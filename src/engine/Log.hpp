@@ -8,9 +8,33 @@
 #include "Utils.hpp"
 #include <iostream>
 #include <tuple>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace std
 {
+   /// @brief stream vec2
+   template<typename T, glm::precision P>
+   inline ostream& operator<<(ostream& stream, const glm::tvec2<T, P>& vec)
+   {
+      return stream << "vec2(" << vec.x << ',' << vec.y << ')';
+   }
+
+   /// @brief stream vec3
+   template<typename T, glm::precision P>
+   inline ostream& operator<<(ostream& stream, const glm::tvec3<T, P>& vec)
+   {
+      return stream << "vec3(" << vec.x << ',' << vec.y << ',' << vec.z << ')';
+   }
+
+   /// @brief stream vec4
+   template<typename T, glm::precision P>
+   inline ostream& operator<<(ostream& stream, const glm::tvec4<T, P>& vec)
+   {
+      return stream << "vec4(" << vec.x << ',' << vec.y << ',' << vec.z << ',' << vec.w << ')';
+   }
+
    /// @brief stream array
    template<typename T, size_t N>
    inline ostream& operator<<(ostream& stream, const std::array<T, N>& arr)
