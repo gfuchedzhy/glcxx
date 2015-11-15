@@ -89,7 +89,9 @@ class TBufferObjectProgramInput
       /// @brief attach buffer
       void attach()
       {
-         if (mBuffer && !mIsAttached)
+         /// @todo for some reason glVertexAttribPointer settings do not persist
+         /// after switching to different program
+         if (mBuffer /* && !mIsAttached */)
          {
             mBuffer->bind();
             TAttribTraits::attach(mLocation);
