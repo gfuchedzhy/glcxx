@@ -123,7 +123,7 @@ class TTextureProgramInput
       /// @brief attach texture
       void attach()
       {
-         if (mTexture && !mIsAttached)
+         if (mTexture)
          {
             gl(glActiveTexture, GL_TEXTURE0 + samplerID);
             mTexture->bind();
