@@ -8,7 +8,7 @@
 #include "GL.hpp"
 #include "GLSLInputVariable.hpp"
 
-/// @brief generic structure containing arbitrary number of arbitrary unifoms,
+/// @brief generic structure containing arbitrary number of arbitrary attributes,
 /// e.g. tuple<glm::vec3, glm::vec2, int>
 template<typename... TAttribTraits>
 struct TAttribPack : std::tuple<typename TAttribTraits::tData...>
