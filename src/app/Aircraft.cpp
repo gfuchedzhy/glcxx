@@ -11,68 +11,70 @@ CAircraft::CAircraft()
    using namespace std;
    using namespace glm;
 
-   auto make_box = [] (vec3 color, vec3 dimensions) { return static_pointer_cast<IRenderableModel>(make_shared<CBox>(color, dimensions)); };
+   auto make_box = [] (vec3 color, vec3 size) {
+      auto p = static_pointer_cast<IRenderableModel>(make_shared<CBox>(color));
+      p->scale(size);
+      return p;
+   };
 
    // cubed geometry representing airplain, kind of :)
-   const float length    = 22.f;
-   const float thickness = 3.f;
+   const vec3 bodySize(3.f, 22.f, 3.f);
    const size_t bodyPartNum = 4;
-   const size_t bodyPartLen = length/bodyPartNum;
-   const vec3 bodyPartDim(thickness, bodyPartLen, thickness);
+   const vec3 bodyPartSize(3.f, bodySize.y/bodyPartNum, 3.f);
    const vec3 bodyColor(1.f, 1.f, 0.f);
 
    auto body = make_shared<CComplexRenderable>();
    for (size_t i = 0; i < bodyPartNum; ++i)
    {
-      body->append({make_pair(translate(vec3(0.f, -(i + 0.5f)*bodyPartLen, 0.f)), make_box(bodyColor, bodyPartDim))});
+      auto p = make_box(bodyColor, bodyPartSize);
+      p->pos(vec3(0.f, -(i + 0.5f)*bodyPartSize.y, 0.f));
+      body->append({p});
    }
 
    const vec3 tailColor(1.f, 1.f, 1.f);
-   auto tail = make_shared<CComplexRenderable>(std::initializer_list<CComplexRenderable::tObject>
-      {
-         make_pair(translate(vec3(0.f, 5.f, 0.f)),  make_box(tailColor, {9.f, 5.f, 0.2f})),
-         make_pair(translate(vec3(0.f, 5.f, 2.5f)), make_box(tailColor, {0.2f, 5.f, 5.f}))
-      });
+   auto hTail = make_box(tailColor, {9.f, 5.f, 0.2f});
+   auto vTail = make_box(tailColor, {0.2f, 5.f, 5.f});
+   hTail->pos(vec3(0.f, 2.5f, 0.f));
+   vTail->pos(vec3(0.f, 2.5f, 2.5f));
+   auto tail = make_shared<CComplexRenderable>(tIniList{hTail, vTail});
+   tail->pos(vec3(0.f, -bodySize.y, 0.f));
 
-   vec3 wingColor(0.f, 1.f, 0.f);
-   vec3 wingDim(12.f, 4.f, 0.2f);
-   auto wings = make_shared<CComplexRenderable>(std::initializer_list<CComplexRenderable::tObject>
-      {
-         make_pair(rotate(-0.2f, vec3(0.f, 0.f, 1.f)) * translate(vec3( wingDim.x/2, 0.f, 0.f)), make_box(wingColor, wingDim)),
-         make_pair(rotate( 0.2f, vec3(0.f, 0.f, 1.f)) * translate(vec3(-wingDim.x/2, 0.f, 0.f)), make_box(wingColor, wingDim))
-      });
+   const vec3 wingColor(0.f, 1.f, 0.f);
+   const vec3 wingSize(12.f, 4.f, 0.2f);
+   auto lWing = make_box(wingColor, wingSize);
+   auto rWing = make_box(wingColor, wingSize);
+   lWing->yaw( 20.f);
+   rWing->yaw(-20.f);
+   lWing->pos(vec3(-wingSize.x/2.f, 0.f, 0.f));
+   rWing->pos(vec3( wingSize.x/2.f, 0.f, 0.f));
+   auto wings = make_shared<CComplexRenderable>(tIniList{lWing, rWing});
+   wings->pos(vec3(0.f, -bodySize.y/3.f, 0.f));
 
-   vec3 propColor(0.f, 1.f, 1.f);
-   vec3 propDim(1.f, 0.2f, 6.f);
-   auto prop = make_shared<CComplexRenderable>(std::initializer_list<CComplexRenderable::tObject>
-      { make_pair(rotate(0.f,             vec3(0.f, 1.f, 0.f)) * translate(vec3(0.f, 0.f, propDim.z/2)), make_box(propColor, propDim)),
-        make_pair(rotate(radians( 120.f), vec3(0.f, 1.f, 0.f)) * translate(vec3(0.f, 0.f, propDim.z/2)), make_box(propColor, propDim)),
-        make_pair(rotate(radians(-120.f), vec3(0.f, 1.f, 0.f)) * translate(vec3(0.f, 0.f, propDim.z/2)), make_box(propColor, propDim)),
-        make_pair(translate(vec3(0.f, -0.25f, 0.f)), make_box(propColor, {0.3f, 0.5f, 0.3f}))
-      });
-
-   auto wholeBody = make_shared<CComplexRenderable>(std::initializer_list<CComplexRenderable::tObject>
-      {
-         make_pair(translate(vec3(0.f, 0.5f, 0.f)), prop),
-         make_pair(mat4(), body),
-         make_pair(translate(vec3(0.f, -length, 0.f)), tail),
-         make_pair(translate(vec3(0.f, -length/3, 0.f)), wings)
-      });
-
-   mBody = wholeBody.get();
-
+   const vec3 propColor(0.f, 1.f, 1.f);
+   const vec3 propSize(1.f, 0.2f, 12.f);
+   const size_t propNum = 3;
+   auto prop = make_shared<CComplexRenderable>();
+   for (size_t i = 0u; i < propNum; ++i)
+   {
+      auto blade = make_box(propColor, propSize);
+      blade->roll(i*180.f/propNum);
+      prop->append({blade});
+   }
+   auto shaft = make_box(propColor, {0.3f, 0.8f, 0.3f});
+   shaft->pos(vec3(0.f, -0.4f, 0.f));
+   prop->append({shaft});
+   prop->pos(vec3(0.f, 0.4f, 0.f));
+   auto wholeBody = make_shared<CComplexRenderable>(tIniList{body, tail, wings, prop});
+   wholeBody->pos(vec3(0.f, bodySize.y*0.2f, -bodySize.z/2));
    auto cabin = make_box({1.f, 0.f, 0.f}, {1.5f, 3.f, 2.f});
-
-   append( {make_pair(mat4(), cabin),
-            make_pair(translate(vec3(0.f, length*0.2f, -thickness/2)), wholeBody)
-            });
+   append(tIniList{wholeBody, cabin});
+   mProp = prop.get();
 }
 
 void CAircraft::update(float timeDelta)
 {
-   static const float angularSpeed = 3000.f;
-   assert(mBody);
-   float angle = timeDelta*angularSpeed;
-   // first component of body is propeller
-   mBody->subObjectModel(0, glm::rotate(glm::radians(angle), glm::vec3(0.f, 1.f, 0.f)) * mBody->subObjectModel(0));
+   static const float angularSpeed = 3e3f;
+   float angle = mProp->roll() + timeDelta*angularSpeed;
+   angle = angle - (int(angle)/360)*360;
+   mProp->roll(angle);
 }

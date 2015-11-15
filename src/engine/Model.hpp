@@ -8,52 +8,11 @@
 #include "Renderable.hpp"
 #include <glm/glm.hpp>
 
-class IRenderableModel : public IRenderable
-{
-   protected:
-      glm::mat4 mModel;
-   public:
-      IRenderableModel(const glm::mat4& model = glm::mat4{})
-         : mModel(model)
-      {}
-
-      /// @brief setter/getter
-      virtual void model(const glm::mat4& model) { mModel = model; }
-      auto& model() const { return mModel; }
-};
-
-class IRenderableCachedModel : public IRenderableModel
-{
-   protected:
-      mutable glm::mat4 mCachedModel;
-      mutable bool mIsCachedModelDirty = true;
-   public:
-      void model(const glm::mat4& model) override
-      {
-         IRenderableModel::model(model);
-         markDirty();
-      }
-
-      void markDirty() const
-      {
-         mIsCachedModelDirty = true;
-      }
-
-      const glm::mat4& getCachedModel() const
-      {
-         if (mIsCachedModelDirty)
-         {
-            updateCachedModel(mCachedModel);
-            mIsCachedModelDirty = false;
-         }
-         return mCachedModel;
-      }
-
-      virtual void updateCachedModel(glm::mat4& cachedModel) const = 0;
-};
-
 class CModel
 {
+      /// @brief scale
+      glm::vec3 mScale = glm::vec3(1.f, 1.f, 1.f);
+
       /// @brief position
       glm::vec3 mPos;
 
@@ -66,6 +25,9 @@ class CModel
       /// @brief yaw
       float mYaw = 0.f;
 
+      /// @brief external model
+      glm::mat4 mExternalModel;
+
       /// @brief automatic cache
       mutable struct SCache
       {
@@ -74,6 +36,15 @@ class CModel
       } mCache;
 
    public:
+      /// @brief returns true if cache is dirty
+      bool dirty() const;
+
+      /// @brief sets scale
+      void scale(const glm::vec3& scale);
+
+      /// @brief returns scale
+      const glm::vec3& scale() const;
+
       /// @brief sets pos
       void pos(const glm::vec3& pos);
 
@@ -98,9 +69,28 @@ class CModel
       /// @brief returns yaw
       float yaw() const;
 
-      /// @brief returns model matrix
+      /// @brief sets external model
+      void externalModel(const glm::mat4& externalModel);
+
+      /// @brief returns external model
+      const glm::mat4& externalModel() const;
+
+   protected:
+      /// @brief returns resulting model matrix
       const glm::mat4& model() const;
 };
+
+class IRenderableModel : public IRenderable, public CModel {};
+
+inline bool CModel::dirty() const
+{
+   return mCache.mIsDirty;
+}
+
+inline const glm::vec3& CModel::scale() const
+{
+   return mScale;
+}
 
 inline const glm::vec3& CModel::pos() const
 {
@@ -120,6 +110,11 @@ inline float CModel::roll() const
 inline float CModel::yaw() const
 {
    return mYaw;
+}
+
+inline const glm::mat4& CModel::externalModel() const
+{
+   return mExternalModel;
 }
 
 #endif // ENGINE_MODEL_HPP

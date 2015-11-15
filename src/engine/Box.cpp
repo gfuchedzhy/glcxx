@@ -24,9 +24,8 @@ namespace
 
    std::shared_ptr<tPosAttribBuffer> vertexBuffer;
 }
-CBox::CBox(const glm::vec3& color, const glm::vec3& dimensions)
+CBox::CBox(const glm::vec3& color)
    : mColor(color)
-   , mDimensions(dimensions)
 {
    if (!vertexBuffer)
    {
@@ -39,7 +38,7 @@ void CBox::draw() const
 {
    auto p = gRenderer.getAndSelect<cts("coloredPolygon")>();
    p->set<cts("aPos")>(vertexBuffer);
-   p->set<cts("uModel")>(getCachedModel());
+   p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }

@@ -8,18 +8,12 @@
 #include <glm/gtx/transform.hpp>
 #include "Model.hpp"
 
-class CBox : public IRenderableCachedModel
+class CBox : public IRenderableModel
 {
       glm::vec3 mColor;
-      glm::vec3 mDimensions;
-
-      void updateCachedModel(glm::mat4& cachedModel) const override
-      {
-         cachedModel = mModel * glm::scale(mDimensions);
-      }
 
    public:
-      CBox(const glm::vec3& color, const glm::vec3& dimensions = glm::vec3(1.f, 1.f, 1.f));
+      CBox(const glm::vec3& color);
       void draw() const override;
 };
 

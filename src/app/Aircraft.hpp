@@ -10,7 +10,7 @@
 class CAircraft : public CComplexRenderable
 {
       /// @brief propeller, we need this field separately to apply animation to it
-      CComplexRenderable* mBody;
+      CComplexRenderable* mProp;
 
    public:
       CAircraft();

@@ -13,55 +13,21 @@
 /// @brief renderable model that consists of composition of other renderable models
 class CComplexRenderable : public IRenderableModel
 {
+      /// @brief object list, subobject may be complex renderable itself
+      std::vector<std::shared_ptr<IRenderableModel>> mObjects;
    public:
-      /// @brief pair of object's matrix in this complex renderable's space and
-      /// renderable model
-      using tObject = std::pair<glm::mat4, std::shared_ptr<IRenderableModel>>;
-   private:
-      /// @brief object list, itself might be complex renderable
-      std::vector<tObject> mObjects;
+      using tIniList = std::initializer_list<std::shared_ptr<IRenderableModel>>;
 
-      /// @brief flags if current corresponding children model should be updated
-      mutable std::vector<bool> mIsObjectsMatrixDirty;
-
-      /// @brief flags if all children models should be updated
-      mutable bool mIsMatrixDirty = true;
-
-   public:
       /// @brief constructors
       CComplexRenderable() = default;
-      CComplexRenderable(std::initializer_list<tObject> list)
+      CComplexRenderable(tIniList list)
          : mObjects(list)
-         , mIsObjectsMatrixDirty(list.size(), true)
       {}
 
       /// @brief appends objects to list
-      void append(std::initializer_list<tObject> list)
+      void append(tIniList list)
       {
          mObjects.insert(mObjects.end(), list.begin(), list.end());
-         mIsObjectsMatrixDirty.insert(mIsObjectsMatrixDirty.end(), list.size(), true);
-      }
-
-      /// @brief appends objects to list
-      const glm::mat4& subObjectModel(size_t idx)
-      {
-         return mObjects[idx].first;
-      }
-
-      /// @brief appends objects to list
-      void subObjectModel(size_t idx, const glm::mat4& m)
-      {
-         mObjects[idx].first = m;
-         mIsObjectsMatrixDirty[idx] = true;
-      }
-
-      using IRenderableModel::model;
-
-      /// @brief sets model matrix, marks dirty
-      void model(const glm::mat4& model) override
-      {
-         IRenderableModel::model(model);
-         mIsMatrixDirty = true;
       }
 
       /// @brief draw

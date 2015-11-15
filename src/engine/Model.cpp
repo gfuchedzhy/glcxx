@@ -14,6 +14,15 @@ void CModel::pos(const glm::vec3& pos)
    }
 }
 
+void CModel::scale(const glm::vec3& scale)
+{
+   if (scale != mScale)
+   {
+      mScale = scale;
+      mCache.mIsDirty = true;
+   }
+}
+
 void CModel::pitch(const float pitch)
 {
    if (pitch != mPitch)
@@ -41,14 +50,24 @@ void CModel::yaw(const float yaw)
    }
 }
 
+void CModel::externalModel(const glm::mat4& externalModel)
+{
+   if (externalModel != mExternalModel)
+   {
+      mExternalModel = externalModel;
+      mCache.mIsDirty = true;
+   }
+}
+
 const glm::mat4& CModel::model() const
 {
    if (mCache.mIsDirty)
    {
-      mCache.mModel = glm::translate(glm::mat4{}, mPos);
+      mCache.mModel = glm::translate(mExternalModel, mPos);
       mCache.mModel = glm::rotate(mCache.mModel, glm::radians(mYaw), glm::vec3{0.f, 0.f, 1.f});
       mCache.mModel = glm::rotate(mCache.mModel, glm::radians(mPitch), glm::vec3{1.f, 0.f, 0.f});
       mCache.mModel = glm::rotate(mCache.mModel, glm::radians(-mRoll), glm::vec3{0.f, 1.f, 0.f});
+      mCache.mModel = glm::scale(mCache.mModel, mScale);
       mCache.mIsDirty = false;
    }
    return mCache.mModel;

@@ -7,17 +7,14 @@
 // update objects' matrices if necessary, draw objects
 void CComplexRenderable::draw() const
 {
-   assert(mObjects.size() == mIsObjectsMatrixDirty.size());
-   for(size_t i = 0; i < mObjects.size(); ++i)
+   const bool isDirty = dirty();
+   auto&& m = model();
+   for(auto&& p : mObjects)
    {
-      auto&& p = mObjects[i];
-      assert(p.second);
-      if (mIsMatrixDirty || mIsObjectsMatrixDirty[i])
+      if (isDirty)
       {
-         p.second->model(mModel * p.first);
-         mIsObjectsMatrixDirty[i] = false;
+         p->externalModel(m);
       }
-      p.second->draw();
+      p->draw();
    }
-   mIsMatrixDirty = false;
 }
