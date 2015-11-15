@@ -8,6 +8,8 @@
 #include "Engine.hpp"
 #include "Aircraft.hpp"
 #include "Camera.hpp"
+#include "Rect.hpp"
+#include "Sky.hpp"
 #include <vector>
 #include <memory>
 
@@ -16,6 +18,8 @@ class CApp : public CEngine
 {
       CCamera mCamera;
       CAircraft mAircraft;
+      CSky mSky;
+      CTexturedRect mGround;
    public:
       /// @brief constructor
       CApp();

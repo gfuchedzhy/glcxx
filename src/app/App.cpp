@@ -3,16 +3,19 @@
  */
 
 #include "App.hpp"
-#include "Log.hpp"
 #include "Programs.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include "Texture.hpp"
 
 CApp::CApp()
    : CEngine(800, 600)
 {
-   mCamera.perspective(35.f, mAspect, 0.1f, 1e3f);
+   mCamera.perspective(35.f, mAspect, 0.1f, 3e2f);
    mCamera.eyeDistance(50.f);
-   mCamera.pitch(30.f);
+   mCamera.pitch(10.f);
+
+   mGround.texture(std::make_shared<CTexture>("ground.jpg"));
+   mGround.scale(glm::vec3(200, 200, 200));
+   mGround.pos(glm::vec3(0, 0, -0.25f*200));
 }
 
 template<typename Get, typename Set>
@@ -67,5 +70,9 @@ void CApp::update(float timeDelta)
 
 void CApp::draw() const
 {
+   gl(glDisable, GL_DEPTH_TEST);
+   mSky.draw();
+   mGround.draw();
+   gl(glEnable, GL_DEPTH_TEST);
    mAircraft.draw();
 }
