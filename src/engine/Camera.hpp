@@ -77,6 +77,15 @@ class CCamera
       /// @brief returns pitch
       float pitch() const;
 
+      /// @brief returns up
+      glm::vec3 up() const;
+
+      /// @brief returns up
+      glm::vec3 right() const;
+
+      /// @brief returns back
+      glm::vec3 back() const;
+
       /// @brief returns projection matrix
       const glm::mat4& proj() const;
 
@@ -86,6 +95,24 @@ class CCamera
       /// @brief returns view-projection matrix
       const glm::mat4& viewProj() const;
 };
+
+inline glm::vec3 CCamera::up() const
+{
+   auto&& v = view();
+   return glm::vec3(v[0][1], v[1][1], v[2][1]);
+}
+
+inline glm::vec3 CCamera::right() const
+{
+   auto&& v = view();
+   return glm::vec3(v[0][0], v[1][0], v[2][0]);
+}
+
+inline glm::vec3 CCamera::back() const
+{
+   auto&& v = view();
+   return glm::vec3(v[0][2], v[1][2], v[2][2]);
+}
 
 inline const glm::vec3& CCamera::lookAt() const
 {
