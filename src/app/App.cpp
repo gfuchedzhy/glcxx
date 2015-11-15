@@ -61,6 +61,8 @@ void CApp::update(float timeDelta)
 
    auto p = gRenderer.get<cts("coloredPolygon")>();
    p->set<cts("uViewProj")>(mCamera.viewProj());
+   auto p2 = gRenderer.get<cts("texturedPolygon")>();
+   p2->set<cts("uViewProj")>(mCamera.viewProj());
 }
 
 void CApp::draw() const
