@@ -31,7 +31,7 @@ class TBufferObject
       }
 
       /// @brief unbinds buffer
-      void unBind()
+      static void unBind()
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
       }
