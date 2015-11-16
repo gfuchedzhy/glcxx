@@ -7,9 +7,11 @@
 
 #include "ComplexRenderable.hpp"
 
+/// @brief sky consists of 5 textured rects
 class CSky : public CComplexRenderable
 {
    public:
+      /// @brief constructor
       CSky();
 };
 

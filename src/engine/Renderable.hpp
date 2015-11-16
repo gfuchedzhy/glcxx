@@ -5,10 +5,14 @@
 #ifndef ENGINE_RENDERABLE_HPP
 #define ENGINE_RENDERABLE_HPP
 
+/// @brief generic renderable object
 class IRenderable
 {
    public:
+      /// @brief destructor
       virtual ~IRenderable() = default;
+
+      /// @brief draws itself
       virtual void draw() const = 0;
 };
 

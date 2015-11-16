@@ -20,15 +20,17 @@ CApp::CApp()
    auto cloudTexture = std::make_shared<CTexture>("cloud.dds");
    float angle = 0;
    const float bbRadius = 100.f;
-   for (auto&& b : mBillboards)
+   for (auto&& c : mClouds)
    {
-      b.texture(cloudTexture);
-      b.size(glm::vec2(30, 15));
-      b.pos(glm::vec3(bbRadius*sin(angle), bbRadius*cos(angle), 0));
-      angle += 2*M_PI/mBillboards.size();
+      c.texture(cloudTexture);
+      c.size(glm::vec2(30, 15));
+      c.pos(glm::vec3(bbRadius*sin(angle), bbRadius*cos(angle), 0));
+      angle += 2*M_PI/mClouds.size();
    }
 }
 
+/// @brief animates value returned by get in given range on given keypresses,
+/// optionally dumping to middle of the range when no keys pressed
 template<typename Get, typename Set>
 inline void animate(Get get, Set set,
                     float timeDelta, float speed,
@@ -42,7 +44,7 @@ inline void animate(Get get, Set set,
    else if (dump)
    {
       const float middle = 0.5f*(minVal+maxVal);
-      if (abs(get() - middle) > 0.001f)
+      if (abs(get() - middle) > 0.001f) /// @todo there should be a better way
          set(middle + (get() - middle) * std::max(0.f, 1.f - timeDelta/0.2f));
       else
          set(middle);
@@ -73,6 +75,7 @@ void CApp::update(float timeDelta)
            [this](float val){mAircraft.roll(val);},
            timeDelta, 70.f, sf::Keyboard::A, sf::Keyboard::D, -60.f, 60.f, true);
 
+   /// @todo make automatic uniforms in renderer to remove this code
    auto p = gRenderer.get<cts("coloredPolygon")>();
    p->set<cts("uViewProj")>(mCamera.viewProj());
    auto p2 = gRenderer.get<cts("texturedPolygon")>();
@@ -81,7 +84,6 @@ void CApp::update(float timeDelta)
    p3->set<cts("uViewProj")>(mCamera.viewProj());
    p3->set<cts("uUp")>(mCamera.up());
    p3->set<cts("uRight")>(mCamera.right());
-
 }
 
 void CApp::draw() const
@@ -91,8 +93,8 @@ void CApp::draw() const
    mGround.draw();
    gl(glEnable, GL_DEPTH_TEST);
 
-   for (auto&& b : mBillboards)
-      b.draw();
+   for (auto&& c : mClouds)
+      c.draw();
 
    mAircraft.draw();
 }

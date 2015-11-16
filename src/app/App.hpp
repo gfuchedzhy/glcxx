@@ -16,11 +16,21 @@
 /// @brief application class
 class CApp : public CEngine
 {
+      /// @brief camera
       CCamera mCamera;
+
+      /// @brief aircraft model
       CAircraft mAircraft;
+
+      /// @brief sky
       CSky mSky;
+
+      /// @brief ground
       CTexturedRect mGround;
-      std::array<CBillboard, 7> mBillboards;
+
+      /// @brief clouds implemented using billboards
+      std::array<CBillboard, 7> mClouds;
+
    public:
       /// @brief constructor
       CApp();

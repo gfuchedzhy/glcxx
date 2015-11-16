@@ -16,7 +16,7 @@ namespace tag
 }
 
 /// @brief holds state of program's uniform, use it as TProgram template
-/// parameter, todo add comments
+/// parameter, tag tells which shader should contain given attribute
 template<typename DeclarationTag, typename TUniformTraits>
 class TUniformProgramInput
 {
