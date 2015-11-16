@@ -29,18 +29,21 @@ class CTexture
       /// @brief binds texture
       void bind() const
       {
-         gl(glBindTexture, GL_TEXTURE_2D, mID);
+         gl(glBindTexture, mTarget, mID);
       }
 
       /// @brief unbinds texture
-      static void unBind()
+      void unBind()
       {
-         gl(glBindTexture, GL_TEXTURE_2D, 0);
+         gl(glBindTexture, mTarget, 0);
       }
 
    private:
       /// @brief texture id
       GLuint mID;
+
+      /// @brief texture target
+      GLenum mTarget;
 };
 
 /// @brief holds state of program's texture object, use it as TProgram template
@@ -82,8 +85,7 @@ class TTextureProgramInput
             else
             {
                // if attached but not selected and detach is not scheduled yet -
-               // schedule detach, @note that we don't need texture itself to
-               // perform detach, but it should be alive until then, so save it
+               // schedule detach
                if (mIsAttached && !mTextureForDelayedDetach)
                   mTextureForDelayedDetach = mTexture;
                mTexture = value;
@@ -97,7 +99,7 @@ class TTextureProgramInput
       {
          if (mTextureForDelayedDetach)
          {
-            CTexture::unBind();
+            mTextureForDelayedDetach->unBind();
             gl(glActiveTexture, GL_TEXTURE0);
             mIsAttached = false;
             mTextureForDelayedDetach = nullptr;
@@ -137,7 +139,7 @@ class TTextureProgramInput
       {
          if (mTexture && mIsAttached)
          {
-            CTexture::unBind();
+            mTexture->unBind();
             gl(glActiveTexture, GL_TEXTURE0);
             mIsAttached = false;
          }

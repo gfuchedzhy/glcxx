@@ -18,10 +18,11 @@ def options(opt):
 def configure(cnf):
     cnf.load('compiler_cxx')
     cnf.find_program('strip')
-    cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system', 'sfml-graphics'], uselib_store='sfml')
+    cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
     cnf.check(features='cxx cxxprogram', lib=['GL'], uselib_store='opengl')
     cnf.check_cxx(cxxflags='-std=c++14', uselib_store='cxxflags')
     cnf.check_cxx(header_name='glm/glm.hpp')
+    cnf.check_cxx(cxxflags='-std=c++11', header_name='gli/load.hpp')
 
 def build(bld):
     appname = 'avia'

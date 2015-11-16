@@ -13,11 +13,11 @@ CApp::CApp()
    mCamera.eyeDistance(50.f);
    mCamera.pitch(10.f);
 
-   mGround.texture(std::make_shared<CTexture>("ground.jpg"));
+   mGround.texture(std::make_shared<CTexture>("ground.dds"));
    mGround.scale(glm::vec3(200, 200, 200));
    mGround.pos(glm::vec3(0, 0, -0.25f*200));
 
-   auto cloudTexture = std::make_shared<CTexture>("cloud.png");
+   auto cloudTexture = std::make_shared<CTexture>("cloud.dds");
    float angle = 0;
    const float bbRadius = 100.f;
    for (auto&& b : mBillboards)
