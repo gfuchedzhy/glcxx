@@ -5,26 +5,33 @@
 #include "App.hpp"
 #include "Programs.hpp"
 #include "Texture.hpp"
+#include <random>
 
 CApp::CApp()
    : CEngine(800, 600)
 {
-   mCamera.perspective(35.f, mAspect, 0.1f, 3e2f);
+   mCamera.perspective(35.f, mAspect, 0.1f, 3e3f);
    mCamera.eyeDistance(50.f);
    mCamera.pitch(10.f);
 
    mGround.texture(std::make_shared<CTexture>("ground.dds"));
-   mGround.scale(glm::vec3(200, 200, 200));
-   mGround.pos(glm::vec3(0, 0, -0.25f*200));
+   mGround.scale(glm::vec3(2000, 2000, 2000));
+   mGround.pos(glm::vec3(0, 0, -0.25f*2000));
 
    auto cloudTexture = std::make_shared<CTexture>("cloud.dds");
    float angle = 0;
-   const float bbRadius = 100.f;
+   const float bbRadius = 400.f;
+
+   std::random_device rd;
+   std::mt19937 gen(rd());
+   std::uniform_real_distribution<> distr1(0.8f, 1.5f);
+   std::uniform_real_distribution<> distr2(-0.2f, 0.2f);
    for (auto&& c : mClouds)
    {
       c.texture(cloudTexture);
-      c.size(glm::vec2(30, 15));
-      c.pos(glm::vec3(bbRadius*sin(angle), bbRadius*cos(angle), 0));
+      c.size(glm::vec2(200*distr1(gen), 100*distr1(gen)));
+      const float jitteredAngle = distr1(gen)*angle;
+      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), bbRadius*distr2(gen)));
       angle += 2*M_PI/mClouds.size();
    }
 }
@@ -93,8 +100,11 @@ void CApp::draw() const
    mGround.draw();
    gl(glEnable, GL_DEPTH_TEST);
 
-   for (auto&& c : mClouds)
-      c.draw();
+   gl(glEnable, GL_BLEND);
+   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    mAircraft.draw();
+
+   for (auto&& c : mClouds)
+      c.draw();
 }

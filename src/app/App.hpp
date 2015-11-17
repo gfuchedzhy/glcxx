@@ -29,7 +29,7 @@ class CApp : public CEngine
       CTexturedRect mGround;
 
       /// @brief clouds implemented using billboards
-      std::array<CBillboard, 7> mClouds;
+      std::array<CBillboard, 6> mClouds;
 
    public:
       /// @brief constructor

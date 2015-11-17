@@ -8,7 +8,7 @@
 
 CSky::CSky()
 {
-   const float size = 200;
+   const float size = 2000;
    auto tex = std::make_shared<CTexture>("sky.dds");
    std::array<std::shared_ptr<CTexturedRect>, 5> sky;
    for (auto&& x : sky)
