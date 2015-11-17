@@ -41,7 +41,7 @@ namespace std
    {
       stream << '[';
       for (size_t i = 0; i < N; ++i)
-         stream << arr[i] << (i+1 < N ? ", " : "]");
+         stream << arr[i] << (i+1 < N ? ',' : ']');
       return stream;
    }
 
@@ -58,7 +58,7 @@ namespace std
       inline void ostreamTupleHelper(ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
       {
          stream << '(' << std::get<0>(t);
-         (void)(int[]){((stream << ',' << std::get<I+1>(t)), 0)..., 0};
+         swallow(stream << ',' << std::get<I+1>(t));
          stream << ')';
       }
    }
