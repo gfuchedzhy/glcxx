@@ -46,17 +46,62 @@ class CTexture
       GLenum mTarget;
 };
 
+/// @brief texture ptr
+using tTexturePtr = std::shared_ptr<CTexture>;
+
+/// @brief impl class for texture program input
+class CTextureProgramInputImpl
+{
+      /// @brief location of program input inside program
+      GLint mLocation;
+
+      /// @brief true if this program input is currently attached to a program
+      bool mIsAttached = false;
+
+      /// @brief holds actual texture
+      tTexturePtr mTexture;
+
+      /// @brief if not nullptr holds outdated texture, that should be detached
+      /// when current program will be selected
+      tTexturePtr mTextureForDelayedDetach;
+
+      /// @brief sampler id
+      GLint mSamplerID;
+
+   public:
+      /// @brief constructor
+      CTextureProgramInputImpl(const GLint location, const GLint samplerID)
+         : mLocation(location)
+         , mSamplerID(samplerID)
+      {}
+
+      /// @brief set new texture object as program input, isSelected should be
+      /// true if program this program input belongs to is currently selected
+      void set(tTexturePtr value, bool isSelected);
+
+      /// @brief called after program was selected, perform delayed detach,
+      /// attach texture
+      void select();
+
+   private: // impl
+      /// @brief attach texture
+      void attach();
+
+      /// @brief detach texture
+      void detach();
+};
+
 /// @brief holds state of program's texture object, use it as TProgram template
 /// parameter
-template<typename TName, int samplerID = 0>
-class TTextureProgramInput
+template<typename TName, GLint samplerID = 0>
+struct TTextureProgramInput : public CTextureProgramInputImpl
 {
    public:
       /// @brief ctstring naming texture
       using tName = TName;
 
       /// @brief type of texture objects this program input accepts
-      using tValueType = std::shared_ptr<CTexture>;
+      using tValueType = tTexturePtr;
 
       /// @brief ctstring containing glsl declaration of texture uniform
       using tFragmentShaderDeclaration = ct::string_cat<cts("uniform sampler2D "), tName, cts(";")>;
@@ -66,84 +111,8 @@ class TTextureProgramInput
 
       /// @brief constructor
       TTextureProgramInput(const GLuint program)
-         : mLocation(glsl::TInputType<true>::template getLocation<tName>(program))
+         : CTextureProgramInputImpl(glsl::TInputType<true>::getLocation(program, TName::chars), samplerID)
       {}
-
-      /// @brief set new texture object as program input, isSelected should be
-      /// true if program this program input belongs to is currently selected
-      void set(tValueType value, bool isSelected)
-      {
-         if (mTexture != value)
-         {
-            if (isSelected)
-            {
-               // detach old input, attach new one
-               detach();
-               mTexture = value;
-               attach();
-            }
-            else
-            {
-               // if attached but not selected and detach is not scheduled yet -
-               // schedule detach
-               if (mIsAttached && !mTextureForDelayedDetach)
-                  mTextureForDelayedDetach = mTexture;
-               mTexture = value;
-            }
-         }
-      }
-
-      /// @brief called after program was selected, perform delayed detach,
-      /// attach texture
-      void select()
-      {
-         if (mTextureForDelayedDetach)
-         {
-            mTextureForDelayedDetach->unBind();
-            gl(glActiveTexture, GL_TEXTURE0);
-            mIsAttached = false;
-            mTextureForDelayedDetach = nullptr;
-         }
-         attach();
-      }
-
-   private:
-      /// @brief location of program input inside program
-      GLint mLocation;
-
-      /// @brief true if this program input is currently attached to a program
-      bool mIsAttached = false;
-
-      /// @brief holds actual texture
-      tValueType mTexture;
-
-      /// @brief if not nullptr holds outdated texture, that should be detached
-      /// when current program will be selected
-      tValueType mTextureForDelayedDetach;
-
-   private: // impl
-      /// @brief attach texture
-      void attach()
-      {
-         if (mTexture)
-         {
-            gl(glActiveTexture, GL_TEXTURE0 + samplerID);
-            mTexture->bind();
-            glsl::attachUniform(mLocation, samplerID);
-            mIsAttached = true;
-         }
-      }
-
-      /// @brief detach texture
-      void detach()
-      {
-         if (mTexture && mIsAttached)
-         {
-            mTexture->unBind();
-            gl(glActiveTexture, GL_TEXTURE0);
-            mIsAttached = false;
-         }
-      }
 };
 
 #endif // ENGINE_TEXTURE_HPP

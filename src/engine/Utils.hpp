@@ -14,6 +14,14 @@
 /// @brief ct stands for compile time
 namespace ct
 {
+   /// @brief wrapper to name type T with ctstring name TName
+   template<typename TName, typename T>
+   struct TNamedType
+   {
+         using tName = TName;
+         using type = T;
+   };
+
    /// @brief tuple traits
    template<typename NamedTuple>
    struct TTupleTraits
@@ -38,12 +46,7 @@ namespace ct
    template<typename T, typename... Types>
    struct TTypeIndexInPack
    {
-         template<typename Type>
-         struct TNamedType
-         {
-               using tName = Type;
-         };
-         static constexpr int value = TTupleTraits<std::tuple<TNamedType<Types>...>>::indexByName(T{});
+         static constexpr int value = TTupleTraits<std::tuple<TNamedType<Types, Types>...>>::indexByName(T{});
    };
 
    /// @brief compile time string

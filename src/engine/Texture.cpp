@@ -47,3 +47,58 @@ CTexture::CTexture(const std::string& filename)
    }
    unBind();
 }
+
+void CTextureProgramInputImpl::set(tTexturePtr value, bool isSelected)
+{
+   if (mTexture != value)
+   {
+      if (isSelected)
+      {
+         // detach old input, attach new one
+         detach();
+         mTexture = value;
+         attach();
+      }
+      else
+      {
+         // if attached but not selected and detach is not scheduled yet -
+         // schedule detach
+         if (mIsAttached && !mTextureForDelayedDetach)
+            mTextureForDelayedDetach = mTexture;
+         mTexture = value;
+      }
+   }
+}
+
+void CTextureProgramInputImpl::select()
+{
+   if (mTextureForDelayedDetach)
+   {
+      mTextureForDelayedDetach->unBind();
+      gl(glActiveTexture, GL_TEXTURE0);
+      mIsAttached = false;
+      mTextureForDelayedDetach = nullptr;
+   }
+   attach();
+}
+
+void CTextureProgramInputImpl::attach()
+{
+   if (mTexture)
+   {
+      gl(glActiveTexture, GL_TEXTURE0 + mSamplerID);
+      mTexture->bind();
+      glsl::attachUniform(mLocation, mSamplerID);
+      mIsAttached = true;
+   }
+}
+
+void CTextureProgramInputImpl::detach()
+{
+   if (mTexture && mIsAttached)
+   {
+      mTexture->unBind();
+      gl(glActiveTexture, GL_TEXTURE0);
+      mIsAttached = false;
+   }
+}

@@ -15,7 +15,7 @@ class TBufferObjectProgramInput
 {
    public:
       /// @brief type of buffer objects this program input accepts
-      using tValueType = std::shared_ptr<TBufferObject<TAttribTraits>>;
+      using tValueType = std::shared_ptr<TBufferObject<typename TAttribTraits::tData>>;
 
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;

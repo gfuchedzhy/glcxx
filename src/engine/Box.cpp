@@ -7,7 +7,7 @@
 
 namespace
 {
-   const typename tPosAttrib::tData vertexData[] = {
+   const typename glm::vec3 vertexData[] = {
       {-0.5f,-0.5f, 0.5f},
       { 0.5f,-0.5f, 0.5f},
       { 0.5f, 0.5f, 0.5f},
@@ -22,14 +22,15 @@ namespace
                               1, 5, 2, 6,
                               6, 3, 3, 7, 0, 4};
 
-   std::shared_ptr<tPosAttribBuffer> vertexBuffer;
+   std::shared_ptr<TBufferObject<glm::vec3>> vertexBuffer;
 }
+
 CBox::CBox(const glm::vec3& color)
    : mColor(color)
 {
    if (!vertexBuffer)
    {
-      vertexBuffer = std::make_shared<tPosAttribBuffer>();
+      vertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
       vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
    }
 }

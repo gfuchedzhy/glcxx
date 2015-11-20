@@ -10,26 +10,15 @@
 #include "UniformProgramInput.hpp"
 #include "Texture.hpp"
 
-using tPosAttrib       = TAttrib<cts("aPos"),   glm::tvec3, float, float, 1>;
-using tPosAttribBuffer = TBufferObject<tPosAttrib>;
-using tModelUniform    = TUniform<cts("uModel"), glm::tmat4x4, float>;
-using tViewProjUniform = TUniform<cts("uViewProj"), glm::tmat4x4, float>;
-using tColorUniform    = TUniform<cts("uColor"), glm::tvec3, float>;
-using tPosUniform      = TUniform<cts("uPos"), glm::tvec3, float>;
-using tSizeUniform     = TUniform<cts("uSize"), glm::tvec2, float>;
-using tRightUniform    = TUniform<cts("uRight"), glm::tvec3, float>;
-using tUpUniform       = TUniform<cts("uUp"), glm::tvec3, float>;
-
-using tUVAttrib        = TAttrib<cts("aUV"), glm::tvec2, float>;
-using tPosUVAttrib     = TAttribPackTraits<tPosAttrib, tUVAttrib>;
-using tPosUVAttribBuffer = TBufferObject<tPosUVAttrib>;
+using tPosUVAttrib  = TAttribPackTraits<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>,
+                                        TAttrib<cts("aUV"), glm::tvec2, float>>;
 
 inline auto make_program(cts("coloredPolygon"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosAttrib>,
-                                    TUniformProgramInput<tag::vertex, tModelUniform>,
-                                    TUniformProgramInput<tag::vertex, tViewProjUniform>,
-                                    TUniformProgramInput<tag::fragment, tColorUniform>>
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::fragment, TUniform<cts("uColor"), glm::tvec3, float>>>
                            >(R"(\
 void main()
 {
@@ -46,8 +35,8 @@ void main()
 inline auto make_program(cts("texturedPolygon"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
-                                    TUniformProgramInput<tag::vertex, tModelUniform>,
-                                    TUniformProgramInput<tag::vertex, tViewProjUniform>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TTextureProgramInput<cts("uTexture")>>
                            >(R"(\
 varying vec2 vUV;
@@ -67,11 +56,11 @@ void main()
 inline auto make_program(cts("billboard"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
-                                    TUniformProgramInput<tag::vertex, tPosUniform>,
-                                    TUniformProgramInput<tag::vertex, tSizeUniform>,
-                                    TUniformProgramInput<tag::vertex, tRightUniform>,
-                                    TUniformProgramInput<tag::vertex, tUpUniform>,
-                                    TUniformProgramInput<tag::vertex, tViewProjUniform>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
                                     TTextureProgramInput<cts("uTexture")>>
                            >(R"(\
 varying vec2 vUV;

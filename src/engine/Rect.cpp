@@ -18,14 +18,14 @@ namespace
 
    const GLubyte indices[] = {0, 1, 3, 2};
 
-   std::shared_ptr<tPosUVAttribBuffer> vertexBuffer;
+   std::shared_ptr<TBufferObject<tPosUVAttrib::tData>> vertexBuffer;
 }
 
 CTexturedRect::CTexturedRect()
 {
    if (!vertexBuffer)
    {
-      vertexBuffer = std::make_shared<tPosUVAttribBuffer>();
+      vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
       vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
    }
 }
@@ -44,7 +44,7 @@ CBillboard::CBillboard()
 {
    if (!vertexBuffer)
    {
-      vertexBuffer = std::make_shared<tPosUVAttribBuffer>();
+      vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
       vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
    }
 }
