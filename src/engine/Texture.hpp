@@ -111,7 +111,7 @@ struct TTextureProgramInput : public CTextureProgramInputImpl
 
       /// @brief constructor
       TTextureProgramInput(const GLuint program)
-         : CTextureProgramInputImpl(glsl::TInputType<true>::getLocation(program, TName::chars), samplerID)
+         : CTextureProgramInputImpl(glsl::TInputType<true>::template getLocation<TName>(program), samplerID)
       {}
 };
 

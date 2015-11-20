@@ -27,10 +27,11 @@ namespace glsl
    struct TInputType
    {
          using tSpecifier = cts("uniform");
-         static auto getLocation(GLuint program, const char* name)
+         template<typename TName>
+         static auto getLocation(GLuint program)
          {
-            const auto location = gl(glGetUniformLocation, program, name);
-            Log::msg("uniform location ", name, "=", location);
+            const auto location = gl(glGetUniformLocation, program, TName::chars);
+            Log::msg("uniform location ", TName::chars, "=", location);
             return location;
          }
    };
@@ -39,10 +40,11 @@ namespace glsl
    struct TInputType<false>
    {
          using tSpecifier = cts("attribute");
-         static auto getLocation(GLuint program, const char* name)
+         template<typename TName>
+         static auto getLocation(GLuint program)
          {
-            const auto location = gl(glGetAttribLocation, program, name);
-            Log::msg("attribute location ", name, "=", location);
+            const auto location = gl(glGetAttribLocation, program, TName::chars);
+            Log::msg("attribute location ", TName::chars, "=", location);
             return location;
          }
    };
@@ -217,7 +219,7 @@ namespace glsl
          /// @brief returns location of variable for given program
          static tLocation getLocation(GLuint program)
          {
-            return TInputType<isUniform>::getLocation(program, tName::chars);
+            return TInputType<isUniform>::template getLocation<tName>(program);
          }
 
          /// @brief attach for uniform
