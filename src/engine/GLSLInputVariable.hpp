@@ -131,14 +131,6 @@ namespace glsl
    {
       gl(glUniform1f, location, val);
    }
-   template<size_t N>
-   inline void attachUniform(GLint location, const std::array<float, N>& val)
-   {
-      for (int i = 0; i < N; ++i)
-      {
-         gl(glUniform1f, location, val[i]);
-      }
-   }
    template<glm::precision P>
    inline void attachUniform(GLint location, const glm::tvec2<float, P>& val)
    {
