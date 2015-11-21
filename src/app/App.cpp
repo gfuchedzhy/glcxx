@@ -92,6 +92,10 @@ void CApp::update(float timeDelta)
    p3->set<cts("uViewProj")>(mCamera.viewProj());
    p3->set<cts("uUp")>(mCamera.up());
    p3->set<cts("uRight")>(mCamera.right());
+   auto p4 = gRenderer.get<cts("healthbar")>();
+   p4->set<cts("uViewProj")>(mCamera.viewProj());
+   p4->set<cts("uUp")>(mCamera.up());
+   p4->set<cts("uRight")>(mCamera.right());
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)

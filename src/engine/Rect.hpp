@@ -34,7 +34,7 @@ class CBillboard : public IRenderable
       glm::vec3 mPos;
 
       /// @brief size
-      glm::vec2 mSize;
+      glm::vec2 mSize = glm::vec2(1.0, 1.0);
 
    public:
       /// @brief set position
@@ -56,6 +56,23 @@ class CTexturedBillboard : public CBillboard
 
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+
+      /// @brief draw
+      void draw(const SContext& context) const override;
+};
+
+/// @brief billboard with texture
+class CHealthBar : public CBillboard
+{
+      /// @brief value in range [0, 1]
+      float mValue;
+
+   public:
+      /// @brief constructor
+      CHealthBar(float value = 1.f);
+
+      /// @brief sets value
+      void value(float value) { mValue = value; }
 
       /// @brief draw
       void draw(const SContext& context) const override;

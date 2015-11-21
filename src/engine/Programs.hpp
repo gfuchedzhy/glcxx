@@ -77,10 +77,41 @@ void main()
 })");
 }
 
+inline auto make_program(cts("healthbar"))
+{
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uExternalPos"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::fragment, TUniform<cts("uValue"), glm::tvec1, float>>>
+                           >(R"(\
+varying vec2 vPos;
+float yCoef = 1.3; // use 30% of uSize.y as offset
+float xCoef = (yCoef - 1.0)*uSize.y/uSize.x + 1.0;
+void main()
+{
+   gl_Position = uViewProj*vec4(uPos+uExternalPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
+   vPos = vec2(xCoef*aPos.x + 0.5,
+               yCoef*aPos.y + 0.5);
+})",
+                             R"(\
+varying vec2 vPos;
+void main()
+{
+   vec2 stepRes = step(vec2(0.0, 0.0), vPos) - step(vec2(uValue, 1.0), vPos);
+   float colorWeight = stepRes.x * stepRes.y;
+   gl_FragColor = mix(vec4(0.0, 0.0, 0.0, 1.0), vec4(1.0, 0.0, 0.0, 1.0), colorWeight);
+})");
+}
+
 #include "Renderer.hpp"
 using tRenderer = TRenderer<cts("colored"),
                             cts("texturedPolygon"),
-                            cts("texturedBillboard")>;
+                            cts("texturedBillboard"),
+                            cts("healthbar")>;
 extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP
