@@ -67,6 +67,11 @@ void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
 
+   static const float angularSpeed = 90;
+   float angle = mSphere.roll() + timeDelta*angularSpeed;
+   angle = angle - (int(angle)/360)*360;
+   mSphere.roll(angle);
+
    animate([this]{return mCamera.orientation();},
            [this](float val){mCamera.orientation(val);},
            timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -180.f, 180.f);
