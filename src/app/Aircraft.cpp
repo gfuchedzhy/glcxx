@@ -12,7 +12,7 @@ CAircraft::CAircraft()
    using namespace glm;
 
    auto make_box = [] (vec3 color, vec3 size) {
-      auto p = static_pointer_cast<IRenderableModel>(make_shared<CBox>(color));
+      auto p = make_shared<CBox>(color);
       p->scale(size);
       return p;
    };
