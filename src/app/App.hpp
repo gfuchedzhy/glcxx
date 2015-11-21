@@ -9,6 +9,7 @@
 #include "Aircraft.hpp"
 #include "Camera.hpp"
 #include "Rect.hpp"
+#include "Sphere.hpp"
 #include "Sky.hpp"
 #include <vector>
 #include <memory>
@@ -30,6 +31,9 @@ class CApp : public CEngine
 
       /// @brief clouds implemented using billboards
       std::array<CTexturedBillboard, 6> mClouds;
+
+      /// @brief sphere
+      CSphere mSphere;
 
    public:
       /// @brief constructor

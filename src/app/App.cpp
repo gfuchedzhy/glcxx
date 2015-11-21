@@ -9,7 +9,11 @@
 
 CApp::CApp()
    : CEngine(800, 600)
+   , mSphere({1.f, 0.f, 1.f})
 {
+   mSphere.scale({5, 5, 5});
+   mSphere.pos({0, 20, 0});
+
    mCamera.perspective(35.f, mAspect, 0.1f, 3e3f);
    mCamera.eyeDistance(50.f);
    mCamera.pitch(10.f);
@@ -126,5 +130,8 @@ void CApp::draw() const
    for (auto&& c : mClouds)
       c.draw(mContext);
 
+   gl(glDisable, GL_BLEND);
+
    mAircraft.draw(mContext);
+   mSphere.draw(mContext);
 }
