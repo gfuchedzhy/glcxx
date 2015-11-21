@@ -12,8 +12,26 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+namespace Log
+{
+   /// @brief struct for convenient logging of bool values as on/off strings
+   struct SOnOff
+   {
+         SOnOff(bool value)
+            : mValue(value)
+         {}
+         bool mValue;
+   };
+}
+
 namespace std
 {
+   /// @brief stream SOnOff
+   inline ostream& operator<<(ostream& stream, const Log::SOnOff& onOff)
+   {
+      return stream << (onOff.mValue ? "on" : "off");
+   }
+
    /// @brief stream vec2
    template<typename T, glm::precision P>
    inline ostream& operator<<(ostream& stream, const glm::tvec2<T, P>& vec)
