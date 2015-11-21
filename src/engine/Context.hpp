@@ -13,6 +13,9 @@ struct SContext
 
       /// @brief if true draw health bars
       bool mDrawHealthBars  = false;
+
+      /// @brief if true draw debug normals
+      bool mDrawNormals  = false;
 };
 
 #endif
