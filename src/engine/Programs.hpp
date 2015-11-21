@@ -13,7 +13,7 @@
 using tPosUVAttrib  = TAttribPackTraits<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>,
                                         TAttrib<cts("aUV"), glm::tvec2, float>>;
 
-inline auto make_program(cts("coloredPolygon"))
+inline auto make_program(cts("colored"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
@@ -81,7 +81,7 @@ void main()
 }
 
 #include "Renderer.hpp"
-using tRenderer = TRenderer<cts("coloredPolygon"), cts("texturedPolygon"), cts("billboard")>;
+using tRenderer = TRenderer<cts("colored"), cts("texturedPolygon"), cts("billboard")>;
 extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP

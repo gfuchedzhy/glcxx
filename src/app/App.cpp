@@ -83,7 +83,7 @@ void CApp::update(float timeDelta)
            timeDelta, 70.f, sf::Keyboard::A, sf::Keyboard::D, -60.f, 60.f, true);
 
    /// @todo make automatic uniforms in renderer to remove this code
-   auto p = gRenderer.get<cts("coloredPolygon")>();
+   auto p = gRenderer.get<cts("colored")>();
    p->set<cts("uViewProj")>(mCamera.viewProj());
    auto p2 = gRenderer.get<cts("texturedPolygon")>();
    p2->set<cts("uViewProj")>(mCamera.viewProj());
