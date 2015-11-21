@@ -25,13 +25,11 @@ class CTexturedRect : public IRenderableModel
       void draw(const SContext& context) const override;
 };
 
-/// @brief renderable rectangle has texture, size and position in space and
-/// always directed perpendicular to camera view
+/// @brief base class for billboards, renderable rectangle has size and position
+/// in space and always directed perpendicular to camera view
 class CBillboard : public IRenderable
 {
-      /// @brief texture
-      std::shared_ptr<CTexture> mTexture;
-
+   protected:
       /// @brief position
       glm::vec3 mPos;
 
@@ -39,14 +37,22 @@ class CBillboard : public IRenderable
       glm::vec2 mSize;
 
    public:
-      /// @brief constructor
-      CBillboard();
-
       /// @brief set position
       void pos(const glm::vec3& pos) { mPos = pos; }
 
       /// @brief set size
       void size(const glm::vec2& size) { mSize = size; }
+};
+
+/// @brief billboard with texture
+class CTexturedBillboard : public CBillboard
+{
+      /// @brief texture
+      std::shared_ptr<CTexture> mTexture;
+
+   public:
+      /// @brief constructor
+      CTexturedBillboard();
 
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }

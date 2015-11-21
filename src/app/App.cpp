@@ -88,7 +88,7 @@ void CApp::update(float timeDelta)
    p->set<cts("uViewProj")>(mCamera.viewProj());
    auto p2 = gRenderer.get<cts("texturedPolygon")>();
    p2->set<cts("uViewProj")>(mCamera.viewProj());
-   auto p3 = gRenderer.get<cts("billboard")>();
+   auto p3 = gRenderer.get<cts("texturedBillboard")>();
    p3->set<cts("uViewProj")>(mCamera.viewProj());
    p3->set<cts("uUp")>(mCamera.up());
    p3->set<cts("uRight")>(mCamera.right());

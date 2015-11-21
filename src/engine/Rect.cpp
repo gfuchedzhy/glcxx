@@ -19,15 +19,19 @@ namespace
    const GLubyte indices[] = {0, 1, 3, 2};
 
    std::shared_ptr<TBufferObject<tPosUVAttrib::tData>> vertexBuffer;
+   void initializeVertexBuffer()
+   {
+      if (!vertexBuffer)
+      {
+         vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
+         vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
+      }
+   }
 }
 
 CTexturedRect::CTexturedRect()
 {
-   if (!vertexBuffer)
-   {
-      vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
-      vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
-   }
+   initializeVertexBuffer();
 }
 
 void CTexturedRect::draw(const SContext&) const
@@ -40,18 +44,14 @@ void CTexturedRect::draw(const SContext&) const
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }
 
-CBillboard::CBillboard()
+CTexturedBillboard::CTexturedBillboard()
 {
-   if (!vertexBuffer)
-   {
-      vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
-      vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
-   }
+   initializeVertexBuffer();
 }
 
-void CBillboard::draw(const SContext&) const
+void CTexturedBillboard::draw(const SContext&) const
 {
-   auto p = gRenderer.getAndSelect<cts("billboard")>();
+   auto p = gRenderer.getAndSelect<cts("texturedBillboard")>();
    p->set<cts("aPos,aUV")>(vertexBuffer);
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);

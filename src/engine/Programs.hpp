@@ -53,7 +53,7 @@ void main()
 })");
 }
 
-inline auto make_program(cts("billboard"))
+inline auto make_program(cts("texturedBillboard"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
@@ -78,7 +78,9 @@ void main()
 }
 
 #include "Renderer.hpp"
-using tRenderer = TRenderer<cts("colored"), cts("texturedPolygon"), cts("billboard")>;
+using tRenderer = TRenderer<cts("colored"),
+                            cts("texturedPolygon"),
+                            cts("texturedBillboard")>;
 extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP
