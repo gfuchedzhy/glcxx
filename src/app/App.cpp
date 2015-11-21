@@ -15,21 +15,22 @@ CApp::CApp()
    mCamera.pitch(10.f);
 
    mGround.texture(std::make_shared<CTexture>("res/ground.dds"));
-   mGround.scale(glm::vec3(2000, 2000, 2000));
-   mGround.pos(glm::vec3(0, 0, -0.25f*2000));
+   const float scale = 2e3f;
+   mGround.scale(glm::vec3(scale, scale, scale));
+   mGround.pos(glm::vec3(0, 0, -0.1f*scale));
 
    auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
    float angle = 0;
-   const float bbRadius = 400.f;
+   const float bbRadius = 800.f;
 
    std::random_device rd;
    std::mt19937 gen(rd());
    std::uniform_real_distribution<> distr1(0.8f, 1.5f);
-   std::uniform_real_distribution<> distr2(-0.2f, 0.2f);
+   std::uniform_real_distribution<> distr2(-0.4f, 0.f);
    for (auto&& c : mClouds)
    {
       c.texture(cloudTexture);
-      c.size(glm::vec2(200*distr1(gen), 100*distr1(gen)));
+      c.size(glm::vec2(250*distr1(gen), 150*distr1(gen)));
       const float jitteredAngle = distr1(gen)*angle;
       c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), bbRadius*distr2(gen)));
       angle += 2*M_PI/mClouds.size();
