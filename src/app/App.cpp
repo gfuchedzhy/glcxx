@@ -123,8 +123,8 @@ void CApp::draw() const
    gl(glEnable, GL_BLEND);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-   mAircraft.draw(mContext);
-
    for (auto&& c : mClouds)
       c.draw(mContext);
+
+   mAircraft.draw(mContext);
 }

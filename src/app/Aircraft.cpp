@@ -4,6 +4,9 @@
 
 #include "Aircraft.hpp"
 #include "Box.hpp"
+#include "Rect.hpp"
+#include "Context.hpp"
+#include "Programs.hpp"
 #include <glm/gtx/transform.hpp>
 
 CAircraft::CAircraft()
@@ -17,6 +20,12 @@ CAircraft::CAircraft()
       return p;
    };
 
+   auto add_hb = [this] (shared_ptr<IRenderableModel> r) {
+      CHealthBar b(0.7f);
+      b.size({3, 0.5});
+      mHealthBars.push_back(make_pair(b, r.get()));
+   };
+
    // cubed geometry representing airplain, kind of :)
    const vec3 bodySize(3.f, 22.f, 3.f);
    const size_t bodyPartNum = 4;
@@ -27,6 +36,7 @@ CAircraft::CAircraft()
    for (size_t i = 0; i < bodyPartNum; ++i)
    {
       auto p = make_box(bodyColor, bodyPartSize);
+      add_hb(p);
       p->pos(vec3(0.f, -(i + 0.5f)*bodyPartSize.y, 0.f));
       body->append({p});
    }
@@ -43,6 +53,8 @@ CAircraft::CAircraft()
    const vec3 wingSize(12.f, 4.f, 0.2f);
    auto lWing = make_box(wingColor, wingSize);
    auto rWing = make_box(wingColor, wingSize);
+   add_hb(lWing);
+   add_hb(rWing);
    lWing->yaw( 20.f);
    rWing->yaw(-20.f);
    lWing->pos(vec3(-wingSize.x/2.f, 0.f, 0.f));
@@ -77,4 +89,22 @@ void CAircraft::update(float timeDelta)
    float angle = mProp->roll() + timeDelta*angularSpeed;
    angle = angle - (int(angle)/360)*360;
    mProp->roll(angle);
+}
+
+void CAircraft::draw(const SContext& context) const
+{
+   CComplexRenderable::draw(context);
+   if (context.mDrawHealthBars)
+   {
+      auto p = gRenderer.getAndSelect<cts("healthbar")>();
+      for (auto&& h : mHealthBars)
+      {
+         // this is a hack, should rethink model of complex objects
+         assert(h.second);
+         auto m = h.second->model();
+         p->set<cts("uExternalPos")>(glm::vec3(m[3][0], m[3][1], m[3][2]));
+         h.first.draw(context);
+         p->set<cts("uExternalPos")>({0, 0, 0});
+      }
+   }
 }
