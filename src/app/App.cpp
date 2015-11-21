@@ -72,17 +72,18 @@ void CApp::update(float timeDelta)
    angle = angle - (int(angle)/360)*360;
    mSphere.roll(angle);
 
+   constexpr auto inf = std::numeric_limits<float>::infinity();
    animate([this]{return mCamera.orientation();},
            [this](float val){mCamera.orientation(val);},
-           timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -180.f, 180.f);
+           timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
 
    animate([this]{return mCamera.pitch();},
            [this](float val){mCamera.pitch(val);},
-           timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -30.f, 90.f);
+           timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
 
    animate([this]{return mCamera.eyeDistance();},
            [this](float val){mCamera.eyeDistance(val);},
-           timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 100.f);
+           timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 500.f);
 
    animate([this]{return mAircraft.pitch();},
            [this](float val){mAircraft.pitch(val);},
