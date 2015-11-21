@@ -75,7 +75,6 @@ class CModel
       /// @brief returns external model
       const glm::mat4& externalModel() const;
 
-   protected:
       /// @brief returns resulting model matrix
       const glm::mat4& model() const;
 };
