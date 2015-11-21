@@ -38,6 +38,9 @@ class CApp : public CEngine
       /// @brief update
       void update(float timeDelta) override;
 
+      /// @brief key presses handler
+      void onKeyPressed(const sf::Event::KeyEvent& keyEvent) override;
+
       /// @brief draw
       void draw() const override;
 };

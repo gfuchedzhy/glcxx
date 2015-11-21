@@ -94,6 +94,21 @@ void CApp::update(float timeDelta)
    p3->set<cts("uRight")>(mCamera.right());
 }
 
+void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
+{
+   switch (keyEvent.code)
+   {
+      case sf::Keyboard::Num1:
+         mContext.mDrawDebugFrames = !mContext.mDrawDebugFrames;
+         Log::msg("debug frames turned ", Log::SOnOff(mContext.mDrawDebugFrames));
+         break;
+      case sf::Keyboard::Num2:
+         mContext.mDrawHealthBars = !mContext.mDrawHealthBars;
+         Log::msg("health bars turned ", Log::SOnOff(mContext.mDrawHealthBars));
+         break;
+   }
+}
+
 void CApp::draw() const
 {
    gl(glDisable, GL_DEPTH_TEST);

@@ -33,6 +33,9 @@ void CEngine::run()
             case sf::Event::Closed:
                Log::msg("close event occured");
                return;
+            case sf::Event::KeyPressed:
+               onKeyPressed(event.key);
+               break;
             default:
                break;
          }

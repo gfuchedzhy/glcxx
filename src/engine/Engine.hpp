@@ -21,6 +21,9 @@ class CEngine
       /// @brief draw
       virtual void update(float timeDelta) = 0;
 
+      /// @brief key presses handler
+      virtual void onKeyPressed(const sf::Event::KeyEvent& keyEvent) = 0;
+
       /// @brief draw
       virtual void draw() const = 0;
 
