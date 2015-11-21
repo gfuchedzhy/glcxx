@@ -4,6 +4,7 @@
 
 #include "Box.hpp"
 #include "Programs.hpp"
+#include "Context.hpp"
 
 namespace
 {
@@ -23,6 +24,15 @@ namespace
                               6, 3, 3, 7, 0, 4};
 
    std::shared_ptr<TBufferObject<glm::vec3>> vertexBuffer;
+
+   const typename glm::vec3 axesVertexData[] = {
+      { 0.0f, 0.0f, 0.0f},
+      { 1.0f, 0.0f, 0.0f},
+      { 0.0f, 1.0f, 0.0f},
+      { 0.0f, 0.0f, 1.0f},
+   };
+   const GLubyte axesIndices[] = {0, 1, 0, 2, 0, 3};
+   std::shared_ptr<TBufferObject<glm::vec3>> axesVertexBuffer;
 }
 
 CBox::CBox(const glm::vec3& color)
@@ -33,6 +43,12 @@ CBox::CBox(const glm::vec3& color)
       vertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
       vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
    }
+
+   if (!axesVertexBuffer)
+   {
+      axesVertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
+      axesVertexBuffer->upload(axesVertexData, sizeof(axesVertexData)/sizeof(axesVertexData[0]));
+   }
 }
 
 void CBox::draw(const SContext& context) const
@@ -42,4 +58,15 @@ void CBox::draw(const SContext& context) const
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+
+   if (context.mDrawDebugFrames)
+   {
+      glLineWidth(2.f);
+      p->set<cts("aPos")>(axesVertexBuffer);
+      for (int i = 0; i < 3; ++i)
+      {
+         p->set<cts("uColor")>(axesVertexData[axesIndices[2*i+1]]);
+         gl(glDrawElements, GL_LINES, 2, GL_UNSIGNED_BYTE, axesIndices + 2*i);
+      }
+   }
 }
