@@ -15,9 +15,6 @@ class CTexturedRect : public IRenderableModel
       std::shared_ptr<CTexture> mTexture;
 
    public:
-      /// @brief constructor
-      CTexturedRect();
-
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
 
@@ -51,9 +48,6 @@ class CTexturedBillboard : public CBillboard
       std::shared_ptr<CTexture> mTexture;
 
    public:
-      /// @brief constructor
-      CTexturedBillboard();
-
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
 
@@ -69,7 +63,9 @@ class CHealthBar : public CBillboard
 
    public:
       /// @brief constructor
-      CHealthBar(float value = 1.f);
+      CHealthBar(float value = 1.f)
+         : mValue(value)
+      {}
 
       /// @brief sets value
       void value(float value) { mValue = value; }

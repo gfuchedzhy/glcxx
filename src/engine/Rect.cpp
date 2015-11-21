@@ -25,51 +25,32 @@ namespace
 
    const GLubyte indices[] = {0, 1, 3, 2};
 
-   std::shared_ptr<TBufferObject<tPosUVAttrib::tData>> vertexBuffer;
-   void initializePosUVVertexBuffer()
+   auto posUVBuffer()
    {
-      if (!vertexBuffer)
-      {
-         vertexBuffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>();
-         vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
-      }
+      static auto buffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
+      return buffer;
    }
-
-   std::shared_ptr<TBufferObject<glm::vec3>> posVertexBuffer;
-   void initializePosVertexBuffer()
+   auto posBuffer()
    {
-      if (!posVertexBuffer)
-      {
-         posVertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
-         posVertexBuffer->upload(posVertexData, sizeof(posVertexData)/sizeof(posVertexData[0]));
-      }
+      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(posVertexData, sizeof(posVertexData)/sizeof(posVertexData[0]));
+      return buffer;
    }
-}
-
-CTexturedRect::CTexturedRect()
-{
-   initializePosUVVertexBuffer();
 }
 
 void CTexturedRect::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
-   p->set<cts("aPos,aUV")>(vertexBuffer);
+   p->set<cts("aPos,aUV")>(posUVBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
 
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }
 
-CTexturedBillboard::CTexturedBillboard()
-{
-   initializePosUVVertexBuffer();
-}
-
 void CTexturedBillboard::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("texturedBillboard")>();
-   p->set<cts("aPos,aUV")>(vertexBuffer);
+   p->set<cts("aPos,aUV")>(posUVBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uTexture")>(mTexture);
@@ -77,16 +58,10 @@ void CTexturedBillboard::draw(const SContext&) const
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }
 
-CHealthBar::CHealthBar(float value)
-   : mValue(value)
-{
-   initializePosVertexBuffer();
-}
-
 void CHealthBar::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("healthbar")>();
-   p->set<cts("aPos")>(posVertexBuffer);
+   p->set<cts("aPos")>(posBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uValue")>(mValue);

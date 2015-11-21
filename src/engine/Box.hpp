@@ -16,7 +16,9 @@ class CBox : public IRenderableModel
 
    public:
       /// @brief constructor
-      CBox(const glm::vec3& color);
+      CBox(const glm::vec3& color)
+         : mColor(color)
+      {}
 
       /// @brief draw
       void draw(const SContext& context) const override;

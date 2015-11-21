@@ -18,12 +18,14 @@ namespace
       { 0.5f, 0.5f,-0.5f},
       {-0.5f, 0.5f,-0.5f}
    };
-
    const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                               1, 5, 2, 6,
                               6, 3, 3, 7, 0, 4};
-
-   std::shared_ptr<TBufferObject<glm::vec3>> vertexBuffer;
+   auto vertexBuffer()
+   {
+      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
+      return buffer;
+   }
 
    const typename glm::vec3 axesVertexData[] = {
       { 0.0f, 0.0f, 0.0f},
@@ -32,29 +34,17 @@ namespace
       { 0.0f, 0.0f, 1.0f},
    };
    const GLubyte axesIndices[] = {0, 1, 0, 2, 0, 3};
-   std::shared_ptr<TBufferObject<glm::vec3>> axesVertexBuffer;
-}
-
-CBox::CBox(const glm::vec3& color)
-   : mColor(color)
-{
-   if (!vertexBuffer)
+   auto axesVertexBuffer()
    {
-      vertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
-      vertexBuffer->upload(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
-   }
-
-   if (!axesVertexBuffer)
-   {
-      axesVertexBuffer = std::make_shared<TBufferObject<glm::vec3>>();
-      axesVertexBuffer->upload(axesVertexData, sizeof(axesVertexData)/sizeof(axesVertexData[0]));
+      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(axesVertexData, sizeof(axesVertexData)/sizeof(axesVertexData[0]));
+      return buffer;
    }
 }
 
 void CBox::draw(const SContext& context) const
 {
    auto p = gRenderer.getAndSelect<cts("colored")>();
-   p->set<cts("aPos")>(vertexBuffer);
+   p->set<cts("aPos")>(vertexBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
@@ -62,7 +52,7 @@ void CBox::draw(const SContext& context) const
    if (context.mDrawDebugFrames)
    {
       glLineWidth(2.f);
-      p->set<cts("aPos")>(axesVertexBuffer);
+      p->set<cts("aPos")>(axesVertexBuffer());
       for (int i = 0; i < 3; ++i)
       {
          p->set<cts("uColor")>(axesVertexData[axesIndices[2*i+1]]);

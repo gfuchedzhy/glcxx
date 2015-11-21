@@ -13,9 +13,12 @@ class TBufferObject
 {
    public:
       /// @brief creates buffer
-      TBufferObject()
+      TBufferObject(const TData* data, size_t size)
       {
          gl(glGenBuffers, 1, &mID);
+         bind();
+         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(TData), data, GL_STATIC_DRAW);
+         unBind();
       }
 
       /// @brief frees buffer
@@ -34,14 +37,6 @@ class TBufferObject
       static void unBind()
       {
          gl(glBindBuffer, GL_ARRAY_BUFFER, 0);
-      }
-
-      /// @brief upload data to buffer
-      void upload(const TData* attr, size_t size)
-      {
-         bind();
-         gl(glBufferData, GL_ARRAY_BUFFER, size*sizeof(TData), attr, GL_STATIC_DRAW);
-         unBind();
       }
 
    private:
