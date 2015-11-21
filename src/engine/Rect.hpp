@@ -22,7 +22,7 @@ class CTexturedRect : public IRenderableModel
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
 
       /// @brief draw
-      void draw() const override;
+      void draw(const SContext& context) const override;
 };
 
 /// @brief renderable rectangle has texture, size and position in space and
@@ -52,7 +52,7 @@ class CBillboard : public IRenderable
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
 
       /// @brief draw
-      void draw() const override;
+      void draw(const SContext& context) const override;
 };
 
 #endif

@@ -30,7 +30,7 @@ CTexturedRect::CTexturedRect()
    }
 }
 
-void CTexturedRect::draw() const
+void CTexturedRect::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
    p->set<cts("aPos,aUV")>(vertexBuffer);
@@ -49,7 +49,7 @@ CBillboard::CBillboard()
    }
 }
 
-void CBillboard::draw() const
+void CBillboard::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("billboard")>();
    p->set<cts("aPos,aUV")>(vertexBuffer);

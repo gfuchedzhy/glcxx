@@ -31,7 +31,7 @@ class CComplexRenderable : public IRenderableModel
       }
 
       /// @brief draw
-      void draw() const override;
+      void draw(const SContext& context) const override;
 };
 
 #endif // ENGINE_COMPLEXRENDERABLE_HPP

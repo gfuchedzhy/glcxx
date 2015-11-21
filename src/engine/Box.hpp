@@ -19,7 +19,7 @@ class CBox : public IRenderableModel
       CBox(const glm::vec3& color);
 
       /// @brief draw
-      void draw() const override;
+      void draw(const SContext& context) const override;
 };
 
 #endif // ENGINE_BOX_HPP

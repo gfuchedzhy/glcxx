@@ -97,15 +97,15 @@ void CApp::update(float timeDelta)
 void CApp::draw() const
 {
    gl(glDisable, GL_DEPTH_TEST);
-   mSky.draw();
-   mGround.draw();
+   mSky.draw(mContext);
+   mGround.draw(mContext);
    gl(glEnable, GL_DEPTH_TEST);
 
    gl(glEnable, GL_BLEND);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-   mAircraft.draw();
+   mAircraft.draw(mContext);
 
    for (auto&& c : mClouds)
-      c.draw();
+      c.draw(mContext);
 }

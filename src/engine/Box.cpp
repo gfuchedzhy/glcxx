@@ -35,7 +35,7 @@ CBox::CBox(const glm::vec3& color)
    }
 }
 
-void CBox::draw() const
+void CBox::draw(const SContext& context) const
 {
    auto p = gRenderer.getAndSelect<cts("colored")>();
    p->set<cts("aPos")>(vertexBuffer);

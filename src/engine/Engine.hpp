@@ -6,6 +6,7 @@
 #define ENGINE_ENGINE_HPP
 
 #include <SFML/Window.hpp>
+#include "Context.hpp"
 
 /// @brief engine class
 class CEngine
@@ -35,6 +36,9 @@ class CEngine
 
       /// @brief absolute time in seconds
       double mAbsTime;
+
+      /// @brief drawing context
+      SContext mContext;
 };
 
 #endif // ENGINE_ENGINE_HPP

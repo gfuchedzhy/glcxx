@@ -5,6 +5,8 @@
 #ifndef ENGINE_RENDERABLE_HPP
 #define ENGINE_RENDERABLE_HPP
 
+struct SContext;
+
 /// @brief generic renderable object
 class IRenderable
 {
@@ -13,7 +15,7 @@ class IRenderable
       virtual ~IRenderable() = default;
 
       /// @brief draws itself
-      virtual void draw() const = 0;
+      virtual void draw(const SContext& context) const = 0;
 };
 
 #endif // ENGINE_RENDERABLE_HPP
