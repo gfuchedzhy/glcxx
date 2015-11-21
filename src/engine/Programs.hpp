@@ -66,10 +66,7 @@ inline auto make_program(cts("billboard"))
 varying vec2 vUV;
 void main()
 {
-   vec4 pos;
-   pos.xyz = uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp;
-   pos.w = 1.0;
-   gl_Position = uViewProj*pos;
+   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
    vUV = aUV;
 })",
                              R"(\
