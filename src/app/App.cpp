@@ -9,7 +9,7 @@
 
 CApp::CApp()
    : CEngine(800, 600)
-   , mSphere({1.f, 0.f, 1.f})
+   , mSphere({1.f, 1.f, 0.f})
 {
    mSphere.scale({5, 5, 5});
    mSphere.pos({0, 20, 0});
@@ -106,6 +106,10 @@ void CApp::update(float timeDelta)
    p4->set<cts("uViewProj")>(mCamera.viewProj());
    p4->set<cts("uUp")>(mCamera.up());
    p4->set<cts("uRight")>(mCamera.right());
+   auto p5 = gRenderer.get<cts("coloredIlluminated")>();
+   p5->set<cts("uViewProj")>(mCamera.viewProj());
+   p5->set<cts("uSunDir")>({0, 0, 1});
+   p5->set<cts("uEye")>(mCamera.eye());
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)

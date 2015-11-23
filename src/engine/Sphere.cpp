@@ -77,8 +77,9 @@ CSphere::CSphere(const glm::vec3& color)
 
 void CSphere::draw(const SContext& context) const
 {
-   auto p = gRenderer.getAndSelect<cts("colored")>();
+   auto p = gRenderer.getAndSelect<cts("coloredIlluminated")>();
    p->set<cts("aPos")>(buffer);
+   p->set<cts("aNorm")>(buffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
    gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
