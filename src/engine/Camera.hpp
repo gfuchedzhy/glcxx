@@ -86,6 +86,9 @@ class CCamera
       /// @brief returns back
       glm::vec3 back() const;
 
+      /// @brief returns eye position
+      glm::vec3 eye() const;
+
       /// @brief returns projection matrix
       const glm::mat4& proj() const;
 
@@ -112,6 +115,11 @@ inline glm::vec3 CCamera::back() const
 {
    auto&& v = view();
    return glm::vec3(v[0][2], v[1][2], v[2][2]);
+}
+
+inline glm::vec3 CCamera::eye() const
+{
+   return lookAt() + eyeDistance()*back();
 }
 
 inline const glm::vec3& CCamera::lookAt() const
