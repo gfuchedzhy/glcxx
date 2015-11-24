@@ -10,55 +10,88 @@
 
 namespace
 {
+   /// @brief generates indices and vertices for halfsphere
+   void generateHalfSphere(size_t N, std::vector<glm::vec3>& vertices, std::vector<GLushort>& indices)
+   {
+      const float deltaTheta = 0.5f*M_PI/N;
+
+      // top point
+      vertices.push_back({0, 0, 1});
+      // number of points in previous row
+      size_t prevN = 1;
+      for (size_t i = 1; i <= N; ++i)
+      {
+         const float theta = i*deltaTheta;
+         const float sinTheta = sin(theta);
+         const float cosTheta = cos(theta);
+
+         // number of points in current row
+         const size_t n = sinTheta*(4*N-1) + 1.5;
+         const float deltaPhi = 2*M_PI/n;
+         const GLushort stripStart = vertices.size();
+
+         // j is index in current row, k is index in previous row
+         for (size_t j = 0, k = 0; j < n; ++j)
+         {
+            const float phi = j*deltaPhi;
+            vertices.push_back({sinTheta*cos(phi), sinTheta*sin(phi), cosTheta});
+
+            if ((1 != i) && ((k+0.5f)*n <= (j+0.5f)*prevN))
+            {
+               indices.push_back(stripStart - prevN + k);
+               indices.push_back(stripStart + j);
+               k = (k+1) % prevN;
+               indices.push_back(stripStart - prevN + k);
+            }
+
+            indices.push_back(stripStart + j);
+            indices.push_back(stripStart + (j+1) % n);
+            indices.push_back(stripStart - prevN + k);
+         }
+         prevN = n;
+      }
+   }
+
    static std::shared_ptr<TBufferObject<glm::vec3>> buffer;
    static std::shared_ptr<TBufferObject<glm::vec3>> normalsBuffer;
    static std::vector<GLushort> indices;
    static std::vector<GLushort> normalIndices;
+
    void initSphere()
    {
       if (!buffer)
       {
-         const size_t N = 9;
-         const size_t verticesNum = 2*N*(N+1);
-         const float deltaAngle = M_PI/N;
-
+         const size_t N = 6;
          std::vector<glm::vec3> vertices;
-         // additional vertex will be (0,0,0) for normal drawing, so reserve +1
-         // for it
-         vertices.reserve(verticesNum + 1);
-         auto ind = [N] (size_t j, size_t i) {return (j%(2*N)) + i*2*N; };
+         generateHalfSphere(N, vertices, indices);
 
-         float sinPhi[2*N], cosPhi[2*N];
-         for (size_t j = 0; j < 2*N; ++j)
+         const size_t vertNum = vertices.size();
+         // do not copy equator row as it is shared
+         const size_t vertNumWithoutEquator = vertNum - 4*N;
+         for (size_t i = 0; i < vertNumWithoutEquator; ++i)
          {
-            const float phi = j*deltaAngle;
-            sinPhi[j] = sin(phi);
-            cosPhi[j] = cos(phi);
+            const auto& p = vertices[i];
+            vertices.emplace_back(p.x, p.y, -p.z);
          }
-
-         for (size_t i = 0; i <= N; ++i)
+         const size_t indSize = indices.size();
+         for (size_t i = 0; i < indSize; ++i)
          {
-            const float theta = i*deltaAngle;
-            const float sinTheta = sin(theta);
-            const float cosTheta = cos(theta);
-            for (size_t j = 0; j < 2*N; ++j)
-            {
-               normalIndices.push_back(verticesNum); // (0,0,0)
-               normalIndices.push_back(vertices.size());
-               vertices.push_back({sinTheta*cosPhi[j], sinTheta*sinPhi[j], cosTheta});
-               if (0 != i)
-               {
-                  indices.push_back(ind(j, i));
-                  indices.push_back(ind(j+1, i-1));
-                  indices.push_back(ind(j, i-1));
+            // swap 2 indices of each triangle to alter orientation, this should
+            // be done because mirroring over xy plane changes triangle orientation
+            const size_t j = (1 == i % 3) ? i - 1 : (0 == i % 3) ? i+1 : i;
 
-                  indices.push_back(ind(j, i));
-                  indices.push_back(ind(j+1, i));
-                  indices.push_back(ind(j+1, i-1));
-               }
-            }
+            // shift index unless it is index of equator vertex
+            indices.push_back(indices[j] + (indices[j] < vertNumWithoutEquator ? vertNum : 0));
          }
          buffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
+
+         // indices for normals, last vertex would be (0,0,0)
+         const size_t lastIndex = vertices.size();
+         for (size_t i = 0; i < lastIndex; ++i)
+         {
+            normalIndices.push_back(lastIndex);
+            normalIndices.push_back(i);
+         }
 
          // scale for normals
          for (auto&& v : vertices)
