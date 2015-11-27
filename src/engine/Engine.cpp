@@ -12,6 +12,7 @@ CEngine::CEngine(const size_t width, const size_t height)
              sf::ContextSettings(24, 0, 0, 3, 0))
    , mAspect(width/float(height))
 {
+   mWindow.setVerticalSyncEnabled(true);
    sf::ContextSettings settings = mWindow.getSettings();
    Log::msg("openGL ", settings.majorVersion, '.', settings.minorVersion,  " version loaded");
 }
