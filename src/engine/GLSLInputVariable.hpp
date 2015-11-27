@@ -122,30 +122,56 @@ namespace glsl
    template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class THolder>
    using tTypeName = typename TTypeTraits<TypeTo, EXTRA, THolder>::tTypeName;
 
-   /// @brief functions to attach uniforms
-   inline void attachUniform(GLint location, int val)
-   {
-      gl(glUniform1i, location, val);
+   /// @brief functions to attach uniforms, replace huge amount of different c
+   /// functions with properly overloaded fucntions, as their ammount is huge,
+   /// use macro to reduce repitition
+#define declareAttachUniformFunctions(type, functionSuffix)             \
+   inline void attachUniform(GLint location, type val)                  \
+   {                                                                    \
+      gl(glUniform1##functionSuffix, location, val);                    \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attachUniform(GLint location, const glm::tvec2<type, P>& val) \
+   {                                                                    \
+      gl(glUniform2##functionSuffix, location, val.x, val.y);           \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attachUniform(GLint location, const glm::tvec3<type, P>& val) \
+   {                                                                    \
+      gl(glUniform3##functionSuffix, location, val.x, val.y, val.z);    \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attachUniform(GLint location, const glm::tvec4<type, P>& val) \
+   {                                                                    \
+      gl(glUniform4##functionSuffix, location, val.x, val.y, val.z, val.w); \
+   }                                                                    \
+   template<size_t N>                                                   \
+   inline void attachUniform(GLint location, const std::array<type, N>& val) \
+   {                                                                    \
+      gl(glUniform1##functionSuffix##v, location, N, &val[0]);          \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attachUniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
+   {                                                                    \
+      gl(glUniform2##functionSuffix##v, location, N, &val[0][0]);       \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attachUniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
+   {                                                                    \
+      gl(glUniform3##functionSuffix##v, location, &val[0][0]);          \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attachUniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
+   {                                                                    \
+      gl(glUniform4##functionSuffix##v, location, &val[0][0]);          \
    }
-   inline void attachUniform(GLint location, float val)
-   {
-      gl(glUniform1f, location, val);
-   }
-   template<glm::precision P>
-   inline void attachUniform(GLint location, const glm::tvec2<float, P>& val)
-   {
-      gl(glUniform2f, location, val.x, val.y);
-   }
-   template<glm::precision P>
-   inline void attachUniform(GLint location, const glm::tvec3<float, P>& val)
-   {
-      gl(glUniform3f, location, val.x, val.y, val.z);
-   }
-   template<glm::precision P>
-   inline void attachUniform(GLint location, const glm::tvec4<float, P>& val)
-   {
-      gl(glUniform4f, location, val.x, val.y, val.z, val.w);
-   }
+
+   /// @brief actual function definitions
+   declareAttachUniformFunctions(float, f);
+   declareAttachUniformFunctions(int, i);
+   declareAttachUniformFunctions(unsigned int, ui);
+
+   /// @overloads for matrices
    template<glm::precision P>
    inline void attachUniform(GLint location, const glm::tmat4x4<float, P>& val)
    {
@@ -155,15 +181,6 @@ namespace glsl
    inline void attachUniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
    {
       gl(glUniformMatrix4fv, location, N, GL_FALSE, &val[0][0][0]);
-   }
-   /// @brief array version
-   template<size_t N, typename T>
-   inline void attachUniform(GLint location, const std::array<T, N>& val)
-   {
-      for (size_t i = 0; i < N; ++i)
-      {
-         attachUniform(location+i, val[i]);
-      }
    }
 
    /// @brief traits class for input variable to shader attribute/uniform
