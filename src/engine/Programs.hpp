@@ -61,7 +61,7 @@ varying vec3 vNorm;
 void main()
 {
    vec3 norm = normalize(vNorm);
-   vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, uSunDir), 0, 1); // is clamp needed?
+   vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, uSunDir), 0, 1);
    vec4 ambient = lightColor*ambientIntensity;
    vec3 reflected = reflect(-uSunDir, norm);
    vec3 cameraDir = normalize(uEye - vPos);
