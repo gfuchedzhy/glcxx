@@ -8,6 +8,7 @@
 #include "Utils.hpp"
 #include <iostream>
 #include <tuple>
+#include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -51,6 +52,20 @@ namespace std
    inline ostream& operator<<(ostream& stream, const glm::tvec4<T, P>& vec)
    {
       return stream << "vec4(" << vec.x << ',' << vec.y << ',' << vec.z << ',' << vec.w << ')';
+   }
+
+   /// @brief stream vector
+   template<typename T>
+   inline ostream& operator<<(ostream& stream, const std::vector<T>& v)
+   {
+      stream << '[';
+      for (size_t i = 0; i < v.size(); ++i)
+      {
+         stream << v[i];
+         if (i+1 < v.size())
+            stream << ',';
+      }
+      return stream << ']';
    }
 
    /// @brief stream array
