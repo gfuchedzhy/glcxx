@@ -32,3 +32,10 @@ CSky::CSky()
    sky[4]->pos(glm::vec3(0, -size/2, 0));
    pos(glm::vec3(0, 0, size/2));
 }
+
+void CSky::draw(const SContext& context) const
+{
+   gl(glDisable, GL_DEPTH_TEST);
+   CComplexRenderable::draw(context);
+   gl(glEnable, GL_DEPTH_TEST);
+}

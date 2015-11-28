@@ -171,9 +171,7 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
 void CApp::draw() const
 {
    mTerrain.draw(mContext);
-   gl(glDisable, GL_DEPTH_TEST);
    mSky.draw(mContext);
-   gl(glEnable, GL_DEPTH_TEST);
 
    gl(glEnable, GL_BLEND);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
