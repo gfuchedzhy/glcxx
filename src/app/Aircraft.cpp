@@ -87,6 +87,9 @@ CAircraft::CAircraft()
 
 void CAircraft::update(float timeDelta)
 {
+   if (pos().z <= 0)
+      mSpeed = 0;
+
    pos(pos() + forward()*mSpeed*timeDelta);
 
    const float angularSpeed = 7*mSpeed; // @todo should be around 150x
