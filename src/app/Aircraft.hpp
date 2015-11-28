@@ -29,6 +29,12 @@ class CAircraft : public CComplexRenderable
       /// @brief constructor
       CAircraft();
 
+      /// @brief return speed
+      float speed() const { return mSpeed; }
+
+      /// @brief set speed
+      void speed(float speed) { mSpeed = speed; }
+
       /// @brief randomly decreases healthbars
       void randomDamage();
 

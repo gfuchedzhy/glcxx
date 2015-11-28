@@ -45,20 +45,20 @@ inline void dumpAnimation(Get get, Set set,
       set(targetValue);
 }
 
-/// @brief animates value returned by get in given range on given keypresses,
-/// optionally dumping to middle of the range when no keys pressed
+/// @brief animates value returned by get in given range on given keypresses
 template<typename Get, typename Set>
-inline void animate(Get get, Set set,
+inline bool animate(Get get, Set set,
                     float timeDelta, float speed,
                     sf::Keyboard::Key minKey, sf::Keyboard::Key maxKey,
-                    float minVal, float maxVal, bool dump = false)
+                    float minVal, float maxVal)
 {
    if (sf::Keyboard::isKeyPressed(minKey))
       set(std::max(minVal, get() - timeDelta*speed));
    else if (sf::Keyboard::isKeyPressed(maxKey))
       set(std::min(maxVal, get() + timeDelta*speed));
-   else if (dump)
-      dumpAnimation(get, set, timeDelta, 0.5f*(minVal+maxVal));
+   else
+      return false;
+   return true;
 }
 
 void CApp::update(float timeDelta)
@@ -78,38 +78,51 @@ void CApp::update(float timeDelta)
    angle = angle - (int(angle)/360)*360;
    mSphere.roll(angle);
 
+   if (!animate([this]{return mAircraft.speed();},
+                [this](float val){mAircraft.speed(val);},
+                timeDelta, 100.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
+      dumpAnimation([this]{return mAircraft.speed();},
+                    [this](float val){mAircraft.speed(val);},
+                    timeDelta, 80.f);
+
+   bool aircraftPitchChanged = false;
+   bool aircraftRollChanged = false;
    constexpr auto inf = std::numeric_limits<float>::infinity();
    if (mIsCameraControl)
    {
       animate([this]{return mCamera.orientation();},
               [this](float val){mCamera.orientation(val);},
               timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
-
       animate([this]{return mCamera.pitch();},
               [this](float val){mCamera.pitch(val);},
               timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
-
       animate([this]{return mCamera.eyeDistance();},
               [this](float val){mCamera.eyeDistance(val);},
               timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 500.f);
-
-      dumpAnimation([this]{return mAircraft.pitch();},
-                    [this](float val){mAircraft.pitch(val);},
-                    timeDelta, 0);
-      dumpAnimation([this]{return mAircraft.roll();},
-                    [this](float val){mAircraft.roll(val);},
-                    timeDelta, 0);
    }
    else
    {
-      animate([this]{return mAircraft.pitch();},
-              [this](float val){mAircraft.pitch(val);},
-              timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f, true);
-
-      animate([this]{return mAircraft.roll();},
-              [this](float val){mAircraft.roll(val);},
-              timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f, true);
+      float pitch;
+      aircraftPitchChanged = animate([this]{return mAircraft.pitch();},
+                                     [&pitch](float val){ pitch = val;},
+                                     timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f);
+      if (aircraftPitchChanged && (pitch <= mAircraft.pitch() || mAircraft.speed() > 130.f))
+         mAircraft.pitch(pitch);
+      else
+         aircraftPitchChanged = false;
+      aircraftRollChanged = animate([this]{return mAircraft.roll();},
+                                    [this](float val){mAircraft.roll(val);},
+                                    timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f);
    }
+
+   if (!aircraftPitchChanged)
+      dumpAnimation([this]{return mAircraft.pitch();},
+                    [this](float val){mAircraft.pitch(val);},
+                    timeDelta, 0);
+   if (!aircraftRollChanged)
+      dumpAnimation([this]{return mAircraft.roll();},
+                    [this](float val){mAircraft.roll(val);},
+                    timeDelta, 0);
 
    /// @todo make automatic uniforms in renderer to remove this code
    auto p = gRenderer.get<cts("colored")>();

@@ -89,7 +89,7 @@ void CAircraft::update(float timeDelta)
 {
    pos(pos() + forward()*mSpeed*timeDelta);
 
-   static const float angularSpeed = mSpeed*150;
+   const float angularSpeed = 7*mSpeed; // @todo should be around 150x
    float angle = mProp->roll() + timeDelta*angularSpeed;
    angle = angle - (int(angle)/360)*360;
    mProp->roll(angle);
