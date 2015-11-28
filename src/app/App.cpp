@@ -124,8 +124,7 @@ void CApp::update(float timeDelta)
 
    auto p6 = gRenderer.get<cts("animationObject")>();
    p6->set<cts("uViewProj")>(mCamera.viewProj());
-   p6->set<cts("uUp")>(mCamera.up());
-   p6->set<cts("uRight")>(mCamera.right());
+   p6->set<cts("uRightStabilized")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back())));
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)

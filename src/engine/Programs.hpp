@@ -124,14 +124,14 @@ inline auto make_program(cts("animationObject"))
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uCurrentFrame"), glm::tvec1, int>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uFrameNumber"), glm::tvec1, int>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRightStabilized"), glm::tvec3, float>>,
                                     TTextureProgramInput<cts("uTexture")>>
                            >(R"(\
+const vec3 up = vec3(0.0, 0.0, 1.0);
 varying vec2 vUV;
 void main()
 {
-   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
+   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*uRightStabilized + aPos.y*uSize.y*up, 1.0);
    vUV = vec2((aUV.x + uCurrentFrame)/uFrameNumber, aUV.y);
 })",
                              R"(\
