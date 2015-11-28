@@ -87,8 +87,12 @@ CAircraft::CAircraft()
 
 void CAircraft::update(float timeDelta)
 {
-   if (pos().z <= 0)
+   if (0 != mSpeed && pos().z <= 0)
+   {
       mSpeed = 0;
+      for (auto&& h : mHealthBars)
+         h.first.value(0);
+   }
 
    pos(pos() + forward()*mSpeed*timeDelta);
 
@@ -122,9 +126,7 @@ void CAircraft::randomDamage()
    std::mt19937 gen(rd());
    std::uniform_real_distribution<> d(0, 1);
    for (auto&& h : mHealthBars)
-   {
       h.first.value(d(gen));
-   }
 }
 
 void CAircraft::repair()

@@ -78,12 +78,15 @@ void CApp::update(float timeDelta)
    angle = angle - (int(angle)/360)*360;
    mSphere.roll(angle);
 
-   if (!animate([this]{return mAircraft.speed();},
-                [this](float val){mAircraft.speed(val);},
-                timeDelta, 100.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
-      dumpAnimation([this]{return mAircraft.speed();},
-                    [this](float val){mAircraft.speed(val);},
-                    timeDelta, 80.f);
+   if(0 != mAircraft.speed())
+   {
+      if (!animate([this]{return mAircraft.speed();},
+                   [this](float val){mAircraft.speed(val);},
+                   timeDelta, 100.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
+         dumpAnimation([this]{return mAircraft.speed();},
+                       [this](float val){mAircraft.speed(val);},
+                       timeDelta, 80.f);
+   }
 
    bool aircraftPitchChanged = false;
    bool aircraftRollChanged = false;
