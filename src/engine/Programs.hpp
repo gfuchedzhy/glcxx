@@ -116,6 +116,32 @@ void main()
 })");
 }
 
+inline auto make_program(cts("animationObject"))
+{
+   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uCurrentFrame"), glm::tvec1, int>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uFrameNumber"), glm::tvec1, int>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
+                                    TTextureProgramInput<cts("uTexture")>>
+                           >(R"(\
+varying vec2 vUV;
+void main()
+{
+   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
+   vUV = vec2((aUV.x + uCurrentFrame)/uFrameNumber, aUV.y);
+})",
+                             R"(\
+varying vec2 vUV;
+void main()
+{
+   gl_FragColor = texture2D(uTexture, vUV);
+})");
+}
+
 inline auto make_program(cts("healthbar"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
@@ -151,6 +177,7 @@ using tRenderer = TRenderer<cts("colored"),
                             cts("coloredIlluminated"),
                             cts("texturedPolygon"),
                             cts("texturedBillboard"),
+                            cts("animationObject"),
                             cts("healthbar")>;
 extern tRenderer gRenderer;
 

@@ -44,12 +44,35 @@ class CBillboard : public IRenderable
 /// @brief billboard with texture
 class CTexturedBillboard : public CBillboard
 {
+   protected:
       /// @brief texture
       std::shared_ptr<CTexture> mTexture;
 
    public:
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+
+      /// @brief draw
+      void draw(const SContext& context) const override;
+};
+
+/// @brief textured billboard with animation
+class CAnimationObject : public CTexturedBillboard
+{
+      /// @brief number of frames in current object
+      unsigned int mFrameNumber;
+
+      /// @brief local time measured in frames
+      float mCurrentFrame = 0.f;
+
+   public:
+      /// @brief constructor
+      CAnimationObject(unsigned int frameNumber)
+         : mFrameNumber(frameNumber)
+      {}
+
+      /// @brief updates current frame
+      void update(float timeDelta);
 
       /// @brief draw
       void draw(const SContext& context) const override;

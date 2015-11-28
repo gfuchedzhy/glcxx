@@ -110,6 +110,11 @@ void CApp::update(float timeDelta)
    p5->set<cts("uViewProj")>(mCamera.viewProj());
    p5->set<cts("uSunDir")>({0, 0, 1});
    p5->set<cts("uEye")>(mCamera.eye());
+
+   auto p6 = gRenderer.get<cts("animationObject")>();
+   p6->set<cts("uViewProj")>(mCamera.viewProj());
+   p6->set<cts("uUp")>(mCamera.up());
+   p6->set<cts("uRight")>(mCamera.right());
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
