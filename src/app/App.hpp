@@ -8,7 +8,7 @@
 #include "Engine.hpp"
 #include "Aircraft.hpp"
 #include "Camera.hpp"
-#include "Rect.hpp"
+#include "Terrain.hpp"
 #include "Sphere.hpp"
 #include "Sky.hpp"
 #include <vector>
@@ -27,7 +27,7 @@ class CApp : public CEngine
       CSky mSky;
 
       /// @brief ground
-      CTexturedRect mGround;
+      CTerrain mTerrain;
 
       /// @brief clouds implemented using billboards
       std::array<CTexturedBillboard, 9> mClouds;

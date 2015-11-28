@@ -21,10 +21,6 @@ CApp::CApp()
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
-   mGround.texture(std::make_shared<CTexture>("res/ground.dds"));
-   const float scale = 1e4;
-   mGround.scale(glm::vec3(scale, scale, scale));
-
    auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
    float angle = 0;
    const float bbRadius = 3e3;
@@ -174,9 +170,9 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
 
 void CApp::draw() const
 {
+   mTerrain.draw(mContext);
    gl(glDisable, GL_DEPTH_TEST);
    mSky.draw(mContext);
-   mGround.draw(mContext);
    gl(glEnable, GL_DEPTH_TEST);
 
    gl(glEnable, GL_BLEND);
