@@ -10,6 +10,7 @@
 CApp::CApp()
    : CEngine(800, 600)
    , mSphere({1.f, 1.f, 0.f})
+   , mAnimationObjects({32, 32})
 {
    mSphere.scale({5, 5, 5});
    mSphere.pos({0, 20, 0});
@@ -39,6 +40,14 @@ CApp::CApp()
       c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), bbRadius*distr2(gen)));
       angle += 2*M_PI/mClouds.size();
    }
+
+   auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
+   for (auto&& ao : mAnimationObjects)
+   {
+      ao.texture(aoTexture);
+      ao.size({5, 5});
+      ao.pos({0, 300*distr1(gen), 0});
+   }
 }
 
 /// @brief animates value returned by get in given range on given keypresses,
@@ -66,6 +75,8 @@ inline void animate(Get get, Set set,
 void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
+   for (auto&& ao : mAnimationObjects)
+      ao.update(timeDelta);
 
    static const float angularSpeed = 90;
    float angle = mSphere.roll() + timeDelta*angularSpeed;
@@ -148,6 +159,9 @@ void CApp::draw() const
 
    for (auto&& c : mClouds)
       c.draw(mContext);
+
+   for (auto&& ao : mAnimationObjects)
+      ao.draw(mContext);
 
    gl(glDisable, GL_BLEND);
 

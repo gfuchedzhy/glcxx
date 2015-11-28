@@ -35,6 +35,9 @@ class CApp : public CEngine
       /// @brief sphere
       CSphere mSphere;
 
+      /// @brief animation objects
+      std::array<CAnimationObject, 2> mAnimationObjects;
+
    public:
       /// @brief constructor
       CApp();
