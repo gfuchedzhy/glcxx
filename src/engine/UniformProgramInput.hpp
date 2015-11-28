@@ -7,7 +7,7 @@
 
 #include "GLSLInputVariable.hpp"
 
-template<typename TData>
+template<typename TData, typename TGLSLData>
 class TUniformProgramInputImpl
 {
       /// @brief location of program input inside program
@@ -35,7 +35,7 @@ class TUniformProgramInputImpl
             // it is allowed to attach only if current program is selected
             if (isSelected)
             {
-               glsl::attachUniform(mLocation, mUniformData);
+               glsl::attachUniform(mLocation, glsl::TConverter<TGLSLData>::convert(mUniformData));
             }
             mIsAttached = isSelected;
          }
@@ -47,7 +47,7 @@ class TUniformProgramInputImpl
       {
          if (!mIsAttached)
          {
-            glsl::attachUniform(mLocation, mUniformData);
+            glsl::attachUniform(mLocation, glsl::TConverter<TGLSLData>::convert(mUniformData));
          }
       }
 };
@@ -63,7 +63,7 @@ namespace tag
 /// @brief holds state of program's uniform, use it as TProgram template
 /// parameter, tag tells which shader should contain given attribute
 template<typename DeclarationTag, typename TUniformTraits>
-class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTraits::tData>
+class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>
 {
    public:
       /// @brief uniform datatype this program input accepts
@@ -84,7 +84,7 @@ class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTr
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program)
-         : TUniformProgramInputImpl<typename TUniformTraits::tData>(TUniformTraits::getLocation(program))
+         : TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>(TUniformTraits::getLocation(program))
       {}
 };
 

@@ -171,7 +171,7 @@ namespace glsl
    declareAttachUniformFunctions(int, i);
    declareAttachUniformFunctions(unsigned int, ui);
 
-   /// @overloads for matrices
+   /// @brief overloads for matrices
    template<glm::precision P>
    inline void attachUniform(GLint location, const glm::tmat4x4<float, P>& val)
    {
@@ -182,6 +182,36 @@ namespace glsl
    {
       gl(glUniformMatrix4fv, location, N, GL_FALSE, &val[0][0][0]);
    }
+
+   /// @brief converter which does nothing if cpu type and glsl type exactly
+   /// match and converts data if they differ
+   template<typename TGLSLData>
+   struct TConverter
+   {
+         /// @brief converter for simple type, e.g. int->float or ivec2->vec2
+         template<typename TData>
+         static inline TGLSLData convert(const TData& data)
+         {
+            return data;
+         }
+
+         /// @brief converter for arrays types, e.g. int[2]->float[2]
+         template<typename TData, size_t N>
+         static inline TGLSLData convert(const std::array<TData, N>& data)
+         {
+            TGLSLData glslData;
+            for (size_t i = 0; i < N; ++i)
+               glslData[i] = data[i];
+            return glslData;
+         }
+
+         /// @brief does nothing return same reference, this method should be
+         /// optimized out
+         static inline const TGLSLData& convert(const TGLSLData& data)
+         {
+            return data;
+         }
+   };
 
    /// @brief traits class for input variable to shader attribute/uniform
    /// @tparam TName name of var for compile time querying, declarations, etc
@@ -200,13 +230,17 @@ namespace glsl
          static_assert(N >= 1, "glsl type size should be at least 1");
 
          /// @brief basic type,  e.g. glm::vec2, or float for glm::tvec1, does not 
-         using tBasicType = typename std::conditional<std::is_same<THolder<TypeFrom, glm::defaultp>,
-                                                                   glm::tvec1<TypeFrom, glm::defaultp>>::value,
-                                                      TypeFrom,
-                                                      THolder<TypeFrom, glm::defaultp>>::type;
+         template<typename T>
+         using tBasicType = typename std::conditional<std::is_same<THolder<T, glm::defaultp>,
+                                                                   glm::tvec1<T, glm::defaultp>>::value,
+                                                      T,
+                                                      THolder<T, glm::defaultp>>::type;
 
          /// @brief data type, basic type or array of basic types
-         using tData = typename std::conditional<1==N, tBasicType, std::array<tBasicType, N>>::type;
+         using tData = typename std::conditional<1==N, tBasicType<TypeFrom>, std::array<tBasicType<TypeFrom>, N>>::type;
+
+         /// @brief data type, basic type or array of basic types
+         using tGLSLData = typename std::conditional<1==N, tBasicType<TypeTo>, std::array<tBasicType<TypeTo>, N>>::type;
 
          /// @brief ctstring containing name of variable
          using tName = TName;
