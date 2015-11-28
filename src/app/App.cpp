@@ -21,29 +21,16 @@ CApp::CApp()
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
-   auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
-   float angle = 0;
-   const float bbRadius = 3e3;
-
    std::random_device rd;
    std::mt19937 gen(rd());
-   std::uniform_real_distribution<> distr1(0.8f, 1.5f);
-   std::uniform_real_distribution<> distr2(-0.1f, 0.f);
-   for (auto&& c : mClouds)
-   {
-      c.texture(cloudTexture);
-      c.size(glm::vec2(500*distr1(gen), 350*distr1(gen)));
-      const float jitteredAngle = distr1(gen)*angle;
-      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 1e3 + bbRadius*distr2(gen)));
-      angle += 2*M_PI/mClouds.size();
-   }
+   std::uniform_real_distribution<> distr(0.8f, 1.5f);
 
    auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
    for (auto&& ao : mAnimationObjects)
    {
       ao.texture(aoTexture);
       ao.size({5, 5});
-      ao.pos({0, 5*distr1(gen), 0});
+      ao.pos({0, 5*distr(gen), 0});
    }
 }
 
@@ -170,18 +157,14 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
 
 void CApp::draw() const
 {
+   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
    mTerrain.draw(mContext);
    mSky.draw(mContext);
 
    gl(glEnable, GL_BLEND);
-   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-   for (auto&& c : mClouds)
-      c.draw(mContext);
-
    for (auto&& ao : mAnimationObjects)
       ao.draw(mContext);
-
    gl(glDisable, GL_BLEND);
 
    mAircraft.draw(mContext);

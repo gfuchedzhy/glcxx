@@ -29,9 +29,6 @@ class CApp : public CEngine
       /// @brief ground
       CTerrain mTerrain;
 
-      /// @brief clouds implemented using billboards
-      std::array<CTexturedBillboard, 9> mClouds;
-
       /// @brief sphere
       CSphere mSphere;
 

@@ -101,7 +101,7 @@ void CAircraft::draw(const SContext& context) const
       auto p = gRenderer.getAndSelect<cts("healthbar")>();
       for (auto&& h : mHealthBars)
       {
-         // this is a hack, should rethink model of complex objects
+         // @todo this is a hack, should rethink model of complex objects
          assert(h.second);
          auto m = h.second->model();
          p->set<cts("uExternalPos")>(glm::vec3(m[3][0], m[3][1], m[3][2]));

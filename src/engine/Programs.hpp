@@ -97,6 +97,7 @@ inline auto make_program(cts("texturedBillboard"))
    return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uExternalPos"), glm::tvec3, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
@@ -105,7 +106,7 @@ inline auto make_program(cts("texturedBillboard"))
 varying vec2 vUV;
 void main()
 {
-   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
+   gl_Position = uViewProj*vec4(uPos + uExternalPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
    vUV = aUV;
 })",
                              R"(\
