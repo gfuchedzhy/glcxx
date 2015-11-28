@@ -6,6 +6,11 @@
 #include "Programs.hpp"
 #include "Texture.hpp"
 
+namespace
+{
+   std::uniform_real_distribution<> distr(0.8f, 1.05f);
+}
+
 CApp::CApp()
    : CEngine(800, 600)
    , mSphere({1, 1, 0})
@@ -20,13 +25,12 @@ CApp::CApp()
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
-   std::uniform_real_distribution<> distr(0.9f, 1.1f);
    auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
    for (size_t i = 0; i < mAnimationObjects.size(); ++i)
    {
       mAnimationObjects[i].texture(aoTexture);
       mAnimationObjects[i].size({10, 10});
-      mAnimationObjects[i].pos({0, 500*(i+1), mAircraft.pos().z * distr(random_gen)});
+      mAnimationObjects[i].pos({0, 500*(i+1), 1.5e3 * distr(random_gen)});
    }
 }
 
@@ -65,7 +69,17 @@ void CApp::update(float timeDelta)
    mTerrain.pos({pos.x, pos.y, 0});
 
    for (auto&& ao : mAnimationObjects)
+   {
+      // @todo redo this with bounding boxes
+      if (glm::distance(ao.pos(), mAircraft.pos()) < 10)
+      {
+         mAircraft.repair();
+         ao.pos({0, mAircraft.pos().y + 1e3, 1.5e3 * distr(random_gen)});
+      }
+      else if(ao.pos().y + 500 < mAircraft.pos().y)
+         ao.pos({0, mAircraft.pos().y + 1.5e3, 1.5e3 * distr(random_gen)});
       ao.update(timeDelta);
+   }
 
    mCamera.lookAt(mAircraft.pos());
 
@@ -165,6 +179,10 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
       case sf::Keyboard::Tab:
          mIsCameraControl = !mIsCameraControl;
          Log::msg("camera control turned ", Log::SOnOff(mIsCameraControl));
+         break;
+      case sf::Keyboard::D:
+         mAircraft.randomDamage();
+         Log::msg("apply random damage to aircraft");
          break;
       default:
          break;
