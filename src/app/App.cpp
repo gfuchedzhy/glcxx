@@ -50,6 +50,17 @@ CApp::CApp()
    }
 }
 
+/// @brief performs dump animation of value returned by get to given targetValue
+template<typename Get, typename Set>
+inline void dumpAnimation(Get get, Set set,
+                          float timeDelta, float targetValue)
+{
+   if (abs(get() - targetValue) > 0.001f) /// @todo there should be a better way
+      set(targetValue + (get() - targetValue) * std::max(0.f, 1.f - timeDelta/0.2f));
+   else
+      set(targetValue);
+}
+
 /// @brief animates value returned by get in given range on given keypresses,
 /// optionally dumping to middle of the range when no keys pressed
 template<typename Get, typename Set>
@@ -63,13 +74,7 @@ inline void animate(Get get, Set set,
    else if (sf::Keyboard::isKeyPressed(maxKey))
       set(std::min(maxVal, get() + timeDelta*speed));
    else if (dump)
-   {
-      const float middle = 0.5f*(minVal+maxVal);
-      if (abs(get() - middle) > 0.001f) /// @todo there should be a better way
-         set(middle + (get() - middle) * std::max(0.f, 1.f - timeDelta/0.2f));
-      else
-         set(middle);
-   }
+      dumpAnimation(get, set, timeDelta, 0.5f*(minVal+maxVal));
 }
 
 void CApp::update(float timeDelta)
@@ -84,25 +89,37 @@ void CApp::update(float timeDelta)
    mSphere.roll(angle);
 
    constexpr auto inf = std::numeric_limits<float>::infinity();
-   animate([this]{return mCamera.orientation();},
-           [this](float val){mCamera.orientation(val);},
-           timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
+   if (mIsCameraControl)
+   {
+      animate([this]{return mCamera.orientation();},
+              [this](float val){mCamera.orientation(val);},
+              timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
 
-   animate([this]{return mCamera.pitch();},
-           [this](float val){mCamera.pitch(val);},
-           timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
+      animate([this]{return mCamera.pitch();},
+              [this](float val){mCamera.pitch(val);},
+              timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
 
-   animate([this]{return mCamera.eyeDistance();},
-           [this](float val){mCamera.eyeDistance(val);},
-           timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 500.f);
+      animate([this]{return mCamera.eyeDistance();},
+              [this](float val){mCamera.eyeDistance(val);},
+              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 500.f);
 
-   animate([this]{return mAircraft.pitch();},
-           [this](float val){mAircraft.pitch(val);},
-           timeDelta, 70.f, sf::Keyboard::W, sf::Keyboard::S, -60.f, 60.f, true);
+      dumpAnimation([this]{return mAircraft.pitch();},
+                    [this](float val){mAircraft.pitch(val);},
+                    timeDelta, 0);
+      dumpAnimation([this]{return mAircraft.roll();},
+                    [this](float val){mAircraft.roll(val);},
+                    timeDelta, 0);
+   }
+   else
+   {
+      animate([this]{return mAircraft.pitch();},
+              [this](float val){mAircraft.pitch(val);},
+              timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f, true);
 
-   animate([this]{return mAircraft.roll();},
-           [this](float val){mAircraft.roll(val);},
-           timeDelta, 70.f, sf::Keyboard::A, sf::Keyboard::D, -60.f, 60.f, true);
+      animate([this]{return mAircraft.roll();},
+              [this](float val){mAircraft.roll(val);},
+              timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f, true);
+   }
 
    /// @todo make automatic uniforms in renderer to remove this code
    auto p = gRenderer.get<cts("colored")>();
@@ -142,6 +159,10 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
       case sf::Keyboard::Num3:
          mContext.mDrawNormals = !mContext.mDrawNormals;
          Log::msg("normals turned ", Log::SOnOff(mContext.mDrawNormals));
+         break;
+      case sf::Keyboard::Tab:
+         mIsCameraControl = !mIsCameraControl;
+         Log::msg("camera control turned ", Log::SOnOff(mIsCameraControl));
          break;
       default:
          break;

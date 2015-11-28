@@ -38,6 +38,9 @@ class CApp : public CEngine
       /// @brief animation objects
       std::array<CAnimationObject, 2> mAnimationObjects;
 
+      /// @brief if true arrows control camera, otherwise aircraft
+      bool mIsCameraControl = false;
+
    public:
       /// @brief constructor
       CApp();
