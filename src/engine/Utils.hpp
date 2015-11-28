@@ -7,9 +7,13 @@
 
 #include <utility>
 #include <cmath>
+#include <random>
 
 /// @brief evaluate expression for every element of expansion pack in order
 #define swallow(expression) (void)(int[]){0, ((expression), 0)...}
+
+/// @brief random generator
+extern std::mt19937 random_gen;
 
 /// @brief ct stands for compile time
 namespace ct

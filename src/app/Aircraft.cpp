@@ -7,7 +7,6 @@
 #include "Rect.hpp"
 #include "Context.hpp"
 #include "Programs.hpp"
-#include <random>
 #include <algorithm>
 #include <glm/gtx/transform.hpp>
 
@@ -122,11 +121,9 @@ void CAircraft::draw(const SContext& context) const
 
 void CAircraft::randomDamage()
 {
-   std::random_device rd;
-   std::mt19937 gen(rd());
    std::uniform_real_distribution<> d(0, 1);
    for (auto&& h : mHealthBars)
-      h.first.value(d(gen));
+      h.first.value(d(random_gen));
 }
 
 void CAircraft::repair()

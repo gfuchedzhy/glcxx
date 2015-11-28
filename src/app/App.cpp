@@ -5,7 +5,6 @@
 #include "App.hpp"
 #include "Programs.hpp"
 #include "Texture.hpp"
-#include <random>
 
 CApp::CApp()
    : CEngine(800, 600)
@@ -21,16 +20,13 @@ CApp::CApp()
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
-   std::random_device rd;
-   std::mt19937 gen(rd());
-   std::uniform_real_distribution<> distr(0.8f, 1.5f);
-
+   std::uniform_real_distribution<> distr(0.9f, 1.1f);
    auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
-   for (auto&& ao : mAnimationObjects)
+   for (size_t i = 0; i < mAnimationObjects.size(); ++i)
    {
-      ao.texture(aoTexture);
-      ao.size({5, 5});
-      ao.pos({0, 5*distr(gen), 0});
+      mAnimationObjects[i].texture(aoTexture);
+      mAnimationObjects[i].size({10, 10});
+      mAnimationObjects[i].pos({0, 500*(i+1), mAircraft.pos().z * distr(random_gen)});
    }
 }
 

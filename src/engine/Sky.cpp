@@ -5,7 +5,6 @@
 #include "Sky.hpp"
 #include "Texture.hpp"
 #include "Programs.hpp"
-#include <random>
 
 CSky::CSky()
 {
@@ -32,8 +31,6 @@ CSky::CSky()
    sky[4]->pitch(-90);
    sky[4]->pos(glm::vec3(0, -size/2, 0));
 
-   std::random_device rd;
-   std::mt19937 gen(rd());
    std::uniform_real_distribution<> distr1(0.8f, 1.5f);
    std::uniform_real_distribution<> distr2(-0.1f, 0.f);
    float angle = 0;
@@ -42,10 +39,10 @@ CSky::CSky()
    for (auto&& c : mClouds)
    {
       c.texture(cloudTexture);
-      c.size(glm::vec2(500*distr1(gen), 350*distr1(gen)));
-      const float jitteredAngle = distr1(gen)*angle;
+      c.size(glm::vec2(500*distr1(random_gen), 350*distr1(random_gen)));
+      const float jitteredAngle = distr1(random_gen)*angle;
       c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 1e3 + // clouds around 1km height
-                      bbRadius*distr2(gen)));
+                      bbRadius*distr2(random_gen)));
       angle += 2*M_PI/mClouds.size();
    }
 
