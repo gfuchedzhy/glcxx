@@ -93,6 +93,9 @@ class CHealthBar : public CBillboard
       /// @brief sets value
       void value(float value) { mValue = value; }
 
+      /// @brief returns value
+      float value() const { return mValue; }
+
       /// @brief draw
       void draw(const SContext& context) const override;
 };

@@ -7,6 +7,8 @@
 #include "Rect.hpp"
 #include "Context.hpp"
 #include "Programs.hpp"
+#include <random>
+#include <algorithm>
 #include <glm/gtx/transform.hpp>
 
 CAircraft::CAircraft()
@@ -21,7 +23,7 @@ CAircraft::CAircraft()
    };
 
    auto add_hb = [this] (shared_ptr<IRenderableModel> r) {
-      CHealthBar b(0.7f);
+      CHealthBar b;
       b.size({3, 0.5});
       mHealthBars.push_back(make_pair(b, r.get()));
    };
@@ -107,4 +109,26 @@ void CAircraft::draw(const SContext& context) const
          p->set<cts("uExternalPos")>({0, 0, 0});
       }
    }
+}
+
+void CAircraft::randomDamage()
+{
+   std::random_device rd;
+   std::mt19937 gen(rd());
+   std::uniform_real_distribution<> d(0, 1);
+   for (auto&& h : mHealthBars)
+   {
+      h.first.value(d(gen));
+   }
+}
+
+void CAircraft::repair()
+{
+   auto m = std::min_element(begin(mHealthBars), end(mHealthBars),
+                             [] (const tHealthBar& a, const tHealthBar& b)
+                             {
+                                return a.first.value() < b.first.value();
+                             });
+   assert(m != end(mHealthBars));
+   m->first.value(std::min(m->first.value() + 0.5f, 1.f));
 }
