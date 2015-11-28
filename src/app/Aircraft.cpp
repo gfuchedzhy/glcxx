@@ -28,12 +28,12 @@ CAircraft::CAircraft()
 
    // cubed geometry representing airplain, kind of :)
    const vec3 bodySize(3.f, 22.f, 3.f);
-   const size_t bodyPartNum = 4;
+   const int bodyPartNum = 4;
    const vec3 bodyPartSize(3.f, bodySize.y/bodyPartNum, 3.f);
    const vec3 bodyColor(1.f, 1.f, 0.f);
 
    auto body = make_shared<CComplexRenderable>();
-   for (size_t i = 0; i < bodyPartNum; ++i)
+   for (int i = 0; i < bodyPartNum; ++i)
    {
       auto p = make_box(bodyColor, bodyPartSize);
       add_hb(p);
@@ -64,9 +64,9 @@ CAircraft::CAircraft()
 
    const vec3 propColor(0.f, 1.f, 1.f);
    const vec3 propSize(1.f, 0.2f, 12.f);
-   const size_t propNum = 3;
+   const int propNum = 3;
    auto prop = make_shared<CComplexRenderable>();
-   for (size_t i = 0u; i < propNum; ++i)
+   for (int i = 0u; i < propNum; ++i)
    {
       auto blade = make_box(propColor, propSize);
       blade->roll(i*180.f/propNum);
