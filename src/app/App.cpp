@@ -144,6 +144,8 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
          mContext.mDrawNormals = !mContext.mDrawNormals;
          Log::msg("normals turned ", Log::SOnOff(mContext.mDrawNormals));
          break;
+      default:
+         break;
    }
 }
 
