@@ -30,7 +30,7 @@ class CApp : public CEngine
       CTexturedRect mGround;
 
       /// @brief clouds implemented using billboards
-      std::array<CTexturedBillboard, 6> mClouds;
+      std::array<CTexturedBillboard, 9> mClouds;
 
       /// @brief sphere
       CSphere mSphere;

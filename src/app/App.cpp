@@ -9,35 +9,36 @@
 
 CApp::CApp()
    : CEngine(800, 600)
-   , mSphere({1.f, 1.f, 0.f})
+   , mSphere({1, 1, 0})
    , mAnimationObjects({32, 32})
 {
-   mSphere.scale({5, 5, 5});
-   mSphere.pos({0, 20, 0});
+   mAircraft.pos({0, 0, 1.5e3});
 
-   mCamera.perspective(35.f, mAspect, 0.1f, 3e3f);
-   mCamera.eyeDistance(50.f);
-   mCamera.pitch(10.f);
+   mSphere.scale({5, 5, 5});
+   mSphere.pos(mAircraft.pos() + glm::vec3{0, 20, 0});
+
+   mCamera.perspective(35, mAspect, 0.1, 2e4);
+   mCamera.eyeDistance(150);
+   mCamera.pitch(20);
 
    mGround.texture(std::make_shared<CTexture>("res/ground.dds"));
-   const float scale = 2e3f;
+   const float scale = 1e4;
    mGround.scale(glm::vec3(scale, scale, scale));
-   mGround.pos(glm::vec3(0, 0, -0.1f*scale));
 
    auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
    float angle = 0;
-   const float bbRadius = 800.f;
+   const float bbRadius = 3e3;
 
    std::random_device rd;
    std::mt19937 gen(rd());
    std::uniform_real_distribution<> distr1(0.8f, 1.5f);
-   std::uniform_real_distribution<> distr2(-0.4f, 0.f);
+   std::uniform_real_distribution<> distr2(-0.1f, 0.f);
    for (auto&& c : mClouds)
    {
       c.texture(cloudTexture);
-      c.size(glm::vec2(250*distr1(gen), 150*distr1(gen)));
+      c.size(glm::vec2(500*distr1(gen), 350*distr1(gen)));
       const float jitteredAngle = distr1(gen)*angle;
-      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), bbRadius*distr2(gen)));
+      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 1e3 + bbRadius*distr2(gen)));
       angle += 2*M_PI/mClouds.size();
    }
 
@@ -46,7 +47,7 @@ CApp::CApp()
    {
       ao.texture(aoTexture);
       ao.size({5, 5});
-      ao.pos({0, 300*distr1(gen), 0});
+      ao.pos({0, 5*distr1(gen), 0});
    }
 }
 
@@ -82,6 +83,8 @@ void CApp::update(float timeDelta)
    mAircraft.update(timeDelta);
    for (auto&& ao : mAnimationObjects)
       ao.update(timeDelta);
+
+   mCamera.lookAt(mAircraft.pos());
 
    static const float angularSpeed = 90;
    float angle = mSphere.roll() + timeDelta*angularSpeed;

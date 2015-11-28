@@ -8,7 +8,7 @@
 
 CSky::CSky()
 {
-   const float size = 2000;
+   const float size = 1e4;
    auto tex = std::make_shared<CTexture>("res/sky.dds");
    std::array<std::shared_ptr<CTexturedRect>, 5> sky;
    for (auto&& x : sky)
@@ -30,5 +30,5 @@ CSky::CSky()
    sky[3]->pos(glm::vec3(size/2, 0, 0));
    sky[4]->pitch(-90);
    sky[4]->pos(glm::vec3(0, -size/2, 0));
-   pos(glm::vec3(0, 0, size/4));
+   pos(glm::vec3(0, 0, size/2));
 }
