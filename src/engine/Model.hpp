@@ -77,9 +77,18 @@ class CModel
 
       /// @brief returns resulting model matrix
       const glm::mat4& model() const;
+
+      /// @brief returns model's forward vector
+      glm::vec3 forward() const;
 };
 
 class IRenderableModel : public IRenderable, public CModel {};
+
+inline glm::vec3 CModel::forward() const
+{
+   auto&& m = model();
+   return glm::vec3(m[1][0], m[1][1], m[1][2]);
+}
 
 inline bool CModel::dirty() const
 {

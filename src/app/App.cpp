@@ -64,6 +64,10 @@ inline void animate(Get get, Set set,
 void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
+   const auto& pos = mAircraft.pos();
+   mSky.pos({pos.x, pos.y, mSky.pos().z});
+   mTerrain.pos({pos.x, pos.y, 0});
+
    for (auto&& ao : mAnimationObjects)
       ao.update(timeDelta);
 

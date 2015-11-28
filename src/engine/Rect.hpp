@@ -37,6 +37,9 @@ class CBillboard : public IRenderable
       /// @brief set position
       void pos(const glm::vec3& pos) { mPos = pos; }
 
+      /// @brief returns position
+      const glm::vec3& pos() const { return mPos; }
+
       /// @brief set size
       void size(const glm::vec2& size) { mSize = size; }
 };

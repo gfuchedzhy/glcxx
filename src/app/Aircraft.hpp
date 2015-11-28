@@ -23,6 +23,8 @@ class CAircraft : public CComplexRenderable
       /// @brief healthbar list
       std::vector<tHealthBar> mHealthBars;
 
+      /// @brief aircrafts speed in m/s
+      float mSpeed = 80;
    public:
       /// @brief constructor
       CAircraft();
