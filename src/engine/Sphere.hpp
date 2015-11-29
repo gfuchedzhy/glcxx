@@ -6,6 +6,7 @@
 #define ENGINE_SPHERE_HPP
 
 #include "Model.hpp"
+#include "Texture.hpp"
 
 /// @brief renderable sphere that has color and model
 class CSphere : public IRenderableModel
@@ -16,6 +17,23 @@ class CSphere : public IRenderableModel
    public:
       /// @brief constructor
       CSphere(const glm::vec3& color);
+
+      /// @brief draw
+      void draw(const SContext& context) const override;
+};
+
+/// @brief renderable sphere that has texture and model
+class CTexturedSphere : public IRenderableModel
+{
+      /// @brief texture
+      std::shared_ptr<CTexture> mTexture;
+
+   public:
+      /// @brief constructor
+      CTexturedSphere();
+
+      /// @brief set texture
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
 
       /// @brief draw
       void draw(const SContext& context) const override;

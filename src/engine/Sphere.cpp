@@ -122,6 +122,11 @@ CSphere::CSphere(const glm::vec3& color)
    initSphere();
 }
 
+CTexturedSphere::CTexturedSphere()
+{
+   initSphere();
+}
+
 void CSphere::draw(const SContext& context) const
 {
    auto p = gRenderer.getAndSelect<cts("coloredIlluminated")>();
@@ -129,6 +134,26 @@ void CSphere::draw(const SContext& context) const
    p->set<cts("aNorm")>(buffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
+   gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+
+   if (context.mDrawNormals)
+   {
+      auto p = gRenderer.getAndSelect<cts("colored")>();
+      p->set<cts("aPos")>(normalsBuffer);
+      p->set<cts("uModel")>(model());
+      p->set<cts("uColor")>({1.f, 1.f, 1.f});
+      gl(glDrawElements, GL_LINE_STRIP, normalIndices.size(), GL_UNSIGNED_SHORT, &normalIndices[0]);
+   }
+}
+
+void CTexturedSphere::draw(const SContext& context) const
+{
+   auto p = gRenderer.getAndSelect<cts("texturedIlluminated")>();
+   p->set<cts("aPos")>(buffer);
+   p->set<cts("aNorm")>(buffer);
+   p->set<cts("aUV")>(texBuffer);
+   p->set<cts("uModel")>(model());
+   p->set<cts("uTexture")>(mTexture);
    gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
    if (context.mDrawNormals)
