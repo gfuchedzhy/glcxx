@@ -71,6 +71,49 @@ void main()
 })");
 }
 
+inline auto make_program(cts("texturedIlluminated"))
+{
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TBufferObjectProgramInput<TAttrib<cts("aNorm"), glm::tvec3, float>>,
+                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
+                                    TUniformProgramInput<tag::fragment, TUniform<cts("uSunDir"), glm::tvec3, float>>,
+                                    TUniformProgramInput<tag::fragment, TUniform<cts("uEye"), glm::tvec3, float>>,
+                                    TTextureProgramInput<cts("uTexture")>>
+                           >(R"(\
+varying vec3 vPos;
+varying vec3 vNorm;
+varying vec2 vUV;
+void main()
+{
+   gl_Position = uViewProj*uModel*aPos;
+   vPos = (uModel*aPos).xyz;
+   vNorm = (uModel*vec4(aNorm, 0.0)).xyz;
+   vUV = aUV;
+})",
+                             R"(\
+const vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
+const float diffuseIntensity = 0.7;
+const float ambientIntensity = 0.5;
+const float specularIntensity = 0.8;
+
+varying vec3 vPos;
+varying vec3 vNorm;
+varying vec2 vUV;
+void main()
+{
+   vec3 norm = normalize(vNorm);
+   vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, uSunDir), 0, 1);
+   vec4 ambient = lightColor*ambientIntensity;
+   vec3 reflected = reflect(-uSunDir, norm);
+   vec3 cameraDir = normalize(uEye - vPos);
+   vec4 specular = lightColor*specularIntensity*pow(clamp(dot(cameraDir, reflected), 0, 1), 20);
+
+   gl_FragColor = texture2D(uTexture, vUV) * (ambient + diffuse) + lightColor*specular;
+})");
+}
+
 inline auto make_program(cts("texturedPolygon"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
@@ -176,6 +219,7 @@ void main()
 #include "Renderer.hpp"
 using tRenderer = TRenderer<cts("colored"),
                             cts("coloredIlluminated"),
+                            cts("texturedIlluminated"),
                             cts("texturedPolygon"),
                             cts("texturedBillboard"),
                             cts("animationObject"),

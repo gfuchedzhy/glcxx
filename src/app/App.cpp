@@ -154,10 +154,13 @@ void CApp::update(float timeDelta)
    p5->set<cts("uViewProj")>(mCamera.viewProj());
    p5->set<cts("uSunDir")>({0, 0, 1});
    p5->set<cts("uEye")>(mCamera.eye());
-
    auto p6 = gRenderer.get<cts("animationObject")>();
    p6->set<cts("uViewProj")>(mCamera.viewProj());
    p6->set<cts("uRightStabilized")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back())));
+   auto p7 = gRenderer.get<cts("texturedIlluminated")>();
+   p7->set<cts("uViewProj")>(mCamera.viewProj());
+   p7->set<cts("uSunDir")>({0, 0, 1});
+   p7->set<cts("uEye")>(mCamera.eye());
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
