@@ -30,7 +30,7 @@ class CApp : public CEngine
       CTerrain mTerrain;
 
       /// @brief sphere
-      CSphere mSphere;
+      CTexturedSphere mSphere;
 
       /// @brief animation objects
       std::array<CAnimationObject, 2> mAnimationObjects;

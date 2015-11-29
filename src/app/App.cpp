@@ -13,13 +13,13 @@ namespace
 
 CApp::CApp()
    : CEngine(800, 600)
-   , mSphere({1, 1, 0})
    , mAnimationObjects({32, 32})
 {
    mAircraft.pos({0, 0, 1.5e3});
 
    mSphere.scale({5, 5, 5});
-   mSphere.pos(mAircraft.pos() + glm::vec3{0, 20, 0});
+   mSphere.pos(mAircraft.pos());
+   mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
 
    mCamera.perspective(35, mAspect, 0.1, 2e4);
    mCamera.eyeDistance(150);
@@ -83,10 +83,10 @@ void CApp::update(float timeDelta)
 
    mCamera.lookAt(mAircraft.pos());
 
-   static const float angularSpeed = 90;
-   float angle = mSphere.roll() + timeDelta*angularSpeed;
+   static const float angularSpeed = 10;
+   float angle = mSphere.yaw() + timeDelta*angularSpeed;
    angle = angle - (int(angle)/360)*360;
-   mSphere.roll(angle);
+   mSphere.yaw(angle);
 
    if(0 != mAircraft.speed())
    {
@@ -111,7 +111,7 @@ void CApp::update(float timeDelta)
               timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
       animate([this]{return mCamera.eyeDistance();},
               [this](float val){mCamera.eyeDistance(val);},
-              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 30.f, 500.f);
+              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
    }
    else
    {
