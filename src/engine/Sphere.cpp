@@ -11,48 +11,58 @@
 namespace
 {
    /// @brief generates indices and vertices for halfsphere
-   void generateHalfSphere(size_t N, std::vector<glm::vec3>& vertices, std::vector<GLushort>& indices)
+   void generateHalfSphere(size_t N,
+                           std::vector<glm::vec3>& vertices,
+                           std::vector<glm::vec2>& texCoords,
+                           std::vector<GLushort>& indices)
    {
       const float deltaTheta = 0.5f*M_PI/N;
 
       // top point
-      vertices.push_back({0, 0, 1});
-      // number of points in previous row
-      size_t prevN = 1;
+      vertices.emplace_back(0, 0, 1);
+      texCoords.emplace_back(0.5, 0);
+      // number of gaps in previous row
+      size_t prevN = 0;
       for (size_t i = 1; i <= N; ++i)
       {
          const float theta = i*deltaTheta;
          const float sinTheta = sin(theta);
          const float cosTheta = cos(theta);
 
-         // number of points in current row
-         const size_t n = sinTheta*(4*N-1) + 1.5;
+         // number of gaps in current row
+         const size_t n = 4*N*sinTheta + 0.5;
          const float deltaPhi = 2*M_PI/n;
          const GLushort stripStart = vertices.size();
 
+         vertices.emplace_back(sinTheta, 0, cosTheta);
+         texCoords.emplace_back(0, theta/M_PI);
+
          // j is index in current row, k is index in previous row
-         for (size_t j = 0, k = 0; j < n; ++j)
+         for (size_t j = 1, k = 1; j <= n; ++j)
          {
             const float phi = j*deltaPhi;
-            vertices.push_back({sinTheta*cos(phi), sinTheta*sin(phi), cosTheta});
+            vertices.emplace_back(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
+            texCoords.emplace_back(phi/(2*M_PI), theta/M_PI);
 
-            if ((1 != i) && ((k+0.5f)*n <= (j+0.5f)*prevN))
-            {
-               indices.push_back(stripStart - prevN + k);
-               indices.push_back(stripStart + j);
-               k = (k+1) % prevN;
-               indices.push_back(stripStart - prevN + k);
-            }
-
+            indices.push_back(stripStart + j - 1);
             indices.push_back(stripStart + j);
-            indices.push_back(stripStart + (j+1) % n);
-            indices.push_back(stripStart - prevN + k);
+            indices.push_back(stripStart - (prevN+1) + k-1);
+
+            // average of k-1 and k angle <= average of j and j+1 angle
+            if ((k-0.5f)*n <= (j+0.5f)*prevN)
+            {
+               indices.push_back(stripStart - (prevN+1) + k-1);
+               indices.push_back(stripStart + j);
+               indices.push_back(stripStart - (prevN+1) + k);
+               k++;
+            }
          }
          prevN = n;
       }
    }
 
    static std::shared_ptr<TBufferObject<glm::vec3>> buffer;
+   static std::shared_ptr<TBufferObject<glm::vec2>> texBuffer;
    static std::shared_ptr<TBufferObject<glm::vec3>> normalsBuffer;
    static std::vector<GLushort> indices;
    static std::vector<GLushort> normalIndices;
@@ -63,7 +73,8 @@ namespace
       {
          const size_t N = 6;
          std::vector<glm::vec3> vertices;
-         generateHalfSphere(N, vertices, indices);
+         std::vector<glm::vec2> texCoords;
+         generateHalfSphere(N, vertices, texCoords, indices);
 
          const size_t vertNum = vertices.size();
          // do not copy equator row as it is shared
@@ -72,6 +83,8 @@ namespace
          {
             const auto& p = vertices[i];
             vertices.emplace_back(p.x, p.y, -p.z);
+            const auto& t = texCoords[i];
+            texCoords.emplace_back(t.x, 1 - t.y);
          }
          const size_t indSize = indices.size();
          for (size_t i = 0; i < indSize; ++i)
@@ -84,6 +97,7 @@ namespace
             indices.push_back(indices[j] + (indices[j] < vertNumWithoutEquator ? vertNum : 0));
          }
          buffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
+         texBuffer = std::make_shared<TBufferObject<glm::vec2>>(&texCoords[0], texCoords.size());
 
          // indices for normals, last vertex would be (0,0,0)
          const size_t lastIndex = vertices.size();
@@ -96,7 +110,7 @@ namespace
          // scale for normals
          for (auto&& v : vertices)
             v *= 1.5f;
-         vertices.push_back({0, 0, 0});
+         vertices.emplace_back(0, 0, 0);
          normalsBuffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
       }
    }
