@@ -13,6 +13,7 @@ namespace
    /// @brief generates indices and vertices for halfsphere
    void generateHalfSphere(size_t N,
                            std::vector<glm::vec3>& vertices,
+                           std::vector<glm::vec3>& tangents,
                            std::vector<glm::vec2>& texCoords,
                            std::vector<GLushort>& indices)
    {
@@ -20,6 +21,7 @@ namespace
 
       // top point
       vertices.emplace_back(0, 0, 1);
+      tangents.emplace_back(1, 0, 0);
       texCoords.emplace_back(0.5, 0);
       // number of gaps in previous row
       size_t prevN = 0;
@@ -35,13 +37,17 @@ namespace
          const GLushort stripStart = vertices.size();
 
          vertices.emplace_back(sinTheta, 0, cosTheta);
+         tangents.emplace_back(0, 1, 0);
          texCoords.emplace_back(0, theta/M_PI);
 
          // j is index in current row, k is index in previous row
          for (size_t j = 1, k = 1; j <= n; ++j)
          {
             const float phi = j*deltaPhi;
-            vertices.emplace_back(sinTheta*cos(phi), sinTheta*sin(phi), cosTheta);
+            const float cosPhi = cos(phi);
+            const float sinPhi = sin(phi);
+            vertices.emplace_back(sinTheta*cosPhi, sinTheta*sinPhi, cosTheta);
+            tangents.emplace_back(-sinPhi, cosPhi, 0);
             texCoords.emplace_back(phi/(2*M_PI), theta/M_PI);
 
             indices.push_back(stripStart + j - 1);
@@ -63,7 +69,8 @@ namespace
 
    static std::shared_ptr<TBufferObject<glm::vec3>> buffer;
    static std::shared_ptr<TBufferObject<glm::vec2>> texBuffer;
-   static std::shared_ptr<TBufferObject<glm::vec3>> normalsBuffer;
+   static std::shared_ptr<TBufferObject<glm::vec3>> tanBuffer;
+   static std::shared_ptr<TBufferObject<glm::vec3>> normalBuffer;
    static std::vector<GLushort> indices;
    static std::vector<GLushort> normalIndices;
 
@@ -73,8 +80,9 @@ namespace
       {
          const size_t N = 6;
          std::vector<glm::vec3> vertices;
+         std::vector<glm::vec3> tangents;
          std::vector<glm::vec2> texCoords;
-         generateHalfSphere(N, vertices, texCoords, indices);
+         generateHalfSphere(N, vertices, tangents, texCoords, indices);
 
          const size_t vertNum = vertices.size();
          // do not copy equator row as it is shared
@@ -83,6 +91,7 @@ namespace
          {
             const auto& p = vertices[i];
             vertices.emplace_back(p.x, p.y, -p.z);
+            tangents.push_back(tangents[i]);
             const auto& t = texCoords[i];
             texCoords.emplace_back(t.x, 1 - t.y);
          }
@@ -98,6 +107,7 @@ namespace
          }
          buffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
          texBuffer = std::make_shared<TBufferObject<glm::vec2>>(&texCoords[0], texCoords.size());
+         tanBuffer = std::make_shared<TBufferObject<glm::vec3>>(&tangents[0], tangents.size());
 
          // indices for normals, last vertex would be (0,0,0)
          const size_t lastIndex = vertices.size();
@@ -111,7 +121,7 @@ namespace
          for (auto&& v : vertices)
             v *= 1.5f;
          vertices.emplace_back(0, 0, 0);
-         normalsBuffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
+         normalBuffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
       }
    }
 }
@@ -139,7 +149,7 @@ void CSphere::draw(const SContext& context) const
    if (context.mDrawNormals)
    {
       auto p = gRenderer.getAndSelect<cts("colored")>();
-      p->set<cts("aPos")>(normalsBuffer);
+      p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
       gl(glDrawElements, GL_LINE_STRIP, normalIndices.size(), GL_UNSIGNED_SHORT, &normalIndices[0]);
@@ -151,6 +161,7 @@ void CTexturedSphere::draw(const SContext& context) const
    auto p = gRenderer.getAndSelect<cts("texturedIlluminated")>();
    p->set<cts("aPos")>(buffer);
    p->set<cts("aNorm")>(buffer);
+   p->set<cts("aTan")>(tanBuffer);
    p->set<cts("aUV")>(texBuffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
@@ -159,7 +170,7 @@ void CTexturedSphere::draw(const SContext& context) const
    if (context.mDrawNormals)
    {
       auto p = gRenderer.getAndSelect<cts("colored")>();
-      p->set<cts("aPos")>(normalsBuffer);
+      p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
       gl(glDrawElements, GL_LINE_STRIP, normalIndices.size(), GL_UNSIGNED_SHORT, &normalIndices[0]);
