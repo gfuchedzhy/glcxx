@@ -119,7 +119,7 @@ void CApp::update(float timeDelta)
       aircraftPitchChanged = animate([this]{return mAircraft.pitch();},
                                      [&pitch](float val){ pitch = val;},
                                      timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f);
-      if (aircraftPitchChanged && (pitch <= mAircraft.pitch() || mAircraft.speed() > 130.f))
+      if (aircraftPitchChanged && (pitch <= 0 || mAircraft.speed() > 130.f))
          mAircraft.pitch(pitch);
       else
          aircraftPitchChanged = false;
