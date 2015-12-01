@@ -9,11 +9,11 @@
 namespace
 {
    std::uniform_real_distribution<> distr(0.8f, 1.05f);
+   std::uniform_real_distribution<> distr2(-1, 1);
 }
 
 CApp::CApp()
    : CEngine(800, 600)
-   , mAnimationObjects({32, 32})
 {
    mAircraft.pos({0, 0, 1.5e3});
 
@@ -27,11 +27,12 @@ CApp::CApp()
    mCamera.pitch(20);
 
    auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
-   for (size_t i = 0; i < mAnimationObjects.size(); ++i)
+   for (auto&& ao: mAnimationObjects)
    {
-      mAnimationObjects[i].texture(aoTexture);
-      mAnimationObjects[i].size({10, 10});
-      mAnimationObjects[i].pos({0, 500*(i+1), 1.5e3 * distr(random_gen)});
+      ao = std::make_unique<CAnimationObject>(32);
+      ao->texture(aoTexture);
+      ao->size({10, 10});
+      ao->pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
    }
 }
 
@@ -74,14 +75,12 @@ void CApp::update(float timeDelta)
    for (auto&& ao : mAnimationObjects)
    {
       // @todo redo this with bounding boxes
-      if (glm::distance(ao.pos(), mAircraft.pos()) < 10)
+      if (glm::distance(ao->pos(), mAircraft.pos()) < 10)
       {
          mAircraft.repair();
-         ao.pos({0, mAircraft.pos().y + 1e3, 1.5e3 * distr(random_gen)});
+         ao->pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
       }
-      else if(ao.pos().y + 500 < mAircraft.pos().y)
-         ao.pos({0, mAircraft.pos().y + 1.5e3, 1.5e3 * distr(random_gen)});
-      ao.update(timeDelta);
+      ao->update(timeDelta);
    }
 
    static const float angularSpeed = 10;
@@ -214,7 +213,7 @@ void CApp::draw() const
 
    gl(glEnable, GL_BLEND);
    for (auto&& ao : mAnimationObjects)
-      ao.draw(mContext);
+      ao->draw(mContext);
    gl(glDisable, GL_BLEND);
 
    mAircraft.draw(mContext);
