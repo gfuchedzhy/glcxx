@@ -30,6 +30,12 @@ CTexture::CTexture(const std::string& filename)
    gl(glTexParameteri, mTarget, GL_TEXTURE_MAX_LEVEL, levels);
    gl(glTexParameteri, mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    gl(glTexParameteri, mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+   gl(glTexParameteri, mTarget, GL_TEXTURE_SWIZZLE_R, format.Swizzle[0]);
+   gl(glTexParameteri, mTarget, GL_TEXTURE_SWIZZLE_G, format.Swizzle[1]);
+   gl(glTexParameteri, mTarget, GL_TEXTURE_SWIZZLE_B, format.Swizzle[2]);
+   gl(glTexParameteri, mTarget, GL_TEXTURE_SWIZZLE_A, format.Swizzle[3]);
+
    gl(glTexStorage2D, mTarget, levels, format.Internal, dimensions.x, dimensions.y);
    for(int l = 0; l < levels; ++l)
    {
