@@ -21,7 +21,7 @@ CApp::CApp()
    mSphere.pos(mAircraft.pos());
    mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
 
-   mCamera.perspective(35, mAspect, 0.1, 2e4);
+   mCamera.perspective(35, mAspect, 10, 2e4);
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
@@ -111,7 +111,7 @@ void CApp::update(float timeDelta)
               timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
       animate([this]{return mCamera.eyeDistance();},
               [this](float val){mCamera.eyeDistance(val);},
-              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
+              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 20.f, 500.f);
    }
    else
    {
