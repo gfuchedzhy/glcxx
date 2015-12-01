@@ -36,15 +36,10 @@ CApp::CApp()
    }
 }
 
-/// @brief performs dump animation of value returned by get to given targetValue
-template<typename Get, typename Set>
-inline void dumpAnimation(Get get, Set set,
-                          float timeDelta, float targetValue)
+/// @brief return damped value
+inline float damp(float value, float timeDelta, float targetValue, float dampCoef = 0.8f)
 {
-   if (abs(get() - targetValue) > 0.001f) /// @todo there should be a better way
-      set(targetValue + (get() - targetValue) * std::max(0.f, 1.f - timeDelta/0.2f));
-   else
-      set(targetValue);
+   return targetValue + (value - targetValue) * std::max(0.f, 1.f - timeDelta/dampCoef);
 }
 
 /// @brief animates value returned by get in given range on given keypresses
@@ -93,9 +88,7 @@ void CApp::update(float timeDelta)
       if (!animate([this]{return mAircraft.speed();},
                    [this](float val){mAircraft.speed(val);},
                    timeDelta, 100.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
-         dumpAnimation([this]{return mAircraft.speed();},
-                       [this](float val){mAircraft.speed(val);},
-                       timeDelta, 80.f);
+         mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
    }
 
    constexpr auto inf = std::numeric_limits<float>::infinity();
@@ -117,18 +110,14 @@ void CApp::update(float timeDelta)
    }
    else
    {
-      dumpAnimation([this]{return mCamera.orientation();},
-                    [this](float val){mCamera.orientation(val);},
-                    timeDelta, mRelativeCameraOrientation + mAircraft.yaw(), 1.f);
+      mCamera.orientation(damp(mCamera.orientation(), timeDelta, mRelativeCameraOrientation + mAircraft.yaw(), 1.f));
    }
 
    if (mIsCameraControl || !animate([this]{return mAircraft.roll();},
                                     [this](float val){mAircraft.roll(val);},
                                     timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f))
    {
-      dumpAnimation([this]{return mAircraft.roll();},
-                    [this](float val){mAircraft.roll(val);},
-                    timeDelta, 0);
+      mAircraft.roll(damp(mAircraft.roll(), timeDelta, 0));
    }
    const float yawSpeed = 0.5f * mAircraft.roll();
    mAircraft.yaw(mAircraft.yaw() - yawSpeed*timeDelta);
@@ -144,9 +133,7 @@ void CApp::update(float timeDelta)
    }
    else
    {
-      dumpAnimation([this]{return mAircraft.pitch();},
-                    [this](float val){mAircraft.pitch(val);},
-                    timeDelta, 0);
+      mAircraft.pitch(damp(mAircraft.pitch(), timeDelta, 0));
    }
 
    /// @todo make automatic uniforms in renderer to remove this code
