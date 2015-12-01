@@ -23,12 +23,13 @@ CSky::CSky()
    sky[1]->pitch(180);
    sky[1]->pos(glm::vec3(0, 0, size/2));
    sky[2]->pitch(90);
-   sky[2]->roll(90);
+   sky[2]->yaw(90);
    sky[2]->pos(glm::vec3(-size/2, 0, 0));
    sky[3]->pitch(90);
-   sky[3]->roll(-90);
+   sky[3]->yaw(-90);
    sky[3]->pos(glm::vec3(size/2, 0, 0));
-   sky[4]->pitch(-90);
+   sky[4]->pitch(90);
+   sky[4]->yaw(180);
    sky[4]->pos(glm::vec3(0, -size/2, 0));
 
    std::uniform_real_distribution<> distr1(0.8f, 1.5f);
