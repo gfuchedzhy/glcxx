@@ -81,7 +81,8 @@ inline auto make_program(cts("texturedIlluminated"))
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uSunDir"), glm::tvec3, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uEye"), glm::tvec3, float>>,
-                                    TTextureProgramInput<cts("uTexture")>>
+                                    TTextureProgramInput<cts("uTexture")>,
+                                    TTextureProgramInput<cts("uNormalMap"), 1>>
                            >(R"(\
 varying vec3 vEyeDir;
 varying vec3 vSunDir;
@@ -109,7 +110,8 @@ varying vec3 vSunDir;
 varying vec2 vUV;
 void main()
 {
-   vec3 norm = vec3(0, 0, 1); // we are in tbn space
+   vec2 normXY = 2*texture2D(uNormalMap, vUV).xy - 1;
+   vec3 norm = vec3(normXY.x, -normXY.y, sqrt(1-length(normXY)));
    vec3 sunDirNorm = normalize(vSunDir);
    vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, sunDirNorm), 0, 1);
    vec4 ambient = lightColor*ambientIntensity;

@@ -165,6 +165,7 @@ void CTexturedSphere::draw(const SContext& context) const
    p->set<cts("aUV")>(texBuffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
+   p->set<cts("uNormalMap")>(mNormalMap);
    gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
    if (context.mDrawNormals)

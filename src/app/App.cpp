@@ -20,6 +20,7 @@ CApp::CApp()
    mSphere.scale({5, 5, 5});
    mSphere.pos(mAircraft.pos());
    mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
+   mSphere.normalMap(std::make_shared<CTexture>("res/earth-normalmap.dds"));
 
    mCamera.perspective(35, mAspect, 10, 2e4);
    mCamera.eyeDistance(150);

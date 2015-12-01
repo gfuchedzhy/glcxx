@@ -28,12 +28,18 @@ class CTexturedSphere : public IRenderableModel
       /// @brief texture
       std::shared_ptr<CTexture> mTexture;
 
+      /// @brief normal map
+      std::shared_ptr<CTexture> mNormalMap;
+
    public:
       /// @brief constructor
       CTexturedSphere();
 
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+
+      /// @brief set normal map
+      void normalMap(std::shared_ptr<CTexture> normalMap) { mNormalMap = normalMap; }
 
       /// @brief draw
       void draw(const SContext& context) const override;
