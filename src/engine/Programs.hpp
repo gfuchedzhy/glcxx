@@ -67,7 +67,7 @@ void main()
    vec3 cameraDir = normalize(uEye - vPos);
    vec4 specular = lightColor*specularIntensity*pow(clamp(dot(cameraDir, reflected), 0, 1), 20);
 
-   gl_FragColor = vec4(uColor, 1.0) * (ambient + diffuse) + lightColor*specular;
+   gl_FragColor = vec4(uColor, 1.0) * (ambient + diffuse) + specular;
 })");
 }
 
@@ -116,7 +116,7 @@ void main()
    vec3 reflected = reflect(-sunDirNorm, norm);
    vec4 specular = lightColor*specularIntensity*pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), 20);
 
-   gl_FragColor = texture2D(uTexture, vUV) * (ambient + diffuse) + lightColor*specular;
+   gl_FragColor = texture2D(uTexture, vUV) * (ambient + diffuse) + specular;
 })");
 
 }
