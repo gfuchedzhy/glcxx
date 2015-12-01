@@ -65,6 +65,8 @@ inline bool animate(Get get, Set set,
 void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
+   mCamera.lookAt(mAircraft.pos());
+
    const auto& pos = mAircraft.pos();
    mSky.pos({pos.x, pos.y, mSky.pos().z});
    mTerrain.pos({pos.x, pos.y, 0});
@@ -82,8 +84,6 @@ void CApp::update(float timeDelta)
       ao.update(timeDelta);
    }
 
-   mCamera.lookAt(mAircraft.pos());
-
    static const float angularSpeed = 10;
    float angle = mSphere.yaw() + timeDelta*angularSpeed;
    angle = angle - (int(angle)/360)*360;
@@ -99,14 +99,9 @@ void CApp::update(float timeDelta)
                        timeDelta, 80.f);
    }
 
-   bool aircraftPitchChanged = false;
-   bool aircraftRollChanged = false;
    constexpr auto inf = std::numeric_limits<float>::infinity();
    if (mIsCameraControl)
    {
-      animate([this]{return mCamera.orientation();},
-              [this](float val){mCamera.orientation(val);},
-              timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
       animate([this]{return mCamera.pitch();},
               [this](float val){mCamera.pitch(val);},
               timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
@@ -114,29 +109,46 @@ void CApp::update(float timeDelta)
               [this](float val){mCamera.eyeDistance(val);},
               timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 20.f, 500.f);
    }
+
+   if (mIsCameraControl && animate([this]{return mRelativeCameraOrientation;},
+                                   [this](float val){mRelativeCameraOrientation = val;},
+                                   timeDelta, 90.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf))
+   {
+      mCamera.orientation(mRelativeCameraOrientation + mAircraft.yaw());
+   }
    else
    {
-      float pitch;
-      aircraftPitchChanged = animate([this]{return mAircraft.pitch();},
-                                     [&pitch](float val){ pitch = val;},
-                                     timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f);
-      if (aircraftPitchChanged && (pitch <= 0 || mAircraft.speed() > 130.f))
-         mAircraft.pitch(pitch);
-      else
-         aircraftPitchChanged = false;
-      aircraftRollChanged = animate([this]{return mAircraft.roll();},
-                                    [this](float val){mAircraft.roll(val);},
-                                    timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f);
+      dumpAnimation([this]{return mCamera.orientation();},
+                    [this](float val){mCamera.orientation(val);},
+                    timeDelta, mRelativeCameraOrientation + mAircraft.yaw(), 1.f);
    }
 
-   if (!aircraftPitchChanged)
-      dumpAnimation([this]{return mAircraft.pitch();},
-                    [this](float val){mAircraft.pitch(val);},
-                    timeDelta, 0);
-   if (!aircraftRollChanged)
+   if (mIsCameraControl || !animate([this]{return mAircraft.roll();},
+                                    [this](float val){mAircraft.roll(val);},
+                                    timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f))
+   {
       dumpAnimation([this]{return mAircraft.roll();},
                     [this](float val){mAircraft.roll(val);},
                     timeDelta, 0);
+   }
+   const float yawSpeed = 0.5f * mAircraft.roll();
+   mAircraft.yaw(mAircraft.yaw() - yawSpeed*timeDelta);
+
+   float pitch;
+   if (!mIsCameraControl
+       && animate([this]{return mAircraft.pitch();},
+                  [&pitch](float val){ pitch = val;},
+                  timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f)
+       && (pitch <= mAircraft.pitch() || mAircraft.speed() > 130.f))
+   {
+      mAircraft.pitch(pitch);
+   }
+   else
+   {
+      dumpAnimation([this]{return mAircraft.pitch();},
+                    [this](float val){mAircraft.pitch(val);},
+                    timeDelta, 0);
+   }
 
    /// @todo make automatic uniforms in renderer to remove this code
    auto p = gRenderer.get<cts("colored")>();
