@@ -121,6 +121,7 @@ void CApp::update(float timeDelta)
                    [this](float val){mAircraft.speed(val);},
                    timeDelta, 40.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
          mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
+      mCamera.dollyZoom(1 - 0.75f*log(mAircraft.speed()/80));
    }
 
    if (mIsCameraControl || !animate([this]{return mAircraft.pitch();},

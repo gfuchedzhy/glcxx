@@ -17,6 +17,11 @@ class CCamera
       /// @brief vertical field of view in degrees
       float mFovY = 35.f;
 
+      /// @brief eye distance gets multiplied by this coefficient,
+      /// simultaneously fovY changed to compensate scale to achieve dolly zoom
+      /// effect
+      float mDollyZoom = 1.f;
+
       /// @brief aspect ratio (w/h)
       float mAspect = 1.f;
 
@@ -52,6 +57,12 @@ class CCamera
    public:
       /// @brief sets perspective
       void perspective(float fovY, float aspect, float near, float far);
+
+      /// @brief sets dollyZoom multiplier
+      void dollyZoom(float fovY);
+
+      /// @brief returns dollyZoom multiplier
+      float dollyZoom() const;
 
       /// @brief sets lookAt
       void lookAt(const glm::vec3& lookAt);
@@ -120,6 +131,11 @@ inline glm::vec3 CCamera::back() const
 inline glm::vec3 CCamera::eye() const
 {
    return lookAt() + eyeDistance()*back();
+}
+
+inline float CCamera::dollyZoom() const
+{
+   return mDollyZoom;
 }
 
 inline const glm::vec3& CCamera::lookAt() const
