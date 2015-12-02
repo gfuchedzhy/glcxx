@@ -116,7 +116,9 @@ void main()
    vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, sunDirNorm), 0, 1);
    vec4 ambient = lightColor*ambientIntensity;
    vec3 reflected = reflect(-sunDirNorm, norm);
-   vec4 specular = lightColor*specularIntensity*pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), 20);
+   // sunDirNorm.z is essentially dot(triangle_normal, sunDirNorm), but as we
+   // are in tbn space triangle_normal=vec3(0, 0, 1)
+   vec4 specular = step(0.0, sunDirNorm.z) * lightColor*specularIntensity*pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), 20);
 
    gl_FragColor = texture2D(uTexture, vUV) * (ambient + diffuse) + specular;
 })");
