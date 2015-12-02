@@ -72,6 +72,7 @@ void CApp::update(float timeDelta)
       // @todo redo this with bounding boxes
       if (glm::distance(ao->pos(), mAircraft.pos()) < 20)
       {
+         Log::msg("bonus collected");
          mAircraft.repair();
          ao->pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
       }
