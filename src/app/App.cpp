@@ -83,14 +83,6 @@ void CApp::update(float timeDelta)
    angle = angle - (int(angle)/360)*360;
    mSphere.yaw(angle);
 
-   if(0 != mAircraft.speed())
-   {
-      if (!animate([this]{return mAircraft.speed();},
-                   [this](float val){mAircraft.speed(val);},
-                   timeDelta, 100.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
-         mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
-   }
-
    constexpr auto inf = std::numeric_limits<float>::infinity();
    if (mIsCameraControl)
    {
@@ -122,16 +114,17 @@ void CApp::update(float timeDelta)
    const float yawSpeed = 0.5f * mAircraft.roll();
    mAircraft.yaw(mAircraft.yaw() - yawSpeed*timeDelta);
 
-   float pitch;
-   if (!mIsCameraControl
-       && animate([this]{return mAircraft.pitch();},
-                  [&pitch](float val){ pitch = val;},
-                  timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, 60.f)
-       && (pitch <= mAircraft.pitch() || mAircraft.speed() > 130.f))
+   if(0 != mAircraft.speed())
    {
-      mAircraft.pitch(pitch);
+      if (!animate([this]{return mAircraft.speed();},
+                   [this](float val){mAircraft.speed(val);},
+                   timeDelta, 40.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
+         mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
    }
-   else
+
+   if (mIsCameraControl || !animate([this]{return mAircraft.pitch();},
+                                    [this](float val){ mAircraft.pitch(val);},
+                                    timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, (mAircraft.speed() - 80.f)*60.f/100.f))
    {
       mAircraft.pitch(damp(mAircraft.pitch(), timeDelta, 0));
    }
