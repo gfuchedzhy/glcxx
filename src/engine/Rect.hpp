@@ -7,6 +7,7 @@
 
 #include "Model.hpp"
 #include "Texture.hpp"
+#include "AnimationObject.hpp"
 
 /// @brief renderable rectangle that has texture and model
 class CTexturedRect : public IRenderableModel
@@ -37,7 +38,7 @@ class CBillboard : public IRenderable
       /// @brief set position
       void pos(const glm::vec3& pos) { mPos = pos; }
 
-      /// @brief returns position
+      /// @brief return position
       const glm::vec3& pos() const { return mPos; }
 
       /// @brief set size
@@ -60,23 +61,9 @@ class CTexturedBillboard : public CBillboard
 };
 
 /// @brief textured billboard with animation
-class CAnimationObject : public CTexturedBillboard
+class CAnimatedBillboard : public CTexturedBillboard, public CAnimationObject
 {
-      /// @brief number of frames in current object
-      unsigned int mFrameNumber;
-
-      /// @brief local time measured in frames
-      float mCurrentFrame = 0.f;
-
    public:
-      /// @brief constructor
-      CAnimationObject(unsigned int frameNumber)
-         : mFrameNumber(frameNumber)
-      {}
-
-      /// @brief updates current frame
-      void update(float timeDelta);
-
       /// @brief draw
       void draw(const SContext& context) const override;
 };

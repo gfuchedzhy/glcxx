@@ -32,8 +32,8 @@ class CApp : public CEngine
       /// @brief sphere
       CTexturedSphere mSphere;
 
-      /// @brief animation objects
-      std::array<std::unique_ptr<CAnimationObject>, 50> mAnimationObjects;
+      /// @brief bonus stars
+      std::array<CAnimatedBillboard, 50> mStars;
 
       /// @brief if true arrows control camera, otherwise aircraft
       bool mIsCameraControl = false;

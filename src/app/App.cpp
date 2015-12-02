@@ -26,13 +26,13 @@ CApp::CApp()
    mCamera.eyeDistance(150);
    mCamera.pitch(20);
 
-   auto aoTexture = std::make_shared<CTexture>("res/star-sprite.dds");
-   for (auto&& ao: mAnimationObjects)
+   auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
+   for (auto&& s: mStars)
    {
-      ao = std::make_unique<CAnimationObject>(32);
-      ao->texture(aoTexture);
-      ao->size({15, 15});
-      ao->pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
+      s.frameNumber(32);
+      s.texture(starTexture);
+      s.size({15, 15});
+      s.pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
    }
 }
 
@@ -67,16 +67,16 @@ void CApp::update(float timeDelta)
    mSky.pos({pos.x, pos.y, mSky.pos().z});
    mTerrain.pos({pos.x, pos.y, 0});
 
-   for (auto&& ao : mAnimationObjects)
+   for (auto&& s : mStars)
    {
       // @todo redo this with bounding boxes
-      if (glm::distance(ao->pos(), mAircraft.pos()) < 20)
+      if (glm::distance(s.pos(), mAircraft.pos()) < 20)
       {
          Log::msg("bonus collected");
          mAircraft.repair();
-         ao->pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
+         s.pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
       }
-      ao->update(timeDelta);
+      s.update(timeDelta);
    }
 
    static const float angularSpeed = 10;
@@ -193,8 +193,8 @@ void CApp::draw() const
    mSky.draw(mContext);
 
    gl(glEnable, GL_BLEND);
-   for (auto&& ao : mAnimationObjects)
-      ao->draw(mContext);
+   for (auto&& s : mStars)
+      s.draw(mContext);
    gl(glDisable, GL_BLEND);
 
    mAircraft.draw(mContext);

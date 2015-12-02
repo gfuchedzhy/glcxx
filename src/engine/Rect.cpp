@@ -58,14 +58,7 @@ void CTexturedBillboard::draw(const SContext&) const
    gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
 }
 
-void CAnimationObject::update(const float timeDelta)
-{
-   static int fps = 60;
-   mCurrentFrame += fps*timeDelta;
-   mCurrentFrame -= mFrameNumber*int(mCurrentFrame/mFrameNumber);
-}
-
-void CAnimationObject::draw(const SContext& context) const
+void CAnimatedBillboard::draw(const SContext& context) const
 {
    auto p = gRenderer.getAndSelect<cts("animationObject")>();
    p->set<cts("aPos,aUV")>(posUVBuffer());
