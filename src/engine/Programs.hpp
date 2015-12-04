@@ -92,8 +92,8 @@ void main()
    vec4 pos = uModel*aPos;
    gl_Position = uViewProj*pos;
 
-   mat3 tbn = transpose(mat3(aTan, cross(aNorm, aTan), aNorm))
-            * transpose(mat3(uModel));
+   mat3 tbn = transpose(mat3(uModel)
+                      * mat3(aTan, cross(aNorm, aTan), aNorm));
 
    vSunDir = tbn*uSunDir;
    vEyeDir = normalize(tbn*(uEye - pos.xyz));
