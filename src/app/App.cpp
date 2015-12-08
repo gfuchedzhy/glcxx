@@ -22,8 +22,8 @@ CApp::CApp()
    mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
    mSphere.normalMap(std::make_shared<CTexture>("res/earth-normalmap.dds"));
 
-   mCamera.perspective(35, mAspect, 10, 2e4);
-   mCamera.eyeDistance(150);
+   mCamera.perspective(75, mAspect, 10, 2e4);
+   mCamera.eyeDistance(75);
    mCamera.pitch(20);
 
    auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
@@ -121,7 +121,13 @@ void CApp::update(float timeDelta)
                    [this](float val){mAircraft.speed(val);},
                    timeDelta, 40.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
          mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
-      mCamera.dollyZoom(1 - 0.75f*log(mAircraft.speed()/80));
+   }
+
+   if (mIsCameraControl || !animate([this]{return mCamera.dollyZoom();},
+                                    [this](float val){ mCamera.dollyZoom(val);},
+                                    timeDelta, 0.6f, sf::Keyboard::Space, sf::Keyboard::Unknown, 0.65, 1.f))
+   {
+      mCamera.dollyZoom(damp(mCamera.dollyZoom(), timeDelta, 1, 0.4f));
    }
 
    if (mIsCameraControl || !animate([this]{return mAircraft.pitch();},
