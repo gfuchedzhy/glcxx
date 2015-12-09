@@ -15,9 +15,11 @@ def add_strip_task(self):
 	self.create_task('strip', self.link_task.outputs[0], self.link_task.outputs[0].change_ext(''))
 
 def options(opt):
+    opt.recurse('res')
     opt.load('compiler_cxx')
 
 def configure(cnf):
+    cnf.recurse('res')
     cnf.load('compiler_cxx')
     cnf.find_program('strip')
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
@@ -27,6 +29,8 @@ def configure(cnf):
     cnf.check_cxx(cxxflags='-std=c++11', header_name='gli/load.hpp')
 
 def build(bld):
+    bld.recurse('res')
+
     appname = 'avia'
     defines = ['APPNAME="' + appname + '"']
     bld(features = 'cxx cxxstlib',
