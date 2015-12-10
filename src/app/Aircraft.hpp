@@ -7,10 +7,14 @@
 
 #include "ComplexRenderable.hpp"
 #include "Rect.hpp"
+#include "Mesh.hpp"
 
 /// @brief simple model of aircraft made out of boxes
 class CAircraft : public CComplexRenderable
 {
+      /// @brief meshes
+      std::vector<std::unique_ptr<CMesh>> mMeshes;
+
       /// @brief propeller, we need this field separately to apply animation to
       /// it, raw pointer because ownership of objects is private and managed by
       /// CComplexRenderable

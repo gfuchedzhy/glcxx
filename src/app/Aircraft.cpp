@@ -10,8 +10,35 @@
 #include <algorithm>
 #include <glm/gtx/transform.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 CAircraft::CAircraft()
 {
+   Assimp::Importer importer;
+   const aiScene* scene = importer.ReadFile("res/Su-35_SuperFlanker/Su-35_SuperFlanker.obj",
+                                            aiProcess_CalcTangentSpace       |
+                                            aiProcess_JoinIdenticalVertices  |
+                                            aiProcess_SortByPType);
+   if (!scene)
+      throw std::runtime_error{"couldn't load aircraft model"};
+
+   std::vector<std::shared_ptr<SMaterial>> materials;
+   for (size_t m = 0; m < scene->mNumMaterials; ++m)
+   {
+      const aiMaterial* material = scene->mMaterials[m];
+      assert(material);
+      materials.push_back(std::make_shared<SMaterial>(*material, "res/Su-35_SuperFlanker/"));
+   }
+
+   for (size_t m = 0; m < scene->mNumMeshes; ++m)
+   {
+      const aiMesh* const mesh = scene->mMeshes[m];
+      assert(mesh);
+      mMeshes.emplace_back(std::make_unique<CMesh>(*mesh, materials[mesh->mMaterialIndex]));
+   }
+
    using namespace std;
    using namespace glm;
 
@@ -104,6 +131,14 @@ void CAircraft::update(float timeDelta)
 void CAircraft::draw(const SContext& context) const
 {
    CComplexRenderable::draw(context);
+   auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
+   p->set<cts("uModel")>(model());
+
+   for (const auto& m: mMeshes)
+   {
+      m->draw(context);
+   }
+
    if (context.mDrawHealthBars)
    {
       auto p = gRenderer.getAndSelect<cts("healthbar")>();

@@ -23,6 +23,7 @@ def configure(cnf):
     cnf.load('compiler_cxx')
     cnf.find_program('strip')
     cnf.check(features='cxx cxxprogram', lib=['sfml-window', 'sfml-system'], uselib_store='sfml')
+    cnf.check(features='cxx cxxprogram', lib='assimp', uselib_store='assimp')
     cnf.check(features='cxx cxxprogram', defines='GL_GLEXT_PROTOTYPES', lib='GL', uselib_store='opengl')
     cnf.check_cxx(cxxflags='-std=c++14', uselib_store='cxxflags')
     cnf.check_cxx(header_name='glm/glm.hpp')
@@ -44,4 +45,4 @@ def build(bld):
         target   = appname + '.out',
         includes = ['src/engine'],
         defines  = defines,
-        use      = ['engine', 'cxxflags', 'sfml'])
+        use      = ['engine', 'cxxflags', 'sfml', 'assimp'])
