@@ -127,7 +127,8 @@ void main()
 
 inline auto make_program(cts("texturedPolygon"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TTextureProgramInput<cts("uTexture")>>

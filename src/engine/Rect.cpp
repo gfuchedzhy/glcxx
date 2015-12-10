@@ -16,6 +16,15 @@ namespace
       { {-0.5f, 0.5f, 0.f}, {0.f, 0.f} }
    };
 
+   /// @note flip of Y coordinates, because loaded data are top-row-first, but
+   /// opengl expects bottom-row-first
+   const typename glm::vec2 uvData[] = {
+      {0.f, 1.f},
+      {1.f, 1.f},
+      {1.f, 0.f},
+      {0.f, 0.f}
+   };
+
    const glm::vec3 posVertexData[] = {
       {-0.5f,-0.5f, 0.f},
       { 0.5f,-0.5f, 0.f},
@@ -24,6 +33,12 @@ namespace
    };
 
    const GLubyte indices[] = {0, 1, 3, 2};
+
+   auto uvBuffer()
+   {
+      static auto buffer = std::make_shared<TBufferObject<glm::vec2>>(uvData, sizeof(uvData)/sizeof(uvData[0]));
+      return buffer;
+   }
 
    auto posUVBuffer()
    {
@@ -40,7 +55,8 @@ namespace
 void CTexturedRect::draw(const SContext&) const
 {
    auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
-   p->set<cts("aPos,aUV")>(posUVBuffer());
+   p->set<cts("aPos")>(posBuffer());
+   p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
 
