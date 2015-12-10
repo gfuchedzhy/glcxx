@@ -9,7 +9,7 @@
 #include <tuple>
 
 template<typename... TProgramInput>
-class TProgram : public CProgramObject
+class TProgram : public CProgramObject, public TProgramInput...
 {
    public:
       /// @brief ctstring containing glsl declarations of all program input
@@ -25,7 +25,7 @@ class TProgram : public CProgramObject
       /// @brief constructor
       TProgram(const std::string& vertexSrc, const std::string& fragmentSrc)
          : CProgramObject(tVertexShaderDeclaration::chars + vertexSrc, tFragmentShaderDeclaration::chars + fragmentSrc)
-         , mProgramInput(TProgramInput(mObject)...)
+         , TProgramInput(mObject)...
       {
       }
 
@@ -33,26 +33,14 @@ class TProgram : public CProgramObject
       template<typename TName, int I = ct::TTupleTraits<tProgramInputTuple>::indexByName(TName{})>
       void set(typename std::tuple_element<I, tProgramInputTuple>::type::tValueType input)
       {
-         std::get<I>(mProgramInput).set(input, mIsSelected);
+         std::tuple_element<I, tProgramInputTuple>::type::set(input, mIsSelected);
       }
 
       /// @brief @see CProgramObject::select
       void select() override
       {
          CProgramObject::select();
-         doSelect(std::make_index_sequence<inputNum>{});
-      }
-
-   private:
-      /// @brief program input associated with program
-      tProgramInputTuple mProgramInput;
-
-   private: // impl
-      /// @brief select impl
-      template<size_t... I>
-      void doSelect(std::index_sequence<I...>)
-      {
-         swallow(std::get<I>(mProgramInput).select());
+         swallow(TProgramInput::select());
       }
 };
 
