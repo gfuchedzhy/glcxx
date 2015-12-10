@@ -24,13 +24,7 @@ class CProgramObject
       /// @brief selects program
       virtual void select();
 
-      /// @brief deselects program
-      virtual void deselect();
-
    protected:
-      /// @brief returns true if current program selected
-      bool mIsSelected = false;
-
       /// @brief program object id
       GLuint mObject = 0;
 
@@ -43,13 +37,6 @@ class CProgramObject
 inline void CProgramObject::select()
 {
    gl(glUseProgram, mObject);
-   mIsSelected = true;
-}
-
-inline void CProgramObject::deselect()
-{
-   gl(glUseProgram, 0);
-   mIsSelected = false;
 }
 
 #endif // ENGINE_PROGRAMOBJECT_HPP
