@@ -55,15 +55,8 @@ class CTextureProgramInputImpl
       /// @brief location of program input inside program
       GLint mLocation;
 
-      /// @brief true if this program input is currently attached to a program
-      bool mIsAttached = false;
-
       /// @brief holds actual texture
       tTexturePtr mTexture;
-
-      /// @brief if not nullptr holds outdated texture, that should be detached
-      /// when current program will be selected
-      tTexturePtr mTextureForDelayedDetach;
 
       /// @brief sampler id
       GLint mSamplerID;
@@ -75,20 +68,18 @@ class CTextureProgramInputImpl
          , mSamplerID(samplerID)
       {}
 
-      /// @brief set new texture object as program input, isSelected should be
-      /// true if program this program input belongs to is currently selected
-      void set(tTexturePtr value, bool isSelected);
+      /// @brief set new texture object as program input
+      void set(tTexturePtr value);
 
-      /// @brief called after program was selected, perform delayed detach,
-      /// attach texture
-      void select();
+      /// @brief called after program was selected
+      void select()
+      {
+         attach();
+      }
 
    private: // impl
       /// @brief attach texture
       void attach();
-
-      /// @brief detach texture
-      void detach();
 };
 
 /// @brief holds state of program's texture object, use it as TProgram template

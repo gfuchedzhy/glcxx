@@ -33,7 +33,7 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
 
 void CMesh::draw(const SContext& context) const
 {
-   auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
+   auto p = gRenderer.get<cts("texturedPolygon")>();
    p->set<cts("aPos")>(mPos);
    p->set<cts("aUV")>(mUV);
 

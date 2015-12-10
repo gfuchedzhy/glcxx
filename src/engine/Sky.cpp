@@ -58,7 +58,7 @@ void CSky::draw(const SContext& context) const
 
    gl(glEnable, GL_BLEND);
    // @todo this is a hack, should rethink model of complex objects
-   auto p = gRenderer.getAndSelect<cts("texturedBillboard")>();
+   auto p = gRenderer.get<cts("texturedBillboard")>();
    p->set<cts("uExternalPos")>({pos().x, pos().y, 0});
    for (auto&& c : mClouds)
    {

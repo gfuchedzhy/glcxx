@@ -139,7 +139,7 @@ CTexturedSphere::CTexturedSphere()
 
 void CSphere::draw(const SContext& context) const
 {
-   auto p = gRenderer.getAndSelect<cts("coloredIlluminated")>();
+   auto p = gRenderer.get<cts("coloredIlluminated")>();
    p->set<cts("aPos")>(buffer);
    p->set<cts("aNorm")>(buffer);
    p->set<cts("uModel")>(model());
@@ -148,7 +148,7 @@ void CSphere::draw(const SContext& context) const
 
    if (context.mDrawNormals)
    {
-      auto p = gRenderer.getAndSelect<cts("colored")>();
+      auto p = gRenderer.get<cts("colored")>();
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
@@ -158,7 +158,7 @@ void CSphere::draw(const SContext& context) const
 
 void CTexturedSphere::draw(const SContext& context) const
 {
-   auto p = gRenderer.getAndSelect<cts("texturedIlluminated")>();
+   auto p = gRenderer.get<cts("texturedIlluminated")>();
    p->set<cts("aPos")>(buffer);
    p->set<cts("aNorm")>(buffer);
    p->set<cts("aTan")>(tanBuffer);
@@ -170,7 +170,7 @@ void CTexturedSphere::draw(const SContext& context) const
 
    if (context.mDrawNormals)
    {
-      auto p = gRenderer.getAndSelect<cts("colored")>();
+      auto p = gRenderer.get<cts("colored")>();
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});

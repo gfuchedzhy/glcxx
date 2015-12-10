@@ -33,7 +33,7 @@ class TProgram : public CProgramObject, public TProgramInput...
       template<typename TName, int I = ct::TTupleTraits<tProgramInputTuple>::indexByName(TName{})>
       void set(typename std::tuple_element<I, tProgramInputTuple>::type::tValueType input)
       {
-         std::tuple_element<I, tProgramInputTuple>::type::set(input, mIsSelected);
+         std::tuple_element<I, tProgramInputTuple>::type::set(input);
       }
 
       /// @brief @see CProgramObject::select

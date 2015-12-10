@@ -15,41 +15,32 @@ class TRenderer
       /// @brief disabled stuff
       TRenderer(const TRenderer&) = delete;
       TRenderer& operator=(const TRenderer& other) = delete;
+
    public:
       TRenderer() = default;
 
       /// @brief searches given program by name in compile time, creates it if
-      /// it is not created
-      /// @note it is disallowed to cache returned value, use it locally only,
-      /// to discourage caching this function returns raw pointer
-      /// @note you can use result of this call only to update program input, to
-      /// actually draw something you will have to select program
+      /// it is not created, deselects previous program, selects requested one
+      /// and returns it, @see @notes for TRenderer::get
+      /// @note it is disallowed to cache returned value, as selection of
+      /// another program will invalidate it, to discourage caching this
+      /// function returns raw pointer
       template<typename TName>
-      inline auto get()
+      auto get()
       {
          constexpr int index = ct::TTypeIndexInPack<TName, TProgramName...>::value;
          static_assert(-1 != index, "program name not found");
          auto&& p = std::get<index>(mPrograms);
          if (!p)
             p = make_program(TName{});
-         return p.get();
-      }
-
-      /// @brief searches given program by name in compile time, creates it if
-      /// it is not created, deselects previous program, selects requested one
-      /// and returns it, @see @notes for TRenderer::get
-      template<typename TName>
-      auto getAndSelect()
-      {
-         auto p = get<TName>();
-         if (p != mCurrent)
+         if (p.get() != mCurrent)
          {
             if(mCurrent)
                mCurrent->deselect();
-            mCurrent = p;
+            mCurrent = p.get();
             mCurrent->select();
          }
-         return p;
+         return p.get();
       }
 
    private:

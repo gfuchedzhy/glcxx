@@ -131,7 +131,7 @@ void CAircraft::update(float timeDelta)
 void CAircraft::draw(const SContext& context) const
 {
    CComplexRenderable::draw(context);
-   auto p = gRenderer.getAndSelect<cts("texturedPolygon")>();
+   auto p = gRenderer.get<cts("texturedPolygon")>();
    p->set<cts("uModel")>(model());
 
    for (const auto& m: mMeshes)
@@ -141,7 +141,7 @@ void CAircraft::draw(const SContext& context) const
 
    if (context.mDrawHealthBars)
    {
-      auto p = gRenderer.getAndSelect<cts("healthbar")>();
+      auto p = gRenderer.get<cts("healthbar")>();
       for (auto&& h : mHealthBars)
       {
          // @todo this is a hack, should rethink model of complex objects

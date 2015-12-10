@@ -13,9 +13,6 @@ class TUniformProgramInputImpl
       /// @brief location of program input inside program
       GLint mLocation;
 
-      /// @brief true if this program input is currently qattached to a program
-      bool mIsAttached = false;
-
       /// @brief holds actual buffer
       TData mUniformData;
 
@@ -25,31 +22,20 @@ class TUniformProgramInputImpl
          : mLocation(location)
       {}
 
-      /// @brief set new buffer object as program input, isSelected should be
-      /// true if program this program input belongs to is currently selected
-      void set(const TData& value, bool isSelected)
+      /// @brief set uniform as program input
+      void set(const TData& value)
       {
          if (mUniformData != value)
          {
             mUniformData = value;
-            // it is allowed to attach only if current program is selected
-            if (isSelected)
-            {
-               glsl::attachUniform(mLocation, glsl::TConverter<TGLSLData>::convert(mUniformData));
-            }
-            mIsAttached = isSelected;
-         }
-      }
-
-      /// @brief called after program was selected, perform delayed detach,
-      /// attach buffer
-      void select()
-      {
-         if (!mIsAttached)
-         {
             glsl::attachUniform(mLocation, glsl::TConverter<TGLSLData>::convert(mUniformData));
          }
       }
+
+      /// @brief called after program was selected, nothing to do as uniforms
+      /// remains attached during program selection change
+      void select()
+      {}
 };
 
 /// @brief tags
