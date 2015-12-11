@@ -9,15 +9,6 @@ namespace
 {
    /// @note flip of Y coordinates, because loaded data are top-row-first, but
    /// opengl expects bottom-row-first
-   const typename tPosUVAttrib::tData vertexData[] = {
-      { {-0.5f,-0.5f, 0.f}, {0.f, 1.f} },
-      { { 0.5f,-0.5f, 0.f}, {1.f, 1.f} },
-      { { 0.5f, 0.5f, 0.f}, {1.f, 0.f} },
-      { {-0.5f, 0.5f, 0.f}, {0.f, 0.f} }
-   };
-
-   /// @note flip of Y coordinates, because loaded data are top-row-first, but
-   /// opengl expects bottom-row-first
    const typename glm::vec2 uvData[] = {
       {0.f, 1.f},
       {1.f, 1.f},
@@ -40,11 +31,6 @@ namespace
       return buffer;
    }
 
-   auto posUVBuffer()
-   {
-      static auto buffer = std::make_shared<TBufferObject<tPosUVAttrib::tData>>(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
-      return buffer;
-   }
    auto posBuffer()
    {
       static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(posVertexData, sizeof(posVertexData)/sizeof(posVertexData[0]));
@@ -66,7 +52,8 @@ void CTexturedRect::draw(const SContext&) const
 void CTexturedBillboard::draw(const SContext&) const
 {
    auto p = gRenderer.get<cts("texturedBillboard")>();
-   p->set<cts("aPos,aUV")>(posUVBuffer());
+   p->set<cts("aPos")>(posBuffer());
+   p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uTexture")>(mTexture);
@@ -77,7 +64,8 @@ void CTexturedBillboard::draw(const SContext&) const
 void CAnimatedBillboard::draw(const SContext& context) const
 {
    auto p = gRenderer.get<cts("animationObject")>();
-   p->set<cts("aPos,aUV")>(posUVBuffer());
+   p->set<cts("aPos")>(posBuffer());
+   p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uFrameNumber")>(mFrameNumber);

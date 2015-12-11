@@ -256,25 +256,22 @@ namespace glsl
                                                                        ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
                                              cts(";")>;
 
-         /// @brief location
-         using tLocation = GLint;
-
          /// @brief returns location of variable for given program
-         static tLocation getLocation(GLuint program)
+         static GLint getLocation(GLuint program)
          {
             return TInputType<isUniform>::template getLocation<tName>(program);
          }
 
          /// @brief attach for uniform
          template<typename TDummy = int> // to enable sfinae
-         static void attach(tLocation location, const tData& data, typename std::enable_if<isUniform, TDummy>::type dummy = 0)
+         static void attach(GLint location, const tData& data, typename std::enable_if<isUniform, TDummy>::type dummy = 0)
          {
             attachUniform(location, data);
          }
 
          /// @brief attach for attributes
          template<typename TDummy = int> // to enable sfinae
-         static void attach(tLocation location, size_t stride = sizeof(tData), size_t offset = 0u, const tData* ptr = nullptr, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
+         static void attach(GLint location, size_t stride = sizeof(tData), size_t offset = 0u, const tData* ptr = nullptr, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
          {
             constexpr size_t locationsNum  = TTypeTraits<TypeTo, EXTRA, THolder>::locationsNum;
             constexpr size_t componentsNum = TTypeTraits<TypeTo, EXTRA, THolder>::componentsNum;
@@ -297,7 +294,7 @@ namespace glsl
 
          /// @brief detach for attributes
          template<typename TDummy = int> // to enable sfinae
-         static void detach(tLocation location, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
+         static void detach(GLint location, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
          {
             constexpr size_t locationsNum  = TTypeTraits<TypeTo, EXTRA, THolder>::locationsNum;
             for (size_t n = 0; n < N; ++n)

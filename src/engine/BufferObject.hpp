@@ -5,7 +5,7 @@
 #ifndef ENGINE_BUFFEROBJECT_HPP
 #define ENGINE_BUFFEROBJECT_HPP
 
-#include "Attribute.hpp"
+#include "GLSLInputVariable.hpp"
 
 /// @brief buffer object
 template<typename TData>

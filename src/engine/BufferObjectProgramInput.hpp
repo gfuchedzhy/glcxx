@@ -57,7 +57,7 @@ class TBufferObjectProgramInput
 
    private:
       /// @brief location of program input inside program
-      typename TAttribTraits::tLocation mLocation;
+      GLint mLocation;
 
       /// @brief holds actual buffer
       tBufferPtr mBuffer;

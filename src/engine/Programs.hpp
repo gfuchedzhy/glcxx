@@ -10,9 +10,6 @@
 #include "UniformProgramInput.hpp"
 #include "Texture.hpp"
 
-using tPosUVAttrib  = TAttribPackTraits<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>,
-                                        TAttrib<cts("aUV"), glm::tvec2, float>>;
-
 inline auto make_program(cts("colored"))
 {
    return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
@@ -149,7 +146,8 @@ void main()
 
 inline auto make_program(cts("texturedBillboard"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uExternalPos"), glm::tvec3, float>>,
@@ -174,7 +172,8 @@ void main()
 
 inline auto make_program(cts("animationObject"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<tPosUVAttrib>,
+   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
+                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
                                     TUniformProgramInput<tag::vertex, TUniform<cts("uCurrentFrame"), glm::tvec1, int>>,
