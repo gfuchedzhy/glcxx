@@ -27,11 +27,10 @@ namespace glsl
    struct TInputType
    {
          using tSpecifier = cts("uniform");
-         template<typename TName>
-         static auto getLocation(GLuint program)
+         static auto getLocation(GLuint program, const char* name)
          {
-            const auto location = gl(glGetUniformLocation, program, TName::chars);
-            Log::msg("uniform location ", TName::chars, "=", location);
+            const auto location = gl(glGetUniformLocation, program, name);
+            Log::msg("uniform location ", name, "=", location);
             return location;
          }
    };
@@ -40,11 +39,10 @@ namespace glsl
    struct TInputType<false>
    {
          using tSpecifier = cts("attribute");
-         template<typename TName>
-         static auto getLocation(GLuint program)
+         static auto getLocation(GLuint program, const char* name)
          {
-            const auto location = gl(glGetAttribLocation, program, TName::chars);
-            Log::msg("attribute location ", TName::chars, "=", location);
+            const auto location = gl(glGetAttribLocation, program, name);
+            Log::msg("attribute location ", name, "=", location);
             return location;
          }
    };
@@ -214,7 +212,6 @@ namespace glsl
    };
 
    /// @brief traits class for input variable to shader attribute/uniform
-   /// @tparam TName name of var for compile time querying, declarations, etc
    /// @tparam THolder glm template holding values, like glm::tvec3 or glm::tmat4
    /// @tparam TypeFrom type on cpu side
    /// @tparam TypeTo cpp type equivalent to glsl type which should be used on gpu side
@@ -224,7 +221,7 @@ namespace glsl
    /// vec4 type on gpu side
    /// @tparam N if N is 1 this is traits class for single value, if N > 1 this
    /// is array, e.g. vec3 varname[2]
-   template<typename TName, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo, bool isUniform, size_t EXTRA, size_t N>
+   template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo, bool isUniform, size_t EXTRA, size_t N>
    struct TInputVarTraits : std::array<TypeFrom, N>
    {
          static_assert(N >= 1, "glsl type size should be at least 1");
@@ -242,24 +239,22 @@ namespace glsl
          /// @brief data type, basic type or array of basic types
          using tGLSLData = typename std::conditional<1==N, tBasicType<TypeTo>, std::array<tBasicType<TypeTo>, N>>::type;
 
-         /// @brief ctstring containing name of variable
-         using tName = TName;
-
          /// @brief variable size
          static constexpr size_t size = N;
 
-         /// @brief ctstring containing glsl declaration of variable
+         /// @brief ctstring containing glsl declaration of variable, todo
+         template<typename TName>
          using tDeclaration = ct::string_cat<typename TInputType<isUniform>::tSpecifier, cts(" "),
                                              tTypeName<TypeTo, EXTRA, THolder>, cts(" "),
-                                             tName,
+                                             TName,
                                              typename std::conditional<1==size, cts(""),
                                                                        ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
                                              cts(";")>;
 
          /// @brief returns location of variable for given program
-         static GLint getLocation(GLuint program)
+         static GLint getLocation(GLuint program, const char* name)
          {
-            return TInputType<isUniform>::template getLocation<tName>(program);
+            return TInputType<isUniform>::getLocation(program, name);
          }
 
          /// @brief attach for uniform
@@ -310,16 +305,26 @@ namespace glsl
 }
 
 /// @brief shortcuts
-template<typename TName, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
-using TAttrib = glsl::TInputVarTraits<TName, THolder, TypeFrom, TypeTo, false, EXTRA, 1>;
+template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+using TAttrib = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, false, EXTRA, 1>;
 
-template<size_t N, typename TName, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
-using TAttribArr = glsl::TInputVarTraits<TName, THolder, TypeFrom, TypeTo, false, EXTRA, N>;
+template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+using TAttribArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, false, EXTRA, N>;
 
-template<typename TName, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
-using TUniform = glsl::TInputVarTraits<TName, THolder, TypeFrom, TypeTo, true, EXTRA, 1>;
+template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+using TUniform = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, 1>;
 
-template<size_t N, typename TName, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
-using TUniformArr = glsl::TInputVarTraits<TName, THolder, TypeFrom, TypeTo, true, EXTRA, N>;
+template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+using TUniformArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
+
+/// @brief wrapper to name type T with ctstring name TName todo
+template<typename TName, typename T>
+struct TNamedProgramInput : public T
+{
+      using tName = TName;
+      using type = T;
+      using T::set;
+      using T::T;
+};
 
 #endif // ENGINE_GLSLINPUTVARIABLE_HPP

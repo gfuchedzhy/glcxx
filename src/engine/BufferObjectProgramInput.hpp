@@ -23,17 +23,16 @@ class TBufferObjectProgramInput
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
 
-      /// @brief buffer object underlying attribute name
-      using tName = typename TAttribTraits::tName;
-
       /// @brief ctstring containing glsl declaration of variable, attributes
-      /// declarations go to vertex shader only
-      using tVertexShaderDeclaration = typename TAttribTraits::tDeclaration;
+      /// declarations go to vertex shader only todo
+      template<typename TName>
+      using tVertexShaderDeclaration = typename TAttribTraits::template tDeclaration<TName>;
+      template<typename TName>
       using tFragmentShaderDeclaration = cts("");
 
       /// @brief constructor
-      TBufferObjectProgramInput(const GLuint program)
-         : mLocation(TAttribTraits::getLocation(program))
+      TBufferObjectProgramInput(const GLuint program, const char* name)
+         : mLocation(TAttribTraits::getLocation(program, name))
       {}
 
       /// @brief set new buffer object as program input

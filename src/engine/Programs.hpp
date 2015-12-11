@@ -12,10 +12,10 @@
 
 inline auto make_program(cts("colored"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::fragment, TUniform<cts("uColor"), glm::tvec3, float>>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("uModel"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uColor"), TUniformProgramInput<tag::fragment, TUniform<glm::tvec3, float>>>>
                            >(R"(\
 void main()
 {
@@ -31,13 +31,13 @@ void main()
 
 inline auto make_program(cts("coloredIlluminated"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aNorm"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::fragment, TUniform<cts("uSunDir"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::fragment, TUniform<cts("uEye"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::fragment, TUniform<cts("uColor"), glm::tvec3, float>>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("aNorm"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uModel"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uSunDir"), TUniformProgramInput<tag::fragment, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uEye"), TUniformProgramInput<tag::fragment, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uColor"), TUniformProgramInput<tag::fragment, TUniform<glm::tvec3, float>>>>
                            >(R"(\
 varying vec3 vPos;
 varying vec3 vNorm;
@@ -70,16 +70,16 @@ void main()
 
 inline auto make_program(cts("texturedIlluminated"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aNorm"), glm::tvec3, float>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aTan"), glm::tvec3, float>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSunDir"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uEye"), glm::tvec3, float>>,
-                                    TTextureProgramInput<cts("uTexture")>,
-                                    TTextureProgramInput<cts("uNormalMap"), 1>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("aNorm"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("aTan"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("aUV"), TBufferObjectProgramInput<TAttrib<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uModel"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uSunDir"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uEye"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uTexture"), TTextureProgramInput<>>,
+                                    TNamedProgramInput<cts("uNormalMap"), TTextureProgramInput<1>>>
                            >(R"(\
 varying vec3 vEyeDir;
 varying vec3 vSunDir;
@@ -124,11 +124,11 @@ void main()
 
 inline auto make_program(cts("texturedPolygon"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uModel"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TTextureProgramInput<cts("uTexture")>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("aUV"), TBufferObjectProgramInput<TAttrib<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uModel"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uTexture"), TTextureProgramInput<>>>
                            >(R"(\
 varying vec2 vUV;
 void main()
@@ -146,15 +146,15 @@ void main()
 
 inline auto make_program(cts("texturedBillboard"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uExternalPos"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
-                                    TTextureProgramInput<cts("uTexture")>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("aUV"), TBufferObjectProgramInput<TAttrib<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uPos"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uExternalPos"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uSize"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uRight"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uUp"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uTexture"), TTextureProgramInput<>>>
                            >(R"(\
 varying vec2 vUV;
 void main()
@@ -172,15 +172,15 @@ void main()
 
 inline auto make_program(cts("animationObject"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TBufferObjectProgramInput<TAttrib<cts("aUV"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uCurrentFrame"), glm::tvec1, int>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uFrameNumber"), glm::tvec1, int>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRightStabilized"), glm::tvec3, float>>,
-                                    TTextureProgramInput<cts("uTexture")>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("aUV"), TBufferObjectProgramInput<TAttrib<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uPos"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uCurrentFrame"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec1, int>>>,
+                                    TNamedProgramInput<cts("uFrameNumber"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec1, int>>>,
+                                    TNamedProgramInput<cts("uSize"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uRightStabilized"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uTexture"), TTextureProgramInput<>>>
                            >(R"(\
 const vec3 up = vec3(0.0, 0.0, 1.0);
 varying vec2 vUV;
@@ -199,14 +199,14 @@ void main()
 
 inline auto make_program(cts("healthbar"))
 {
-   return std::make_unique<TProgram<TBufferObjectProgramInput<TAttrib<cts("aPos"), glm::tvec3, float, float, 1>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uViewProj"), glm::tmat4x4, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uPos"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uExternalPos"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uSize"), glm::tvec2, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uRight"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::vertex, TUniform<cts("uUp"), glm::tvec3, float>>,
-                                    TUniformProgramInput<tag::fragment, TUniform<cts("uValue"), glm::tvec1, float>>>
+   return std::make_unique<TProgram<TNamedProgramInput<cts("aPos"), TBufferObjectProgramInput<TAttrib<glm::tvec3, float, float, 1>>>,
+                                    TNamedProgramInput<cts("uViewProj"), TUniformProgramInput<tag::vertex, TUniform<glm::tmat4x4, float>>>,
+                                    TNamedProgramInput<cts("uPos"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uExternalPos"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uSize"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec2, float>>>,
+                                    TNamedProgramInput<cts("uRight"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uUp"), TUniformProgramInput<tag::vertex, TUniform<glm::tvec3, float>>>,
+                                    TNamedProgramInput<cts("uValue"), TUniformProgramInput<tag::fragment, TUniform<glm::tvec1, float>>>>
                            >(R"(\
 varying vec2 vPos;
 float yCoef = 1.3; // use 30% of uSize.y as offset

@@ -84,25 +84,24 @@ class CTextureProgramInputImpl
 
 /// @brief holds state of program's texture object, use it as TProgram template
 /// parameter
-template<typename TName, GLint samplerID = 0>
+template<GLint samplerID = 0>
 struct TTextureProgramInput : public CTextureProgramInputImpl
 {
    public:
-      /// @brief ctstring naming texture
-      using tName = TName;
-
       /// @brief type of texture objects this program input accepts
       using tValueType = tTexturePtr;
 
-      /// @brief ctstring containing glsl declaration of texture uniform
-      using tFragmentShaderDeclaration = ct::string_cat<cts("uniform sampler2D "), tName, cts(";")>;
+      /// @brief ctstring containing glsl declaration of texture uniform todo
+      template<typename TName>
+      using tFragmentShaderDeclaration = ct::string_cat<cts("uniform sampler2D "), TName, cts(";")>;
 
-      /// @brief nothing to declare for vertex shader
+      /// @brief nothing to declare for vertex shader todo
+      template<typename TName>
       using tVertexShaderDeclaration = cts("");
 
       /// @brief constructor
-      TTextureProgramInput(const GLuint program)
-         : CTextureProgramInputImpl(glsl::TInputType<true>::template getLocation<TName>(program), samplerID)
+      TTextureProgramInput(const GLuint program, const char* name)
+         : CTextureProgramInputImpl(glsl::TInputType<true>::getLocation(program, name), samplerID)
       {}
 };
 

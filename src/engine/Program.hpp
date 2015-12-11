@@ -12,9 +12,9 @@ template<typename... TProgramInput>
 class TProgram : public CProgramObject, public TProgramInput...
 {
    public:
-      /// @brief ctstring containing glsl declarations of all program input
-      using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::tVertexShaderDeclaration...>;
-      using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::tFragmentShaderDeclaration...>;
+      /// @brief ctstring containing glsl declarations of all program input todo
+      using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::type::template tVertexShaderDeclaration<typename TProgramInput::tName>...>;
+      using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::type::template tFragmentShaderDeclaration<typename TProgramInput::tName>...>;
 
       /// @brief tuple containing all program input
       using tProgramInputTuple = std::tuple<TProgramInput...>;
@@ -25,13 +25,12 @@ class TProgram : public CProgramObject, public TProgramInput...
       /// @brief constructor
       TProgram(const std::string& vertexSrc, const std::string& fragmentSrc)
          : CProgramObject(tVertexShaderDeclaration::chars + vertexSrc, tFragmentShaderDeclaration::chars + fragmentSrc)
-         , TProgramInput(mObject)...
-      {
-      }
+         , TProgramInput(mObject, TProgramInput::tName::chars)...
+      {}
 
       /// @brief sets program input to a program
       template<typename TName, int I = ct::TTupleTraits<tProgramInputTuple>::indexByName(TName{})>
-      void set(typename std::tuple_element<I, tProgramInputTuple>::type::tValueType input)
+      void set(typename std::tuple_element<I, tProgramInputTuple>::type::type::tValueType input)
       {
          std::tuple_element<I, tProgramInputTuple>::type::set(input);
       }

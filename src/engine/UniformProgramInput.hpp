@@ -55,22 +55,21 @@ class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTr
       /// @brief uniform datatype this program input accepts
       using tValueType = const typename TUniformTraits::tData&;
 
-      /// @brief underlying uniform name
-      using tName = typename TUniformTraits::tName;
-
-      /// @brief ctstring containing glsl declaration of variable
+      /// @brief ctstring containing glsl declaration of variable, todo
+      template<typename TName>
       using tVertexShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::vertex>::value
                                                                  || std::is_same<DeclarationTag, tag::all>::value,
-                                                                 typename TUniformTraits::tDeclaration,
+                                                                 typename TUniformTraits::template tDeclaration<TName>,
                                                                  cts("")>::type;
+      template<typename TName>
       using tFragmentShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::fragment>::value
                                                                    || std::is_same<DeclarationTag, tag::all>::value,
-                                                                   typename TUniformTraits::tDeclaration,
+                                                                   typename TUniformTraits::template tDeclaration<TName>,
                                                                    cts("")>::type;
 
       /// @brief constructor
-      TUniformProgramInput(const GLuint program)
-         : TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>(TUniformTraits::getLocation(program))
+      TUniformProgramInput(const GLuint program, const char* name)
+         : TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>(TUniformTraits::getLocation(program, name))
       {}
 };
 
