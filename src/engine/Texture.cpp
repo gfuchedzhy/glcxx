@@ -65,7 +65,7 @@ void CTextureProgramInputImpl::set(tTexturePtr value)
    }
 }
 
-void CTextureProgramInputImpl::attach()
+void CTextureProgramInputImpl::attach() const
 {
    if (mTexture)
    {

@@ -47,7 +47,7 @@ class TBufferObjectProgramInput
       }
 
       /// @brief called after program was selected, attach buffer
-      void select()
+      void select() const
       {
          attach();
       }
@@ -61,7 +61,7 @@ class TBufferObjectProgramInput
 
    private: // impl
       /// @brief attach buffer
-      void attach()
+      void attach() const
       {
          if (mBuffer)
             mBuffer->bind();

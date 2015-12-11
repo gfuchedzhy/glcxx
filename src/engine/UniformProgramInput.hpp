@@ -34,7 +34,7 @@ class TUniformProgramInputImpl
 
       /// @brief called after program was selected, nothing to do as uniforms
       /// remains attached during program selection change
-      void select()
+      void select() const
       {}
 };
 

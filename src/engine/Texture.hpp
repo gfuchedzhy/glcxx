@@ -72,14 +72,14 @@ class CTextureProgramInputImpl
       void set(tTexturePtr value);
 
       /// @brief called after program was selected
-      void select()
+      void select() const
       {
          attach();
       }
 
    private: // impl
       /// @brief attach texture
-      void attach();
+      void attach() const;
 };
 
 /// @brief holds state of program's texture object, use it as TProgram template

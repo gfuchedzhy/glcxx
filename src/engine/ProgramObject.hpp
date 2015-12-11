@@ -22,7 +22,7 @@ class CProgramObject
       virtual ~CProgramObject();
 
       /// @brief selects program
-      virtual void select();
+      virtual void select() const;
 
    protected:
       /// @brief program object id
@@ -34,7 +34,7 @@ class CProgramObject
       CShader mFragmentShader;
 };
 
-inline void CProgramObject::select()
+inline void CProgramObject::select() const
 {
    gl(glUseProgram, mObject);
 }
