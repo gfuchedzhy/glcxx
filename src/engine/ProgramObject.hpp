@@ -19,10 +19,10 @@ class CProgramObject
       CProgramObject(const std::string& vertexSrc, const std::string& fragmentSrc);
 
       /// @brief destructor
-      virtual ~CProgramObject();
+      ~CProgramObject();
 
       /// @brief selects program
-      virtual void select() const;
+      void select() const;
 
    protected:
       /// @brief program object id

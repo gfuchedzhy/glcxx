@@ -37,7 +37,7 @@ class TProgram : public CProgramObject, public TProgramInput...
       }
 
       /// @brief @see CProgramObject::select
-      void select() const override
+      void select() const
       {
          CProgramObject::select();
          swallow(TProgramInput::select());

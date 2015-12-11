@@ -35,8 +35,8 @@ class TRenderer
             p = make_program(TName{});
          if (p.get() != mCurrent)
          {
+            p->select();
             mCurrent = p.get();
-            mCurrent->select();
          }
          return p.get();
       }
