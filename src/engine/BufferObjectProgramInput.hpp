@@ -14,8 +14,11 @@ template<typename TAttribTraits>
 class TBufferObjectProgramInput
 {
    public:
-      /// @brief type of buffer objects this program input accepts
-      using tValueType = std::shared_ptr<TBufferObject<typename TAttribTraits::tData>>;
+      /// @brief buffer objects ptr
+      using tBufferPtr = std::shared_ptr<TBufferObject<typename TAttribTraits::tData>>;
+
+      /// @brief value type for setter
+      using tValueType = const tBufferPtr&;
 
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
@@ -57,7 +60,7 @@ class TBufferObjectProgramInput
       typename TAttribTraits::tLocation mLocation;
 
       /// @brief holds actual buffer
-      tValueType mBuffer;
+      tBufferPtr mBuffer;
 
    private: // impl
       /// @brief attach buffer

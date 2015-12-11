@@ -69,7 +69,7 @@ class CTextureProgramInputImpl
       {}
 
       /// @brief set new texture object as program input
-      void set(tTexturePtr value);
+      void set(const tTexturePtr& value);
 
       /// @brief called after program was selected
       void select() const

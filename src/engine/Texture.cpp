@@ -54,7 +54,7 @@ CTexture::CTexture(const std::string& filename)
    unBind();
 }
 
-void CTextureProgramInputImpl::set(tTexturePtr value)
+void CTextureProgramInputImpl::set(const tTexturePtr& value)
 {
    if (mTexture != value)
    {
