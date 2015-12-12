@@ -295,14 +295,21 @@ using TUniform = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, 1
 template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
 using TUniformArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
 
-/// @brief wrapper to name type T with ctstring name TName todo
+/// @brief todo
 template<typename TName, typename T>
 struct TNamedProgramInput : public T
 {
       using tName = TName;
-      using type = T;
-      using T::set;
-      using T::T;
+
+      template<typename TInputName>
+      void set(const typename std::enable_if<std::is_same<TInputName, TName>::value, typename T::tValueType>::type& x)
+      {
+         T::set(x);
+      }
+
+      TNamedProgramInput(GLuint program)
+         : T(program, tName::chars)
+      {}
 };
 
 #endif // ENGINE_GLSLINPUTVARIABLE_HPP
