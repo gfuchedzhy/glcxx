@@ -7,37 +7,6 @@
 
 #include "GLSLInputVariable.hpp"
 
-template<typename TData, typename TGLSLData>
-class TUniformProgramInputImpl
-{
-      /// @brief location of program input inside program
-      GLint mLocation;
-
-      /// @brief holds actual buffer
-      TData mUniformData;
-
-   public:
-      /// @brief constructor
-      TUniformProgramInputImpl(const GLint location)
-         : mLocation(location)
-      {}
-
-      /// @brief set uniform as program input
-      void set(const TData& value)
-      {
-         if (mUniformData != value)
-         {
-            mUniformData = value;
-            glsl::attachUniform(mLocation, glsl::TConverter<TGLSLData>::convert(mUniformData));
-         }
-      }
-
-      /// @brief called after program was selected, nothing to do as uniforms
-      /// remains attached during program selection change
-      void select() const
-      {}
-};
-
 /// @brief tags
 namespace tag
 {
@@ -49,11 +18,17 @@ namespace tag
 /// @brief holds state of program's uniform, use it as TProgram template
 /// parameter, tag tells which shader should contain given attribute
 template<typename DeclarationTag, typename TUniformTraits>
-class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>
+class TUniformProgramInput
 {
+      /// @brief location of program input inside program
+      GLint mLocation;
+
+      /// @brief holds actual uniform
+      typename TUniformTraits::tData mUniformData;
+
    public:
       /// @brief uniform datatype this program input accepts
-      using tValueType = const typename TUniformTraits::tData&;
+      using tValueType = typename TUniformTraits::tData;
 
       /// @brief ctstring containing glsl declaration of variable, todo
       template<typename TName>
@@ -69,7 +44,22 @@ class TUniformProgramInput : public TUniformProgramInputImpl<typename TUniformTr
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program, const char* name)
-         : TUniformProgramInputImpl<typename TUniformTraits::tData, typename TUniformTraits::tGLSLData>(TUniformTraits::getLocation(program, name))
+         : mLocation(glsl::getUniformLocation(program, name))
+      {}
+
+      /// @brief set uniform as program input
+      void set(const tValueType& value)
+      {
+         if (mUniformData != value)
+         {
+            mUniformData = value;
+            glsl::attachUniform(mLocation, glsl::TConverter<typename TUniformTraits::tGLSLData>::convert(mUniformData));
+         }
+      }
+
+      /// @brief called after program was selected, nothing to do as uniforms
+      /// remains attached during program selection change
+      void select() const
       {}
 };
 

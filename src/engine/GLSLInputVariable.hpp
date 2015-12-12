@@ -22,30 +22,21 @@ namespace glsl
    template<> struct TTypeID<signed int>     { static constexpr GLenum id = GL_INT; };
    template<> struct TTypeID<unsigned int>   { static constexpr GLenum id = GL_UNSIGNED_INT; };
 
-   /// @brief traits for uniforms and attributes
-   template<bool isUniform>
-   struct TInputType
+   /// @brief get uniform location
+   inline auto getUniformLocation(GLuint program, const char* name)
    {
-         using tSpecifier = cts("uniform");
-         static auto getLocation(GLuint program, const char* name)
-         {
-            const auto location = gl(glGetUniformLocation, program, name);
-            Log::msg("uniform location ", name, "=", location);
-            return location;
-         }
-   };
-   /// @brief specialization for attributes
-   template<>
-   struct TInputType<false>
+      const auto location = gl(glGetUniformLocation, program, name);
+      Log::msg("uniform location ", name, "=", location);
+      return location;
+   }
+
+   /// @brief get attribute location
+   inline auto getAttribLocation(GLuint program, const char* name)
    {
-         using tSpecifier = cts("attribute");
-         static auto getLocation(GLuint program, const char* name)
-         {
-            const auto location = gl(glGetAttribLocation, program, name);
-            Log::msg("attribute location ", name, "=", location);
-            return location;
-         }
-   };
+      const auto location = gl(glGetAttribLocation, program, name);
+      Log::msg("attribute location ", name, "=", location);
+      return location;
+   }
 
    /// @brief compile time glsl prefixes for glsl
    template<typename Type> struct TTypePrefix;
@@ -244,29 +235,16 @@ namespace glsl
 
          /// @brief ctstring containing glsl declaration of variable, todo
          template<typename TName>
-         using tDeclaration = ct::string_cat<typename TInputType<isUniform>::tSpecifier, cts(" "),
+         using tDeclaration = ct::string_cat<typename std::conditional<isUniform, cts("uniform "), cts("attribute ")>::type,
                                              tTypeName<TypeTo, EXTRA, THolder>, cts(" "),
                                              TName,
                                              typename std::conditional<1==size, cts(""),
                                                                        ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
                                              cts(";")>;
 
-         /// @brief returns location of variable for given program
-         static GLint getLocation(GLuint program, const char* name)
-         {
-            return TInputType<isUniform>::getLocation(program, name);
-         }
-
-         /// @brief attach for uniform
-         template<typename TDummy = int> // to enable sfinae
-         static void attach(GLint location, const tData& data, typename std::enable_if<isUniform, TDummy>::type dummy = 0)
-         {
-            attachUniform(location, data);
-         }
-
          /// @brief attach for attributes
          template<typename TDummy = int> // to enable sfinae
-         static void attach(GLint location, size_t stride = sizeof(tData), size_t offset = 0u, const tData* ptr = nullptr, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
+         static void attach(GLint location, const tData* ptr = nullptr, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
          {
             constexpr size_t locationsNum  = TTypeTraits<TypeTo, EXTRA, THolder>::locationsNum;
             constexpr size_t componentsNum = TTypeTraits<TypeTo, EXTRA, THolder>::componentsNum;
@@ -281,8 +259,8 @@ namespace glsl
                      componentsNum,
                      TTypeID<TypeFrom>::id,
                      GL_FALSE, // not normalized
-                     stride,
-                     (void*)((const char*)ptr + offset + locationOffset*componentsNum*sizeof(TypeFrom)));
+                     sizeof(tData),
+                     (void*)((const char*)ptr + locationOffset*componentsNum*sizeof(TypeFrom)));
                }
             }
          }

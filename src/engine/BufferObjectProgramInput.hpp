@@ -15,10 +15,7 @@ class TBufferObjectProgramInput
 {
    public:
       /// @brief buffer objects ptr
-      using tBufferPtr = std::shared_ptr<TBufferObject<typename TAttribTraits::tData>>;
-
-      /// @brief value type for setter
-      using tValueType = const tBufferPtr&;
+      using tValueType = std::shared_ptr<TBufferObject<typename TAttribTraits::tData>>;
 
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
@@ -32,11 +29,11 @@ class TBufferObjectProgramInput
 
       /// @brief constructor
       TBufferObjectProgramInput(const GLuint program, const char* name)
-         : mLocation(TAttribTraits::getLocation(program, name))
+         : mLocation(glsl::getAttribLocation(program, name))
       {}
 
       /// @brief set new buffer object as program input
-      void set(tValueType value)
+      void set(const tValueType& value)
       {
          if (mBuffer != value)
          {
@@ -59,7 +56,7 @@ class TBufferObjectProgramInput
       GLint mLocation;
 
       /// @brief holds actual buffer
-      tBufferPtr mBuffer;
+      tValueType mBuffer;
 
    private: // impl
       /// @brief attach buffer
