@@ -39,8 +39,7 @@ namespace detail
       {
          Log::err("gl error code ", err, " in ",
                   glFuncName, std::make_tuple(std::forward<TArgs>(args)...),
-                  " at ", filename + 1, // +1 to convert ../path to ./path
-                  ':', line);
+                  " at ", filename, ':', line);
       }
       return static_cast<decltype(glFunc(args...))>(retVal);
    }
