@@ -19,6 +19,15 @@ class TRenderer
    public:
       TRenderer() = default;
 
+      /// @brief initializes all programs of this renderer, @note actually it
+      /// would be better to do this in constructor, however for this gl context
+      /// should be created in constructor too, but sfml doesn't work well with
+      /// custom context initialization
+      void init()
+      {
+         mPrograms = std::make_tuple(make_program(TProgramName{})...);
+      }
+
       /// @brief searches given program by name in compile time, creates it if
       /// it is not created, deselects previous program, selects requested one
       /// and returns it, @see @notes for TRenderer::get
@@ -30,15 +39,13 @@ class TRenderer
       {
          constexpr int index = ct::TTypeIndexInPack<TName, TProgramName...>::value;
          static_assert(-1 != index, "program name not found");
-         auto&& p = std::get<index>(mPrograms);
-         if (!p)
-            p = make_program(TName{});
-         if (p.get() != mCurrent)
+         auto p = std::get<index>(mPrograms).get();
+         if (p != mCurrent)
          {
             p->select();
-            mCurrent = p.get();
+            mCurrent = p;
          }
-         return p.get();
+         return p;
       }
 
    private:

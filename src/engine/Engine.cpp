@@ -5,6 +5,7 @@
 #include "Engine.hpp"
 #include "GL.hpp"
 #include "Log.hpp"
+#include "Programs.hpp"
 #include <SFML/System/Clock.hpp>
 
 CEngine::CEngine(const size_t width, const size_t height)
@@ -15,6 +16,7 @@ CEngine::CEngine(const size_t width, const size_t height)
    mWindow.setVerticalSyncEnabled(true);
    sf::ContextSettings settings = mWindow.getSettings();
    Log::msg("openGL ", settings.majorVersion, '.', settings.minorVersion,  " version loaded");
+   gRenderer.init();
 }
 
 void CEngine::run()
