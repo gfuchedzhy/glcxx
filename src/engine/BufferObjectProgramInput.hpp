@@ -60,7 +60,60 @@ class TBufferObjectProgramInput
          if (mBuffer)
             mBuffer->bind();
          TAttribTraits::attach(mLocation);
-         TBufferObject<typename TAttribTraits::tData>::unBind();
+         if (mBuffer)
+            mBuffer->unBind();
+      }
+};
+
+/// @brief holds state of program's index buffer
+class CIndexBufferProgramInput
+{
+      /// @brief buffer
+      std::shared_ptr<CIndexBuffer> mBuffer;
+
+   public:
+      /// @brief set new buffer object as program input
+      template<typename TName>
+      void set(const typename std::enable_if<std::is_same<TName, cts("indices")>::value, std::shared_ptr<CIndexBuffer>>::type& value)
+      {
+         if (mBuffer != value)
+         {
+            mBuffer = value;
+            attach();
+         }
+      }
+
+      /// @brief called after program was selected, attach buffer
+      void select() const
+      {
+         attach();
+      }
+
+      /// @brief draw with current index buffer
+      void draw() const
+      {
+         assert(mBuffer);
+         mBuffer->draw();
+      }
+
+      /// @brief draw with given pointer
+      template<typename T>
+      void draw(const T* data, GLsizei size, GLenum mode) const
+      {
+         assert(!mBuffer);
+         constexpr GLenum id = glsl::TTypeID<T>::id;
+         static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
+         gl(glDrawElements, mode, size, id, data);
+      }
+
+   private: // impl
+      /// @brief attach buffer
+      void attach() const
+      {
+         if (mBuffer)
+            mBuffer->bind();
+         else
+            CIndexBuffer::unBind();
       }
 };
 

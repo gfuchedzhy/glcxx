@@ -45,8 +45,8 @@ void CTexturedRect::draw(const SContext&) const
    p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
-
-   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+   p->set<cts("indices")>(0);
+   p->draw(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CTexturedBillboard::draw(const SContext&) const
@@ -57,8 +57,8 @@ void CTexturedBillboard::draw(const SContext&) const
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uTexture")>(mTexture);
-
-   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+   p->set<cts("indices")>(0);
+   p->draw(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CAnimatedBillboard::draw(const SContext& context) const
@@ -71,8 +71,8 @@ void CAnimatedBillboard::draw(const SContext& context) const
    p->set<cts("uFrameNumber")>(mFrameNumber);
    p->set<cts("uCurrentFrame")>(mCurrentFrame);
    p->set<cts("uTexture")>(mTexture);
-
-   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+   p->set<cts("indices")>(0);
+   p->draw(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CHealthBar::draw(const SContext&) const
@@ -82,8 +82,9 @@ void CHealthBar::draw(const SContext&) const
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
    p->set<cts("uValue")>(mValue);
+   p->set<cts("indices")>(0);
 
    gl(glDisable, GL_DEPTH_TEST);
-   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+   p->draw(indices, 4, GL_TRIANGLE_STRIP);
    gl(glEnable, GL_DEPTH_TEST);
 }

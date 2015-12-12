@@ -71,8 +71,8 @@ namespace
    static std::shared_ptr<TBufferObject<glm::vec2>> texBuffer;
    static std::shared_ptr<TBufferObject<glm::vec3>> tanBuffer;
    static std::shared_ptr<TBufferObject<glm::vec3>> normalBuffer;
-   static std::vector<GLushort> indices;
-   static std::vector<GLushort> normalIndices;
+   static std::shared_ptr<CIndexBuffer> indexBuffer;
+   static std::shared_ptr<CIndexBuffer> normalIndexBuffer;
 
    void initSphere()
    {
@@ -82,6 +82,8 @@ namespace
          std::vector<glm::vec3> vertices;
          std::vector<glm::vec3> tangents;
          std::vector<glm::vec2> texCoords;
+         std::vector<GLushort> indices;
+         std::vector<GLushort> normalIndices;
          generateHalfSphere(N, vertices, tangents, texCoords, indices);
 
          const size_t vertNum = vertices.size();
@@ -108,6 +110,7 @@ namespace
          buffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
          texBuffer = std::make_shared<TBufferObject<glm::vec2>>(&texCoords[0], texCoords.size());
          tanBuffer = std::make_shared<TBufferObject<glm::vec3>>(&tangents[0], tangents.size());
+         indexBuffer = std::make_shared<CIndexBuffer>(&indices[0], indices.size(), GL_TRIANGLES);
 
          // indices for normals, last vertex would be (0,0,0)
          const size_t lastIndex = vertices.size();
@@ -122,6 +125,7 @@ namespace
             v *= 1.5f;
          vertices.emplace_back(0, 0, 0);
          normalBuffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
+         normalIndexBuffer = std::make_shared<CIndexBuffer>(&normalIndices[0], normalIndices.size(), GL_LINE_STRIP);
       }
    }
 }
@@ -144,7 +148,8 @@ void CSphere::draw(const SContext& context) const
    p->set<cts("aNorm")>(buffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
-   gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+   p->set<cts("indices")>(indexBuffer);
+   p->draw();
 
    if (context.mDrawNormals)
    {
@@ -152,7 +157,8 @@ void CSphere::draw(const SContext& context) const
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      gl(glDrawElements, GL_LINE_STRIP, normalIndices.size(), GL_UNSIGNED_SHORT, &normalIndices[0]);
+      p->set<cts("indices")>(normalIndexBuffer);
+      p->draw();
    }
 }
 
@@ -166,7 +172,8 @@ void CTexturedSphere::draw(const SContext& context) const
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
    p->set<cts("uNormalMap")>(mNormalMap);
-   gl(glDrawElements, GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+   p->set<cts("indices")>(indexBuffer);
+   p->draw();
 
    if (context.mDrawNormals)
    {
@@ -174,6 +181,7 @@ void CTexturedSphere::draw(const SContext& context) const
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      gl(glDrawElements, GL_LINE_STRIP, normalIndices.size(), GL_UNSIGNED_SHORT, &normalIndices[0]);
+      p->set<cts("indices")>(normalIndexBuffer);
+      p->draw();
    }
 }

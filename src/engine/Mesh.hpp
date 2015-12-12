@@ -21,8 +21,8 @@ class CMesh : public IRenderable
       /// @brief position buffer
       std::shared_ptr<TBufferObject<glm::vec3>> mPos;
 
-      /// @brief indices
-      std::vector<GLushort> mIndices;
+      /// @brief index buffer
+      std::shared_ptr<CIndexBuffer> mInd;
 
       /// @brief texture coord buffer
       std::shared_ptr<TBufferObject<glm::vec2>> mUV;

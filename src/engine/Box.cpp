@@ -8,22 +8,28 @@
 
 namespace
 {
-   const typename glm::vec3 vertexData[] = {
-      {-0.5f,-0.5f, 0.5f},
-      { 0.5f,-0.5f, 0.5f},
-      { 0.5f, 0.5f, 0.5f},
-      {-0.5f, 0.5f, 0.5f},
-      {-0.5f,-0.5f,-0.5f},
-      { 0.5f,-0.5f,-0.5f},
-      { 0.5f, 0.5f,-0.5f},
-      {-0.5f, 0.5f,-0.5f}
-   };
-   const GLubyte indices[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
-                              1, 5, 2, 6,
-                              6, 3, 3, 7, 0, 4};
    auto vertexBuffer()
    {
-      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(vertexData, sizeof(vertexData)/sizeof(vertexData[0]));
+      static const typename glm::vec3 data[] = {
+         {-0.5f,-0.5f, 0.5f},
+         { 0.5f,-0.5f, 0.5f},
+         { 0.5f, 0.5f, 0.5f},
+         {-0.5f, 0.5f, 0.5f},
+         {-0.5f,-0.5f,-0.5f},
+         { 0.5f,-0.5f,-0.5f},
+         { 0.5f, 0.5f,-0.5f},
+         {-0.5f, 0.5f,-0.5f}
+      };
+      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(data, sizeof(data)/sizeof(data[0]));
+      return buffer;
+   }
+
+   auto indexBuffer()
+   {
+      const GLubyte data[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
+                                 1, 5, 2, 6,
+                                 6, 3, 3, 7, 0, 4};
+      static auto buffer = std::make_shared<CIndexBuffer>(data, sizeof(data)/sizeof(data[0]), GL_TRIANGLE_STRIP);
       return buffer;
    }
 
@@ -33,6 +39,7 @@ namespace
       { 0.0f, 1.0f, 0.0f},
       { 0.0f, 0.0f, 1.0f},
    };
+
    const GLubyte axesIndices[] = {0, 1, 0, 2, 0, 3};
    auto axesVertexBuffer()
    {
@@ -44,19 +51,21 @@ namespace
 void CBox::draw(const SContext& context) const
 {
    auto p = gRenderer.get<cts("colored")>();
+   p->set<cts("indices")>(indexBuffer());
    p->set<cts("aPos")>(vertexBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
-   gl(glDrawElements, GL_TRIANGLE_STRIP, sizeof(indices), GL_UNSIGNED_BYTE, indices);
+   p->draw();
 
    if (context.mDrawDebugFrames)
    {
       glLineWidth(2.f);
       p->set<cts("aPos")>(axesVertexBuffer());
+      p->set<cts("indices")>(0);
       for (int i = 0; i < 3; ++i)
       {
          p->set<cts("uColor")>(axesVertexData[axesIndices[2*i+1]]);
-         gl(glDrawElements, GL_LINES, 2, GL_UNSIGNED_BYTE, axesIndices + 2*i);
+         p->draw(axesIndices + 2*i, 2, GL_LINES);
       }
    }
 }

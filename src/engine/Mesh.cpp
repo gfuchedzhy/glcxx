@@ -24,11 +24,13 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
       uv.push_back({mesh.mTextureCoords[0][t].x, -mesh.mTextureCoords[0][t].y});
    mUV = std::make_shared<TBufferObject<glm::vec2>>(&uv[0], mesh.mNumVertices);
 
+   std::vector<GLushort> indices;
    for (size_t f = 0; f < mesh.mNumFaces; ++f)
    {
       const aiFace& face = mesh.mFaces[f];
-      std::copy(face.mIndices, face.mIndices + face.mNumIndices, back_inserter(mIndices));
+      std::copy(face.mIndices, face.mIndices + face.mNumIndices, back_inserter(indices));
    }
+   mInd = std::make_shared<CIndexBuffer>(&indices[0], indices.size(), GL_TRIANGLES);
 }
 
 void CMesh::draw(const SContext& context) const
@@ -40,5 +42,6 @@ void CMesh::draw(const SContext& context) const
    if (mMaterial->mDiffuseMap)
       p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
 
-   gl(glDrawElements, GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_SHORT, &mIndices[0]);
+   p->set<cts("indices")>(mInd);
+   p->draw();
 }

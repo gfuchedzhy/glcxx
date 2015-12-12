@@ -10,9 +10,13 @@
 #include <tuple>
 
 template<typename... TProgramInput>
-class TProgram : public CProgramObject, public TProgramInputs<TProgramInput...>
+class TProgram : public CProgramObject, public TProgramInputs<TProgramInput...>, public CIndexBufferProgramInput
 {
    public:
+      //todo
+      using TProgramInputs<TProgramInput...>::set;
+      using CIndexBufferProgramInput::set;
+
       /// @brief ctstring containing glsl declarations of all program inputs
       using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::template tVertexShaderDeclaration<typename TProgramInput::tName>...>;
       using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::template tFragmentShaderDeclaration<typename TProgramInput::tName>...>;
@@ -28,6 +32,7 @@ class TProgram : public CProgramObject, public TProgramInputs<TProgramInput...>
       {
          CProgramObject::select();
          swallow(TProgramInput::select());
+         CIndexBufferProgramInput::select();
       }
 };
 
