@@ -61,8 +61,8 @@ class TProgram : public CProgramBase, public TProgramInputs<TProgramInput...>
 {
    public:
       /// @brief ctstring containing glsl declarations of all program inputs
-      using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::template tVertexShaderDeclaration<typename TProgramInput::tName>...>;
-      using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::template tFragmentShaderDeclaration<typename TProgramInput::tName>...>;
+      using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::tVertexShaderDeclaration...>;
+      using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::tFragmentShaderDeclaration...>;
 
       /// @brief constructor
       TProgram(const std::string& vertexSrc, const std::string& fragmentSrc)

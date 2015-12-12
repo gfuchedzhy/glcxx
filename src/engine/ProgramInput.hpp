@@ -46,15 +46,13 @@ struct TProgramInput : public TProgramInputSelector<T>::type
       using tImpl = typename TProgramInputSelector<T>::type;
 
       /// @brief ctstrings containing glsl declarations for this input
-      template<typename TName>
       using tVertexShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::vertex>::value
                                                                  || std::is_same<DeclarationTag, tag::all>::value,
-                                                                 typename tImpl::template tDeclaration<TName>,
+                                                                 typename tImpl::template tDeclaration<TInputName>,
                                                                  cts("")>::type;
-      template<typename TName>
       using tFragmentShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::fragment>::value
                                                                    || std::is_same<DeclarationTag, tag::all>::value,
-                                                                   typename tImpl::template tDeclaration<TName>,
+                                                                   typename tImpl::template tDeclaration<TInputName>,
                                                                    cts("")>::type;
       /// @brief forward named set to impl set
       template<typename TName>
