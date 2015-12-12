@@ -9,6 +9,9 @@ CShader::CShader(const std::string& src, const GLenum shaderType)
 {
    mObject = gl(glCreateShader, shaderType);
    Log::msg("creating shader ", mObject);
+#ifdef GL_LOG_ALL
+   Log::msg(src);
+#endif
    std::string versionedSrc("#version 120\n");
    versionedSrc += src;
    const GLint length = versionedSrc.length();

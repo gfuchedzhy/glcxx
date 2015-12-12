@@ -8,6 +8,7 @@
 #include <SFML/OpenGL.hpp>
 #include "Log.hpp"
 
+#if defined GL_LOG_ERR || defined GL_LOG_ALL
 namespace detail
 {
    template<typename TFunction, typename... TArgs>
@@ -32,7 +33,9 @@ namespace detail
                       int         line,
                       TArgs...  args)
    {
-      // Log::msg(glFuncName, std::make_tuple(std::forward<TArgs>(args)...));
+#ifdef GL_LOG_ALL
+      Log::msg(glFuncName, std::make_tuple(std::forward<TArgs>(args)...));
+#endif
       auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
       const GLenum err = glGetError();
       if (GL_NO_ERROR != err)
@@ -44,8 +47,9 @@ namespace detail
       return static_cast<decltype(glFunc(args...))>(retVal);
    }
 }
-
 #define gl(glFunc, ...) detail::callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
-// #define gl(glFunc, ...) glFunc(__VA_ARGS__)
+#else // no logging
+#define gl(glFunc, ...) glFunc(__VA_ARGS__)
+#endif
 
 #endif // ENGINE_GL_HPP
