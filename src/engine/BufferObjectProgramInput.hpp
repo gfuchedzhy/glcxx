@@ -8,8 +8,7 @@
 #include "BufferObject.hpp"
 #include <memory>
 
-/// @brief holds state of program's buffer object, use it as TProgram template
-/// parameter
+/// @brief holds state of program's buffer object
 template<typename TAttribTraits>
 class TBufferObjectProgramInput
 {
@@ -20,12 +19,8 @@ class TBufferObjectProgramInput
       /// @brief buffer object underlying data type
       using tData = typename TAttribTraits::tData;
 
-      /// @brief ctstring containing glsl declaration of variable, attributes
-      /// declarations go to vertex shader only todo
-      template<typename TName>
-      using tVertexShaderDeclaration = typename TAttribTraits::template tDeclaration<TName>;
-      template<typename TName>
-      using tFragmentShaderDeclaration = cts("");
+      /// @brief ctstring containing glsl declaration of variable
+      template<typename TName> using tDeclaration = typename TAttribTraits::template tDeclaration<TName>;
 
       /// @brief constructor
       TBufferObjectProgramInput(const GLuint program, const char* name)

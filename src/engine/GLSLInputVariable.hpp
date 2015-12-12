@@ -217,6 +217,9 @@ namespace glsl
    {
          static_assert(N >= 1, "glsl type size should be at least 1");
 
+         /// @brief true if this type is attribute
+         static constexpr bool isAttribute = !isUniform;
+
          /// @brief basic type,  e.g. glm::vec2, or float for glm::tvec1, does not 
          template<typename T>
          using tBasicType = typename std::conditional<std::is_same<THolder<T, glm::defaultp>,
@@ -233,7 +236,7 @@ namespace glsl
          /// @brief variable size
          static constexpr size_t size = N;
 
-         /// @brief ctstring containing glsl declaration of variable, todo
+         /// @brief ctstring containing glsl declaration of variable
          template<typename TName>
          using tDeclaration = ct::string_cat<typename std::conditional<isUniform, cts("uniform "), cts("attribute ")>::type,
                                              tTypeName<TypeTo, EXTRA, THolder>, cts(" "),
@@ -244,7 +247,7 @@ namespace glsl
 
          /// @brief attach for attributes
          template<typename TDummy = int> // to enable sfinae
-         static void attach(GLint location, const tData* ptr = nullptr, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
+         static void attach(GLint location, const tData* ptr = nullptr, typename std::enable_if<isAttribute, TDummy>::type dummy = 0)
          {
             constexpr size_t locationsNum  = TTypeTraits<TypeTo, EXTRA, THolder>::locationsNum;
             constexpr size_t componentsNum = TTypeTraits<TypeTo, EXTRA, THolder>::componentsNum;
@@ -267,7 +270,7 @@ namespace glsl
 
          /// @brief detach for attributes
          template<typename TDummy = int> // to enable sfinae
-         static void detach(GLint location, typename std::enable_if<!isUniform, TDummy>::type dummy = 0)
+         static void detach(GLint location, typename std::enable_if<isAttribute, TDummy>::type dummy = 0)
          {
             constexpr size_t locationsNum  = TTypeTraits<TypeTo, EXTRA, THolder>::locationsNum;
             for (size_t n = 0; n < N; ++n)
@@ -294,22 +297,5 @@ using TUniform = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, 1
 
 template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
 using TUniformArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
-
-/// @brief todo
-template<typename TName, typename T>
-struct TNamedProgramInput : public T
-{
-      using tName = TName;
-
-      template<typename TInputName>
-      void set(const typename std::enable_if<std::is_same<TInputName, TName>::value, typename T::tValueType>::type& x)
-      {
-         T::set(x);
-      }
-
-      TNamedProgramInput(GLuint program)
-         : T(program, tName::chars)
-      {}
-};
 
 #endif // ENGINE_GLSLINPUTVARIABLE_HPP

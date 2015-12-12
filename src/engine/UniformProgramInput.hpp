@@ -7,17 +7,8 @@
 
 #include "GLSLInputVariable.hpp"
 
-/// @brief tags
-namespace tag
-{
-   struct vertex;
-   struct fragment;
-   struct all;
-}
-
-/// @brief holds state of program's uniform, use it as TProgram template
-/// parameter, tag tells which shader should contain given attribute
-template<typename DeclarationTag, typename TUniformTraits>
+/// @brief holds state of program's uniform
+template<typename TUniformTraits>
 class TUniformProgramInput
 {
       /// @brief location of program input inside program
@@ -30,17 +21,8 @@ class TUniformProgramInput
       /// @brief uniform datatype this program input accepts
       using tValueType = typename TUniformTraits::tData;
 
-      /// @brief ctstring containing glsl declaration of variable, todo
-      template<typename TName>
-      using tVertexShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::vertex>::value
-                                                                 || std::is_same<DeclarationTag, tag::all>::value,
-                                                                 typename TUniformTraits::template tDeclaration<TName>,
-                                                                 cts("")>::type;
-      template<typename TName>
-      using tFragmentShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::fragment>::value
-                                                                   || std::is_same<DeclarationTag, tag::all>::value,
-                                                                   typename TUniformTraits::template tDeclaration<TName>,
-                                                                   cts("")>::type;
+      /// @brief ctstring containing glsl declaration of variable
+      template<typename TName> using tDeclaration = typename TUniformTraits::template tDeclaration<TName>;
 
       /// @brief constructor
       TUniformProgramInput(const GLuint program, const char* name)
