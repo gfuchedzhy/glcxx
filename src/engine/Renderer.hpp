@@ -53,7 +53,7 @@ class TRenderer
       std::tuple<decltype(make_program(TProgramName{}))...> mPrograms;
 
       /// @brief current program ptr
-      CProgramObject* mCurrent;
+      CProgramBase* mCurrent;
 };
 
 #endif // ENGINE_RENDERER_HPP

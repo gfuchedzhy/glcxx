@@ -51,17 +51,15 @@ namespace
 void CBox::draw(const SContext& context) const
 {
    auto p = gRenderer.get<cts("colored")>();
-   p->set<cts("indices")>(indexBuffer());
    p->set<cts("aPos")>(vertexBuffer());
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
-   p->draw();
+   p->draw(indexBuffer());
 
    if (context.mDrawDebugFrames)
    {
       glLineWidth(2.f);
       p->set<cts("aPos")>(axesVertexBuffer());
-      p->set<cts("indices")>(0);
       for (int i = 0; i < 3; ++i)
       {
          p->set<cts("uColor")>(axesVertexData[axesIndices[2*i+1]]);

@@ -42,6 +42,5 @@ void CMesh::draw(const SContext& context) const
    if (mMaterial->mDiffuseMap)
       p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
 
-   p->set<cts("indices")>(mInd);
-   p->draw();
+   p->draw(mInd);
 }

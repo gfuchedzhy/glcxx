@@ -2,9 +2,9 @@
  * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "ProgramObject.hpp"
+#include "Program.hpp"
 
-CProgramObject::CProgramObject(const std::string& vertexSrc, const std::string& fragmentSrc)
+CProgramBase::CProgramBase(const std::string& vertexSrc, const std::string& fragmentSrc)
    : mVertexShader(vertexSrc, GL_VERTEX_SHADER)
    , mFragmentShader(fragmentSrc, GL_FRAGMENT_SHADER)
 {
@@ -26,12 +26,12 @@ CProgramObject::CProgramObject(const std::string& vertexSrc, const std::string& 
          gl(glGetProgramInfoLog, mObject, logLength, &len, str.get());
          Log::err("program link failed: ", str.get());
       }
-      this->~CProgramObject();
+      this->~CProgramBase();
       throw std::runtime_error{"program linking failed"};
    }
 }
 
-CProgramObject::~CProgramObject()
+CProgramBase::~CProgramBase()
 {
    Log::msg("destroying program ", mObject);
    gl(glDetachShader, mObject, mVertexShader.mObject);

@@ -26,7 +26,7 @@ class CShader
       /// @brief shader object id
       GLuint mObject = 0;
 
-      friend class CProgramObject;
+      friend class CProgramBase;
 };
 
 #endif // ENGINE_SHADER_HPP

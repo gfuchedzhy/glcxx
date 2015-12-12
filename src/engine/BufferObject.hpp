@@ -85,7 +85,7 @@ class CIndexBuffer : public TBufferObject<unsigned char>
       /// @brief draw with this index buffer
       void draw() const
       {
-         gl(glDrawElements, mMode, mSize, mType, 0);
+         gl(glDrawElements, mMode, mSize, mType, nullptr);
       }
 
       /// @brief unbind index buffer

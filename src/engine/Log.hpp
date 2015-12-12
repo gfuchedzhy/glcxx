@@ -33,6 +33,12 @@ namespace std
       return stream << (onOff.mValue ? "on" : "off");
    }
 
+   /// @brief stream nullptr
+   inline ostream& operator<<(ostream& stream, nullptr_t)
+   {
+      return stream << "null";
+   }
+
    /// @brief stream vec2
    template<typename T, glm::precision P>
    inline ostream& operator<<(ostream& stream, const glm::tvec2<T, P>& vec)

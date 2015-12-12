@@ -148,8 +148,7 @@ void CSphere::draw(const SContext& context) const
    p->set<cts("aNorm")>(buffer);
    p->set<cts("uModel")>(model());
    p->set<cts("uColor")>(mColor);
-   p->set<cts("indices")>(indexBuffer);
-   p->draw();
+   p->draw(indexBuffer);
 
    if (context.mDrawNormals)
    {
@@ -157,8 +156,7 @@ void CSphere::draw(const SContext& context) const
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      p->set<cts("indices")>(normalIndexBuffer);
-      p->draw();
+      p->draw(normalIndexBuffer);
    }
 }
 
@@ -172,8 +170,7 @@ void CTexturedSphere::draw(const SContext& context) const
    p->set<cts("uModel")>(model());
    p->set<cts("uTexture")>(mTexture);
    p->set<cts("uNormalMap")>(mNormalMap);
-   p->set<cts("indices")>(indexBuffer);
-   p->draw();
+   p->draw(indexBuffer);
 
    if (context.mDrawNormals)
    {
@@ -181,7 +178,6 @@ void CTexturedSphere::draw(const SContext& context) const
       p->set<cts("aPos")>(normalBuffer);
       p->set<cts("uModel")>(model());
       p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      p->set<cts("indices")>(normalIndexBuffer);
-      p->draw();
+      p->draw(normalIndexBuffer);
    }
 }
