@@ -89,18 +89,41 @@ namespace ct
    template<char c, typename TString>
    using string_strip_char = typename string_strip_char_impl<c, TString>::type;
 
-   /// @brief returns substring [start,end]
+   /// @brief returns substring [start,end)
    template<size_t start, size_t end, size_t...I, char...str>
    auto string_sub_helper(string<str...>, std::index_sequence<I...>)
-      -> string_cat<typename std::conditional< (I<start) || (I>end), string<>, string<str>>::type...>;
+      -> string_cat<typename std::conditional< (I<start) || (I>=end), string<>, string<str>>::type...>;
 
    /// @brief shortcut
-   template<size_t start, size_t end, typename TString>
+   template<typename TString, size_t start, size_t end = TString::length>
    using string_sub = decltype(string_sub_helper<start, end>(TString{}, std::make_index_sequence<TString::length>{}));
 
-   /// @brief shortcut, returns range [start,length]
-   template<size_t start, typename TString>
-   using string_sub_from = decltype(string_sub_helper<start, TString::length>(TString{}, std::make_index_sequence<TString::length>{}));
+   /// @brief string rfind
+   template<typename TString, typename TSubString> struct string_rfind;
+
+   /// @brief string rfind
+   template<char first, char... rest, char... substr>
+   struct string_rfind<string<first, rest...>, string<substr...>>
+   {
+         static constexpr int value = std::is_same<string<substr...>,
+                                                   string_sub<string<first, rest...>, 0, string<substr...>::length>
+                                                  >::value
+                                      ? int(sizeof...(rest)) : string_rfind<string<rest...>, string<substr...>>::value;
+   };
+
+   /// @brief string rfind
+   template<char... substr>
+   struct string_rfind<string<>, string<substr...>>
+   {
+         static constexpr int value = -1;
+   };
+
+   /// @brief string find
+   template<typename TString, typename TSubString> struct string_find
+   {
+         static constexpr int value = (-1 == string_rfind<TString, TSubString>::value) ? -1
+            : int(TString::length) - string_rfind<TString, TSubString>::value - 1;
+   };
 
    /// @brief string from impl
    template<typename T, T val> struct string_from_impl;
