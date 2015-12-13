@@ -125,6 +125,35 @@ namespace ct
             : int(TString::length) - string_rfind<TString, TSubString>::value - 1;
    };
 
+   /// @brief string single replace
+   template<typename TString, typename TOld, typename TNew>
+   struct string_single_rep_impl
+   {
+         using type = typename std::conditional<-1 == string_find<TString, TOld>::value,
+                                                TString,
+                                                string_cat<string_sub<TString, 0, string_find<TString, TOld>::value>,
+                                                           TNew,
+                                                           string_sub<TString, string_find<TString, TOld>::value + TOld::length>>
+                                                >::type;
+   };
+   /// @brief string single replace shortcut
+   template<typename TString, typename TOld, typename TNew>
+   using string_single_rep = typename string_single_rep_impl<TString, TOld, TNew>::type;
+
+   /// @brief string all replace termination helper
+   template<typename TOld, typename TNew, typename TString>
+   auto string_all_rep_helper(TString, std::integral_constant<bool, true>) -> TString;
+
+   /// @brief string all replace helper
+   template<typename TOld, typename TNew, typename TString>
+   auto string_all_rep_helper(TString, std::integral_constant<bool, false>)
+      -> decltype(string_all_rep_helper<TOld, TNew>(string_single_rep<TString, TOld, TNew>{},
+                                                    std::integral_constant<bool, std::is_same<TString, string_single_rep<TString, TOld, TNew>>::value>{}));
+
+   /// @brief string all replace shortcut
+   template<typename TString, typename TOld, typename TNew>
+   using string_all_rep = decltype(string_all_rep_helper<TOld, TNew>(TString{}, std::integral_constant<bool, false>{}));
+
    /// @brief string from impl
    template<typename T, T val> struct string_from_impl;
 
