@@ -152,6 +152,18 @@ namespace ct
    /// @brief string from shortcut
    template<typename T, T val>
    using string_from = typename string_from_impl<T, val>::type;
+
+   /// @brief string to upper case
+   template<typename T> struct string_toupper_impl;
+   template<char... c>
+   struct string_toupper_impl<string<c...>>
+   {
+         using type = string<((c >= 'a' && c <= 'z') ? (c + 'A' - 'a') : ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z')) ? c : '_')...>;
+   };
+
+   /// @brief string toupper shortcut
+   template<typename TString>
+   using string_toupper = typename string_toupper_impl<TString>::type;
 }
 
 /// @brief macros to generate compile time string type, maximum length supported
