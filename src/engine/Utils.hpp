@@ -65,18 +65,24 @@ namespace ct
    template<char... s>
    constexpr char string<s...>::chars[];
 
-   /// @brief helper function to deduce type of string concatanation
+   /// @brief string concatanation impl
+   template<typename... TStrings> struct string_cat_impl;
    template<char... str1, char... str2, typename... TRestStrings>
-   auto string_cat_helper(string<str1...> s1, string<str2...> s2, TRestStrings... rest)
-      -> decltype(string_cat_helper(std::declval<string<str1..., str2...>>(), rest...));
+   struct string_cat_impl<string<str1...>, string<str2...>, TRestStrings...>
+   {
+      using type = typename string_cat_impl<string<str1..., str2...>, TRestStrings...>::type;
+   };
 
-   /// @brief termination helper function to deduce type of string concatanation
+   /// @brief string concatanation impl terminator
    template<char... str>
-   auto string_cat_helper(string<str...>) -> string<str...>;
+   struct string_cat_impl<string<str...>>
+   {
+      using type = string<str...>;
+   };
 
-   /// @brief string concatanation
+   /// @brief string concatanation shortcut
    template<typename... TStrings>
-   using string_cat = decltype(string_cat_helper(std::declval<TStrings>()...));
+   using string_cat = typename string_cat_impl<TStrings...>::type;
 
    /// @brief strip all occurances of given char from given ct string
    template<char c, typename TString> struct string_strip_char_impl;
@@ -131,7 +137,7 @@ namespace ct
    {
          using type = typename std::conditional<-1 == string_find<TString, TOld>::value,
                                                 TString,
-                                                string_cat<string_sub<TString, 0, string_find<TString, TOld>::value>,
+                                                string_cat<string_sub<TString, 0, size_t(string_find<TString, TOld>::value)>,
                                                            TNew,
                                                            string_sub<TString, string_find<TString, TOld>::value + TOld::length>>
                                                 >::type;
@@ -140,19 +146,25 @@ namespace ct
    template<typename TString, typename TOld, typename TNew>
    using string_single_rep = typename string_single_rep_impl<TString, TOld, TNew>::type;
 
-   /// @brief string all replace termination helper
-   template<typename TOld, typename TNew, typename TString>
-   auto string_all_rep_helper(TString, std::integral_constant<bool, true>) -> TString;
+   /// @brief string replace all impl
+   template<typename TString, typename TOld, typename TNew, bool noOccurances = false>
+   struct string_all_rep_impl
+   {
+         using single_rep = string_single_rep<TString, TOld, TNew>;
+         using type = typename string_all_rep_impl<single_rep, TOld, TNew,
+                                                   std::is_same<TString, single_rep>::value>::type;
+   };
 
-   /// @brief string all replace helper
-   template<typename TOld, typename TNew, typename TString>
-   auto string_all_rep_helper(TString, std::integral_constant<bool, false>)
-      -> decltype(string_all_rep_helper<TOld, TNew>(string_single_rep<TString, TOld, TNew>{},
-                                                    std::integral_constant<bool, std::is_same<TString, string_single_rep<TString, TOld, TNew>>::value>{}));
-
-   /// @brief string all replace shortcut
+   /// @brief string replace all impl terminator
    template<typename TString, typename TOld, typename TNew>
-   using string_all_rep = decltype(string_all_rep_helper<TOld, TNew>(TString{}, std::integral_constant<bool, false>{}));
+   struct string_all_rep_impl<TString, TOld, TNew, true>
+   {
+         using type = TString;
+   };
+
+   /// @brief string replace all shortcut
+   template<typename TString, typename TOld, typename TNew>
+   using string_all_rep = typename string_all_rep_impl<TString, TOld, TNew>::type;
 
    /// @brief string from impl
    template<typename T, T val> struct string_from_impl;
