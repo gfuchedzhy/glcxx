@@ -6,6 +6,7 @@
 #define ENGINE_UTILS_HPP
 
 #include <utility>
+#include <tuple>
 #include <cmath>
 #include <random>
 
@@ -18,6 +19,29 @@ extern std::mt19937 random_gen;
 /// @brief ct stands for compile time
 namespace ct
 {
+   /// @brief function traits
+   template<typename Func> struct function_traits;
+
+   /// @brief specialization for free functions
+   template<typename R, typename... Args>
+   struct function_traits<R(Args...)>
+   {
+         using ret_type = R;
+
+         template<size_t I>
+         using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
+   };
+
+   /// @brief specialization for member functions
+   template<typename T, typename R, typename... Args>
+   struct function_traits<R(T::*)(Args...)>
+   {
+         using ret_type = R;
+
+         template<size_t I>
+         using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
+   };
+
    /// @brief wrapper to name type T with ctstring name TName
    template<typename TName, typename T>
    struct TNamedType
