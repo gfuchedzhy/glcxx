@@ -92,7 +92,7 @@ struct TTextureProgramInput : public CTextureProgramInputImpl
 
       /// @brief ctstring containing glsl declaration of texture uniform
       template<typename TName>
-      using tDeclaration = ct::string_cat<cts("uniform sampler2D "), TName, cts(";")>;
+      using tDeclaration = ct::string_cat<cts("uniform sampler2D "), TName, cts(";\n")>;
 
       /// @brief constructor
       TTextureProgramInput(const GLuint program, const char* name)

@@ -243,7 +243,7 @@ namespace glsl
                                              TName,
                                              typename std::conditional<1==size, cts(""),
                                                                        ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
-                                             cts(";")>;
+                                             cts(";\n")>;
 
          /// @brief attach for attributes
          template<typename TDummy = int> // to enable sfinae

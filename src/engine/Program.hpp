@@ -56,17 +56,31 @@ class CProgramBase
       CShader mFragmentShader;
 };
 
-template<typename... TProgramInput>
-class TProgram : public CProgramBase, public TProgramInputs<TProgramInput...>
+template<typename TName, typename TProgramInputs> class TProgram;
+
+template<typename TName, typename... TProgramInput>
+class TProgram<TName, TProgramInputs<TProgramInput...>> : public CProgramBase, public TProgramInputs<TProgramInput...>
 {
    public:
+      /// @brief program name
+      using tName = TName;
+
+      /// @brief program defines
+      using tDefines = ct::string_all_rep<
+         ct::string_toupper<typename std::conditional<-1 == ct::string_find<TName, cts("-")>::value,
+                                                      cts(""),
+                                                      ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>
+                                                      >::type>,
+         cts("_"),
+         cts("\n#define ")>;
+
       /// @brief ctstring containing glsl declarations of all program inputs
-      using tVertexShaderDeclaration = ct::string_cat<typename TProgramInput::tVertexShaderDeclaration...>;
-      using tFragmentShaderDeclaration = ct::string_cat<typename TProgramInput::tFragmentShaderDeclaration...>;
+      using tVertexShaderDeclaration = ct::string_cat<tDefines, cts("\n#define VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration...>;
+      using tFragmentShaderDeclaration = ct::string_cat<tDefines, cts("\n#define FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration...>;
 
       /// @brief constructor
-      TProgram(const std::string& vertexSrc, const std::string& fragmentSrc)
-         : CProgramBase(tVertexShaderDeclaration::chars + vertexSrc, tFragmentShaderDeclaration::chars + fragmentSrc)
+      TProgram(const std::string& src)
+         : CProgramBase(tVertexShaderDeclaration::chars + src, tFragmentShaderDeclaration::chars + src)
          , TProgramInputs<TProgramInput...>(mObject)
       {}
 

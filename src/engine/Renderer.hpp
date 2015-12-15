@@ -7,7 +7,7 @@
 
 #include "Program.hpp"
 
-/// @brief renderer, implements lazy program creation and program selection
+/// @brief renderer, implements program creation and program selection
 /// @tparam list of program names
 template<typename... TProgramName>
 class TRenderer
@@ -15,6 +15,14 @@ class TRenderer
       /// @brief disabled stuff
       TRenderer(const TRenderer&) = delete;
       TRenderer& operator=(const TRenderer& other) = delete;
+
+      /// @brief base program name, e.g. shaded-tex-nmap -> shaded
+      template<typename TFullName>
+      using base_name = ct::string_sub<TFullName, 0, ct::string_find<TFullName, cts("-")>::value>;
+
+      /// @brief program type by its name
+      template<typename TName>
+      using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
 
    public:
       TRenderer() = default;
@@ -25,7 +33,7 @@ class TRenderer
       /// custom context initialization
       void init()
       {
-         mPrograms = std::make_tuple(make_program(TProgramName{})...);
+         mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(programSrc<base_name<TProgramName>>())...);
       }
 
       /// @brief searches given program by name in compile time, creates it if
@@ -40,7 +48,7 @@ class TRenderer
          constexpr int index = ct::TTypeIndexInPack<TName, TProgramName...>::value;
          static_assert(-1 != index, "program name not found");
          auto p = std::get<index>(mPrograms).get();
-         if (p != mCurrent)
+         if (static_cast<CProgramBase*>(p) != mCurrent)
          {
             p->select();
             mCurrent = p;
@@ -50,7 +58,7 @@ class TRenderer
 
    private:
       /// @brief program list
-      std::tuple<decltype(make_program(TProgramName{}))...> mPrograms;
+      std::tuple<std::unique_ptr<program_type<TProgramName>>...> mPrograms;
 
       /// @brief current program ptr
       CProgramBase* mCurrent;

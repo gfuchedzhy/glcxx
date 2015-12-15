@@ -40,7 +40,7 @@ namespace
 
 void CTexturedRect::draw(const SContext&) const
 {
-   auto p = gRenderer.get<cts("texturedPolygon")>();
+   auto p = gRenderer.get<cts("regular-tex")>();
    p->set<cts("aPos")>(posBuffer());
    p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uModel")>(model());
@@ -50,7 +50,7 @@ void CTexturedRect::draw(const SContext&) const
 
 void CTexturedBillboard::draw(const SContext&) const
 {
-   auto p = gRenderer.get<cts("texturedBillboard")>();
+   auto p = gRenderer.get<cts("billboard-tex")>();
    p->set<cts("aPos")>(posBuffer());
    p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uPos")>(mPos);
@@ -61,7 +61,7 @@ void CTexturedBillboard::draw(const SContext&) const
 
 void CAnimatedBillboard::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("animationObject")>();
+   auto p = gRenderer.get<cts("billboard-tex-sprite")>();
    p->set<cts("aPos")>(posBuffer());
    p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uPos")>(mPos);
@@ -74,7 +74,7 @@ void CAnimatedBillboard::draw(const SContext& context) const
 
 void CHealthBar::draw(const SContext&) const
 {
-   auto p = gRenderer.get<cts("healthbar")>();
+   auto p = gRenderer.get<cts("billboard-hb")>();
    p->set<cts("aPos")>(posBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);

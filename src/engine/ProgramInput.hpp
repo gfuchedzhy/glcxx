@@ -93,4 +93,19 @@ struct TProgramInputs<T> : public T
       using T::set;
 };
 
+/// @brief append some program inputs to this input list
+namespace detail
+{
+   template<typename TInput, typename... T> struct TPIAppendImpl;
+   template<typename... T1, typename... T2>
+   struct TPIAppendImpl<TProgramInputs<T1...>, T2...>
+   {
+         using type = TProgramInputs<T1..., T2...>;
+   };
+}
+
+/// @brief shortcut
+template<typename TInput, typename... T>
+using pinput_append = typename detail::TPIAppendImpl<TInput, T...>::type;
+
 #endif

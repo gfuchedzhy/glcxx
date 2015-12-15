@@ -22,7 +22,7 @@ CApp::CApp()
    mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
    mSphere.normalMap(std::make_shared<CTexture>("res/earth-nmap.dds"));
 
-   mCamera.perspective(75, mAspect, 10, 2e4);
+   mCamera.perspective(75, mAspect, 1, 2e4);
    mCamera.eyeDistance(75);
    mCamera.pitch(20);
 
@@ -92,7 +92,7 @@ void CApp::update(float timeDelta)
               timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
       animate([this]{return mCamera.eyeDistance();},
               [this](float val){mCamera.eyeDistance(val);},
-              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 20.f, 500.f);
+              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
    }
 
    if (mIsCameraControl && animate([this]{return mRelativeCameraOrientation;},
@@ -138,29 +138,34 @@ void CApp::update(float timeDelta)
    }
 
    /// @todo make automatic uniforms in renderer to remove this code
-   auto p = gRenderer.get<cts("colored")>();
-   p->set<cts("uViewProj")>(mCamera.viewProj());
-   auto p2 = gRenderer.get<cts("texturedPolygon")>();
-   p2->set<cts("uViewProj")>(mCamera.viewProj());
-   auto p3 = gRenderer.get<cts("texturedBillboard")>();
-   p3->set<cts("uViewProj")>(mCamera.viewProj());
-   p3->set<cts("uUp")>(mCamera.up());
-   p3->set<cts("uRight")>(mCamera.right());
-   auto p4 = gRenderer.get<cts("healthbar")>();
-   p4->set<cts("uViewProj")>(mCamera.viewProj());
-   p4->set<cts("uUp")>(mCamera.up());
-   p4->set<cts("uRight")>(mCamera.right());
-   auto p5 = gRenderer.get<cts("coloredIlluminated")>();
-   p5->set<cts("uViewProj")>(mCamera.viewProj());
-   p5->set<cts("uSunDir")>({0, 0, 1});
-   p5->set<cts("uEye")>(mCamera.eye());
-   auto p6 = gRenderer.get<cts("animationObject")>();
-   p6->set<cts("uViewProj")>(mCamera.viewProj());
-   p6->set<cts("uRightStabilized")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back())));
-   auto p7 = gRenderer.get<cts("texturedIlluminated")>();
-   p7->set<cts("uViewProj")>(mCamera.viewProj());
-   p7->set<cts("uSunDir")>({0, 0, 1});
-   p7->set<cts("uEye")>(mCamera.eye());
+   {  auto p = gRenderer.get<cts("regular-col")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj()); }
+   {  auto p = gRenderer.get<cts("regular-tex")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj()); }
+   {  auto p = gRenderer.get<cts("shaded-col")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uEye")>(mCamera.eye()); }
+   {  auto p = gRenderer.get<cts("shaded-tex")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uEye")>(mCamera.eye()); }
+   {  auto p = gRenderer.get<cts("shaded-tex-nmap")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uEye")>(mCamera.eye()); }
+   {  auto p = gRenderer.get<cts("billboard-tex")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uUp")>(mCamera.up());
+      p->set<cts("uRight")>(mCamera.right()); }
+   {  auto p = gRenderer.get<cts("billboard-tex-sprite")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uUp")>({0, 0, 1});
+      p->set<cts("uRight")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back()))); }
+   {  auto p = gRenderer.get<cts("billboard-hb")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uUp")>(mCamera.up());
+      p->set<cts("uRight")>(mCamera.right()); }
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
