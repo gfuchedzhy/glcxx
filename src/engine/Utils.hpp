@@ -42,39 +42,34 @@ namespace ct
          using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
    };
 
-   /// @brief wrapper to name type T with ctstring name TName
-   template<typename TName, typename T>
-   struct TNamedType
+   /// @brief append more types to given tuple
+   template<typename Tuple, typename... T>
+   using tuple_append = decltype(std::tuple_cat(std::declval<Tuple>(), std::declval<std::tuple<T...>>()));
+
+   /// @brief value contains index of type in tuple
+   template<typename T, typename Tuple> struct type_index_in_pack_impl;
+
+   /// @brief specialization for tuple
+   template<typename T, typename T1, typename... TRest>
+   struct type_index_in_pack_impl<T, std::tuple<T1, TRest...>>
    {
-         using tName = TName;
-         using type = T;
+         static constexpr int rIndex = std::is_same<T, T1>::value ? sizeof...(TRest) : type_index_in_pack_impl<T, std::tuple<TRest...>>::rIndex;
+         static constexpr int value = (-1 == rIndex) ? -1 : sizeof...(TRest) - rIndex;
    };
 
-   /// @brief tuple traits
-   template<typename NamedTuple>
-   struct TTupleTraits
+   /// @brief terminator specialization for tuple
+   template<typename T>
+   struct type_index_in_pack_impl<T, std::tuple<>>
    {
-         /// @brief get index of named tuple at compile time
-         template<typename TName, int index = std::tuple_size<NamedTuple>::value - 1>
-         static constexpr int indexByName(TName, std::integral_constant<int, index> = std::integral_constant<int, index>{})
-         {
-            return std::is_same<TName, typename std::tuple_element<index, NamedTuple>::type::tName>::value ? index :
-               indexByName(TName{}, std::integral_constant<int, index-1>{});
-         }
-
-         /// @brief terminator indexByName
-         template<typename TName>
-         static constexpr int indexByName(TName, std::integral_constant<int, -1>)
-         {
-            return -1;
-         }
+         static constexpr int rIndex = -1;
+         static constexpr int value = -1;
    };
 
-   /// @brief tuple traits
-   template<typename T, typename... Types>
-   struct TTypeIndexInPack
+   /// @brief shortcut
+   template<typename T, typename... Pack>
+   struct type_index_in_pack
    {
-         static constexpr int value = TTupleTraits<std::tuple<TNamedType<Types, Types>...>>::indexByName(T{});
+         static constexpr int value = type_index_in_pack_impl<T, std::tuple<Pack...>>::value;
    };
 
    /// @brief compile time string

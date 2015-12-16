@@ -45,7 +45,7 @@ class TRenderer
       template<typename TName>
       auto get()
       {
-         constexpr int index = ct::TTypeIndexInPack<TName, TProgramName...>::value;
+         constexpr int index = ct::type_index_in_pack<TName, TProgramName...>::value;
          static_assert(-1 != index, "program name not found");
          auto p = std::get<index>(mPrograms).get();
          if (static_cast<CProgramBase*>(p) != mCurrent)

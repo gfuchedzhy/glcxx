@@ -87,9 +87,6 @@ template<GLint samplerID = 0>
 struct TTextureProgramInput : public CTextureProgramInputImpl
 {
    public:
-      /// @brief type of texture objects this program input accepts
-      using tValueType = tTexturePtr;
-
       /// @brief ctstring containing glsl declaration of texture uniform
       template<typename TName>
       using tDeclaration = ct::string_cat<cts("uniform sampler2D "), TName, cts(";\n")>;

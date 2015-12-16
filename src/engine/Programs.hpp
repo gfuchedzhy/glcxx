@@ -7,25 +7,26 @@
 
 #include "Program.hpp"
 #include "Texture.hpp"
+#include <functional>
 
 template<typename TName>
 const char* programSrc();
 
 #define inp_by_name(name) decltype(progInputDef(cts(name){}))
 
-auto progInputDef(cts("regular")) -> TProgramInputs<
+auto progInputDef(cts("regular")) -> std::tuple<
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TProgramInput<cts("uModel"), TUniform<glm::tmat4x4, float>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4, float>>>;
 
-auto progInputDef(cts("regular-col")) -> pinput_append<inp_by_name("regular"),
+auto progInputDef(cts("regular-col")) -> ct::tuple_append<inp_by_name("regular"),
    TProgramInput<cts("uColor"), TUniform<glm::tvec3, float>, tag::fragment>>;
 
-auto progInputDef(cts("regular-tex")) -> pinput_append<inp_by_name("regular"),
+auto progInputDef(cts("regular-tex")) -> ct::tuple_append<inp_by_name("regular"),
    TProgramInput<cts("aUV"), TAttrib<glm::tvec2, float>>,
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
 
-auto progInputDef(cts("shaded")) -> TProgramInputs<
+auto progInputDef(cts("shaded")) -> std::tuple<
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TProgramInput<cts("aNorm"), TAttrib<glm::tvec3, float>>,
    TProgramInput<cts("uModel"), TUniform<glm::tmat4x4, float>>,
@@ -33,18 +34,18 @@ auto progInputDef(cts("shaded")) -> TProgramInputs<
    TProgramInput<cts("uSunDir"), TUniform<glm::tvec3, float>, tag::all>,
    TProgramInput<cts("uEye"), TUniform<glm::tvec3, float>>>;
 
-auto progInputDef(cts("shaded-col")) -> pinput_append<inp_by_name("shaded"),
+auto progInputDef(cts("shaded-col")) -> ct::tuple_append<inp_by_name("shaded"),
    TProgramInput<cts("uColor"), TUniform<glm::tvec3, float>, tag::fragment>>;
 
-auto progInputDef(cts("shaded-tex")) -> pinput_append<inp_by_name("shaded"),
+auto progInputDef(cts("shaded-tex")) -> ct::tuple_append<inp_by_name("shaded"),
    TProgramInput<cts("aUV"), TAttrib<glm::tvec2, float>>,
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
 
-auto progInputDef(cts("shaded-tex-nmap")) -> pinput_append<inp_by_name("shaded-tex"),
+auto progInputDef(cts("shaded-tex-nmap")) -> ct::tuple_append<inp_by_name("shaded-tex"),
    TProgramInput<cts("aTan"), TAttrib<glm::tvec3, float>>,
    TProgramInput<cts("uNormalMap"), TTextureProgramInput<1>, tag::fragment>>;
 
-auto progInputDef(cts("billboard")) -> TProgramInputs<
+auto progInputDef(cts("billboard")) -> std::tuple<
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4, float>>,
    TProgramInput<cts("uPos"), TUniform<glm::tvec3, float>>,
@@ -53,15 +54,15 @@ auto progInputDef(cts("billboard")) -> TProgramInputs<
    TProgramInput<cts("uRight"), TUniform<glm::tvec3, float>>,
    TProgramInput<cts("uUp"), TUniform<glm::tvec3, float>>>;
 
-auto progInputDef(cts("billboard-tex")) -> pinput_append<inp_by_name("billboard"),
+auto progInputDef(cts("billboard-tex")) -> ct::tuple_append<inp_by_name("billboard"),
    TProgramInput<cts("aUV"), TAttrib<glm::tvec2, float>>,
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
 
-auto progInputDef(cts("billboard-tex-sprite")) -> pinput_append<inp_by_name("billboard-tex"),
+auto progInputDef(cts("billboard-tex-sprite")) -> ct::tuple_append<inp_by_name("billboard-tex"),
    TProgramInput<cts("uCurrentFrame"), TUniform<glm::tvec1, int>>,
    TProgramInput<cts("uFrameNumber"), TUniform<glm::tvec1, int>>>;
 
-auto progInputDef(cts("billboard-hb")) -> pinput_append<inp_by_name("billboard"),
+auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboard"),
    TProgramInput<cts("uValue"), TUniform<glm::tvec1, float>, tag::fragment>>;
 
 #include "Renderer.hpp"

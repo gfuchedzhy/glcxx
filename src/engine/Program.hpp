@@ -56,11 +56,57 @@ class CProgramBase
       CShader mFragmentShader;
 };
 
-template<typename TName, typename TProgramInputs> class TProgram;
-
-template<typename TName, typename... TProgramInput>
-class TProgram<TName, TProgramInputs<TProgramInput...>> : public CProgramBase, public TProgramInputs<TProgramInput...>
+/// @brief value is true it T has valid instance of set<TName> member
+template<typename TName, typename T>
+struct THasNamedSetMethod
 {
+   private:
+      template<typename U, typename = decltype(&U::template set<TName>)>
+      static std::true_type test(int*);
+      template<typename U>
+      static std::false_type test(...);
+
+   public:
+      static constexpr bool value = decltype(test<T>(nullptr))::value;
+};
+
+/// @brief specialization for tuple searches for tuple member that has valid
+/// set<TName> member
+template<typename TName, typename T1, typename... TRest>
+struct THasNamedSetMethod<TName, std::tuple<T1, TRest...>>
+{
+   static constexpr int rIndex = THasNamedSetMethod<TName, T1>::value ? sizeof...(TRest) : THasNamedSetMethod<TName, std::tuple<TRest...>>::rIndex;
+   static constexpr int index  = (-1 == rIndex) ? -1 : sizeof...(TRest) - rIndex;
+   static constexpr bool value = (-1 != index);
+};
+
+/// @brief terminator of specialization for tuple
+template<typename TName>
+struct THasNamedSetMethod<TName, std::tuple<>>
+{
+   static constexpr int rIndex = -1;
+   static constexpr int index  = -1;
+   static constexpr bool value = false;
+};
+
+/// @brief program
+template<typename TName, typename TProgramInputTuple> class TProgram;
+
+/// @brief only tuple of program inputs is a valid parameter for program
+template<typename TName, typename... TProgramInput>
+class TProgram<TName, std::tuple<TProgramInput...>> : public CProgramBase, public TProgramInput...
+{
+      /// @brief inputs tuple
+      using tInputs = std::tuple<TProgramInput...>;
+
+      /// @brief returns input type which has valid set<TSetName> method
+      template<typename TSetName>
+      using input_type = typename std::tuple_element<THasNamedSetMethod<TSetName, tInputs>::index, tInputs>::type;
+
+      /// @brief returns argument type of set<TSetName> method found in input tuple
+      template<typename TSetName>
+      using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
+
    public:
       /// @brief program name
       using tName = TName;
@@ -81,7 +127,7 @@ class TProgram<TName, TProgramInputs<TProgramInput...>> : public CProgramBase, p
       /// @brief constructor
       TProgram(const std::string& src)
          : CProgramBase(tVertexShaderDeclaration::chars + src, tFragmentShaderDeclaration::chars + src)
-         , TProgramInputs<TProgramInput...>(mObject)
+         , TProgramInput(mObject)...
       {}
 
       /// @brief @see CProgramBase::select
@@ -89,6 +135,17 @@ class TProgram<TName, TProgramInputs<TProgramInput...>> : public CProgramBase, p
       {
          CProgramBase::select();
          swallow(TProgramInput::select());
+      }
+
+      /// @brief forward named set method to base class which has valid
+      /// definition of it
+      /// @note unfortunately it is impossible to write something like
+      /// using TProgramInput::set...; to bring all base setter into current
+      /// class' scope, so we need this forwarding function
+      template<typename TSetName>
+      void set(set_arg_type<TSetName> value)
+      {
+         input_type<TSetName>::template set<TSetName>(value);
       }
 };
 

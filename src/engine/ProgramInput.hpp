@@ -56,7 +56,8 @@ struct TProgramInput : public TProgramInputSelector<T>::type
                                                                    cts("")>::type;
       /// @brief forward named set to impl set
       template<typename TName>
-      void set(const typename std::enable_if<std::is_same<tName, TName>::value, typename tImpl::tValueType>::type& value)
+      typename std::enable_if<std::is_same<tName, TName>::value>::type
+      set(typename ct::function_traits<decltype(&tImpl::set)>::template arg_type<0> value)
       {
          tImpl::set(value);
       }
@@ -65,47 +66,5 @@ struct TProgramInput : public TProgramInputSelector<T>::type
          : tImpl(program, tName::chars)
       {}
 };
-
-/// @brief aggregator of program inputs, using recursive inheritance to bring
-/// all set methods visible for overload in derived class
-template<typename T, typename... TRest>
-struct TProgramInputs : public T, public TProgramInputs<TRest...>
-{
-      /// @brief constructor
-      TProgramInputs(GLuint program)
-         : T(program)
-         , TProgramInputs<TRest...>(program)
-      {}
-
-      /// @brief pull set visibility from base classes
-      using T::set;
-      using TProgramInputs<TRest...>::set;
-};
-
-/// @brief terminating partial specialization of TProgramInputs
-template<typename T>
-struct TProgramInputs<T> : public T
-{
-      /// @brief inherit constructor
-      using T::T;
-
-      /// @brief pull set visibility from base classes
-      using T::set;
-};
-
-/// @brief append some program inputs to this input list
-namespace detail
-{
-   template<typename TInput, typename... T> struct TPIAppendImpl;
-   template<typename... T1, typename... T2>
-   struct TPIAppendImpl<TProgramInputs<T1...>, T2...>
-   {
-         using type = TProgramInputs<T1..., T2...>;
-   };
-}
-
-/// @brief shortcut
-template<typename TInput, typename... T>
-using pinput_append = typename detail::TPIAppendImpl<TInput, T...>::type;
 
 #endif

@@ -18,9 +18,6 @@ class TUniformProgramInput
       typename TUniformTraits::tData mUniformData;
 
    public:
-      /// @brief uniform datatype this program input accepts
-      using tValueType = typename TUniformTraits::tData;
-
       /// @brief ctstring containing glsl declaration of variable
       template<typename TName> using tDeclaration = typename TUniformTraits::template tDeclaration<TName>;
 
@@ -30,7 +27,7 @@ class TUniformProgramInput
       {}
 
       /// @brief set uniform as program input
-      void set(const tValueType& value)
+      void set(const typename TUniformTraits::tData& value)
       {
          if (mUniformData != value)
          {
