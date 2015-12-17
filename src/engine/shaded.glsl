@@ -56,7 +56,7 @@ void main()
 #endif
 
    vec4 diffuse = vec4(uDiffuse, 1.0)*diffuseIntensity*clamp(dot(norm, sunDirNorm), 0, 1);
-   vec4 ambient = vec4(uAmbient, 1.0)*ambientIntensity;
+   vec4 ambient = vec4(uAmbient, 1.0)*ambientIntensity*clamp(dot(norm, geomNorm), 0, 1);
    vec3 reflected = reflect(-sunDirNorm, norm);
    vec4 specular = step(0.0, dot(sunDirNorm, geomNorm)) * vec4(uSpecular, 1.0)
       * specularIntensity * pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), uShininess);
