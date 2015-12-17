@@ -38,10 +38,9 @@ void main()
 
 #elif defined FRAGMENT
 
-const vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
-const float diffuseIntensity = 0.7;
-const float ambientIntensity = 0.5;
-const float specularIntensity = 0.8;
+const float diffuseIntensity = 1.3;
+const float ambientIntensity = 3;
+const float specularIntensity = 2;
 
 void main()
 {
@@ -56,11 +55,11 @@ void main()
    vec3 sunDirNorm = uSunDir;
 #endif
 
-   vec4 diffuse = lightColor*diffuseIntensity*clamp(dot(norm, sunDirNorm), 0, 1);
-   vec4 ambient = lightColor*ambientIntensity;
+   vec4 diffuse = vec4(uDiffuse, 1.0)*diffuseIntensity*clamp(dot(norm, sunDirNorm), 0, 1);
+   vec4 ambient = vec4(uAmbient, 1.0)*ambientIntensity;
    vec3 reflected = reflect(-sunDirNorm, norm);
-   vec4 specular = step(0.0, dot(sunDirNorm, geomNorm)) * lightColor
-      * specularIntensity * pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), 20);
+   vec4 specular = step(0.0, dot(sunDirNorm, geomNorm)) * vec4(uSpecular, 1.0)
+      * specularIntensity * pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), uShininess);
 
 #ifdef COL
    vec4 color = vec4(uColor, 1.0);
@@ -68,7 +67,7 @@ void main()
 #ifdef TEX
    vec4 color = texture2D(uTexture, vUV);
 #endif
-   gl_FragColor = color * (ambient + diffuse) + specular;
+   gl_FragColor = color * (ambient + diffuse + specular/color.w);
 }
 
 #endif

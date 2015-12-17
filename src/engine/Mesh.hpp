@@ -30,6 +30,9 @@ class CMesh : public IRenderable
       /// @brief normal buffer
       std::shared_ptr<TBufferObject<glm::vec3>> mNormals;
 
+      /// @brief tangent buffer
+      std::shared_ptr<TBufferObject<glm::vec3>> mTan;
+
    public:
       /// @brief constructor
       CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material);

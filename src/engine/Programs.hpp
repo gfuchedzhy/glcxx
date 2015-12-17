@@ -31,6 +31,10 @@ auto progInputDef(cts("shaded")) -> std::tuple<
    TProgramInput<cts("aNorm"), TAttrib<glm::tvec3, float>>,
    TProgramInput<cts("uModel"), TUniform<glm::tmat4x4, float>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4, float>>,
+   TProgramInput<cts("uAmbient"), TUniform<glm::tvec3, float>, tag::fragment>,
+   TProgramInput<cts("uDiffuse"), TUniform<glm::tvec3, float>, tag::fragment>,
+   TProgramInput<cts("uSpecular"), TUniform<glm::tvec3, float>, tag::fragment>,
+   TProgramInput<cts("uShininess"), TUniform<glm::tvec1, float>, tag::fragment>,
    TProgramInput<cts("uSunDir"), TUniform<glm::tvec3, float>, tag::all>,
    TProgramInput<cts("uEye"), TUniform<glm::tvec3, float>>>;
 

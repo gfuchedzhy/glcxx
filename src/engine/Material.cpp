@@ -28,6 +28,8 @@ SMaterial::SMaterial(const aiMaterial& material, const std::string& textureDirec
    if (AI_SUCCESS == material.GetTexture(aiTextureType_DIFFUSE, 0, &path))
       mDiffuseMap = std::make_shared<CTexture>(textureDirectory + path.data);
 
-   if (AI_SUCCESS == material.GetTexture(aiTextureType_NORMALS, 0, &path))
+   /// @todo bug in assimp library: normal map is available as height map for
+   /// some reason
+   if (AI_SUCCESS == material.GetTexture(aiTextureType_HEIGHT, 0, &path))
       mNormalMap = std::make_shared<CTexture>(textureDirectory + path.data);
 }

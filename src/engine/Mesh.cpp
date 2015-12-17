@@ -24,6 +24,16 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
       uv.push_back({mesh.mTextureCoords[0][t].x, -mesh.mTextureCoords[0][t].y});
    mUV = std::make_shared<TBufferObject<glm::vec2>>(&uv[0], mesh.mNumVertices);
 
+   if (!mesh.HasNormals())
+      throw std::runtime_error{"loaded mesh doesn't have normals"};
+   mNormals = std::make_shared<TBufferObject<glm::vec3>>(reinterpret_cast<const glm::vec3*>(mesh.mNormals),
+                                                         mesh.mNumVertices);
+
+   if (material->mNormalMap && !mesh.HasTangentsAndBitangents())
+      throw std::runtime_error{"loaded mesh has normal map but doesn't have tangents"};
+   mTan = std::make_shared<TBufferObject<glm::vec3>>(reinterpret_cast<const glm::vec3*>(mesh.mTangents),
+                                                     mesh.mNumVertices);
+
    std::vector<GLushort> indices;
    for (size_t f = 0; f < mesh.mNumFaces; ++f)
    {
@@ -35,12 +45,36 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
 
 void CMesh::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("regular-tex")>();
-   p->set<cts("aPos")>(mPos);
-   p->set<cts("aUV")>(mUV);
-
-   if (mMaterial->mDiffuseMap)
+   assert(mMaterial->mDiffuseMap);
+   if (mMaterial->mNormalMap)
+   {
+      auto p = gRenderer.get<cts("shaded-tex-nmap")>();
+      p->set<cts("aPos")>(mPos);
+      p->set<cts("aUV")>(mUV);
       p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
 
-   p->draw(mInd);
+      p->set<cts("aNorm")>(mNormals);
+      p->set<cts("uAmbient")>(mMaterial->mAmbient);
+      p->set<cts("uDiffuse")>(mMaterial->mDiffuse);
+      p->set<cts("uSpecular")>(mMaterial->mSpecular);
+      p->set<cts("uShininess")>(mMaterial->mShininess);
+
+      p->set<cts("aTan")>(mTan);
+      p->set<cts("uNormalMap")>(mMaterial->mNormalMap);
+      p->draw(mInd);
+   }
+   else
+   {
+      auto p = gRenderer.get<cts("shaded-tex")>();
+      p->set<cts("aPos")>(mPos);
+      p->set<cts("aUV")>(mUV);
+      p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
+
+      p->set<cts("aNorm")>(mNormals);
+      p->set<cts("uAmbient")>(mMaterial->mAmbient);
+      p->set<cts("uDiffuse")>(mMaterial->mDiffuse);
+      p->set<cts("uSpecular")>(mMaterial->mSpecular);
+      p->set<cts("uShininess")>(mMaterial->mShininess);
+      p->draw(mInd);
+   }
 }
