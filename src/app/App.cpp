@@ -13,7 +13,7 @@ namespace
 }
 
 CApp::CApp()
-   : CEngine(800, 600)
+   : CEngine(1280, 960)
 {
    mAircraft.pos({0, 0, 1.5e3});
 
@@ -23,7 +23,7 @@ CApp::CApp()
    mSphere.normalMap(std::make_shared<CTexture>("res/earth-nmap.dds"));
 
    mCamera.perspective(75, mAspect, 1, 2e4);
-   mCamera.eyeDistance(75);
+   mCamera.eyeDistance(20);
    mCamera.pitch(20);
 
    auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
@@ -144,15 +144,15 @@ void CApp::update(float timeDelta)
       p->set<cts("uViewProj")>(mCamera.viewProj()); }
    {  auto p = gRenderer.get<cts("shaded-col")>();
       p->set<cts("uViewProj")>(mCamera.viewProj());
-      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uSunDir")>({0, 0.707, 0.707});
       p->set<cts("uEye")>(mCamera.eye()); }
    {  auto p = gRenderer.get<cts("shaded-tex")>();
       p->set<cts("uViewProj")>(mCamera.viewProj());
-      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uSunDir")>({0, 0.707, 0.707});
       p->set<cts("uEye")>(mCamera.eye()); }
    {  auto p = gRenderer.get<cts("shaded-tex-nmap")>();
       p->set<cts("uViewProj")>(mCamera.viewProj());
-      p->set<cts("uSunDir")>({0, 0, 1});
+      p->set<cts("uSunDir")>({0, 0.707, 0.707});
       p->set<cts("uEye")>(mCamera.eye()); }
    {  auto p = gRenderer.get<cts("billboard-tex")>();
       p->set<cts("uViewProj")>(mCamera.viewProj());
@@ -199,8 +199,6 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
 
 void CApp::draw() const
 {
-   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
    mTerrain.draw(mContext);
    mSky.draw(mContext);
 

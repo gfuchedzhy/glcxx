@@ -17,14 +17,16 @@ CEngine::CEngine(const size_t width, const size_t height)
    sf::ContextSettings settings = mWindow.getSettings();
    Log::msg("openGL ", settings.majorVersion, '.', settings.minorVersion,  " version loaded");
    gRenderer.init();
+
+   gl(glEnable, GL_DEPTH_TEST);
+   gl(glEnable, GL_CULL_FACE);
+   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void CEngine::run()
 {
    sf::Clock clock;
 
-   gl(glEnable, GL_DEPTH_TEST);
-   gl(glEnable, GL_CULL_FACE);
    while (true)
    {
       // handle events
