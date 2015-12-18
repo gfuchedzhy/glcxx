@@ -63,8 +63,8 @@ auto progInputDef(cts("billboard-tex")) -> ct::tuple_append<inp_by_name("billboa
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
 
 auto progInputDef(cts("billboard-tex-sprite")) -> ct::tuple_append<inp_by_name("billboard-tex"),
-   TProgramInput<cts("uCurrentFrame"), TUniform<glm::tvec1, int>>,
-   TProgramInput<cts("uFrameNumber"), TUniform<glm::tvec1, int>>>;
+   TProgramInput<cts("uAtlasSize"), TUniform<glm::tvec2, int>>,
+   TProgramInput<cts("uAtlasPos"), TUniform<glm::tvec2, int>>>;
 
 auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboard"),
    TProgramInput<cts("uValue"), TUniform<glm::tvec1, float>, tag::fragment>>;

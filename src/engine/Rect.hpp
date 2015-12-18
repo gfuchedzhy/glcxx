@@ -60,8 +60,8 @@ class CTexturedBillboard : public CBillboard
       void draw(const SContext& context) const override;
 };
 
-/// @brief textured billboard with animation
-class CAnimatedBillboard : public CTexturedBillboard, public CAnimationObject
+/// @brief billboard with atlased animation
+class CAnimatedBillboard : public CBillboard, public CAtlasedAnimationObject
 {
    public:
       /// @brief draw

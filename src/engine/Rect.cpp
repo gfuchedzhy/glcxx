@@ -66,8 +66,8 @@ void CAnimatedBillboard::draw(const SContext& context) const
    p->set<cts("aUV")>(uvBuffer());
    p->set<cts("uPos")>(mPos);
    p->set<cts("uSize")>(mSize);
-   p->set<cts("uFrameNumber")>(mFrameNumber);
-   p->set<cts("uCurrentFrame")>(mCurrentFrame);
+   p->set<cts("uAtlasSize")>(mAtlasSize);
+   p->set<cts("uAtlasPos")>(mAtlasPos);
    p->set<cts("uTexture")>(mTexture);
    p->draw(indices, 4, GL_TRIANGLE_STRIP);
 }

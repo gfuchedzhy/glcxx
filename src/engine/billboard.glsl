@@ -22,7 +22,7 @@ void main()
    gl_Position = uViewProj*vec4(uExternalPos + uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
 
 #if defined SPRITE
-   vUV = vec2((aUV.x + uCurrentFrame)/uFrameNumber, aUV.y);
+   vUV = (aUV + uAtlasPos)/uAtlasSize;
 #elif defined TEX
    vUV = aUV;
 #elif defined HB

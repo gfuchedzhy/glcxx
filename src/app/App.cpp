@@ -29,7 +29,7 @@ CApp::CApp()
    auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
    for (auto&& s: mStars)
    {
-      s.frameNumber(32);
+      s.atlasSize({4, 4});
       s.texture(starTexture);
       s.size({15, 15});
       s.pos({1e3*distr2(random_gen), 1e3*distr2(random_gen), 1.5e3 * distr(random_gen)});
