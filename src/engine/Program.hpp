@@ -75,18 +75,16 @@ struct THasNamedSetMethod
 template<typename TName, typename T1, typename... TRest>
 struct THasNamedSetMethod<TName, std::tuple<T1, TRest...>>
 {
-   static constexpr int rIndex = THasNamedSetMethod<TName, T1>::value ? sizeof...(TRest) : THasNamedSetMethod<TName, std::tuple<TRest...>>::rIndex;
-   static constexpr int index  = (-1 == rIndex) ? -1 : sizeof...(TRest) - rIndex;
-   static constexpr bool value = (-1 != index);
+   static constexpr size_t index = THasNamedSetMethod<TName, T1>::value ? 0 : 1 + THasNamedSetMethod<TName, std::tuple<TRest...>>::index;
+   static constexpr bool   value = (index != sizeof...(TRest) + 1);
 };
 
 /// @brief terminator of specialization for tuple
 template<typename TName>
 struct THasNamedSetMethod<TName, std::tuple<>>
 {
-   static constexpr int rIndex = -1;
-   static constexpr int index  = -1;
-   static constexpr bool value = false;
+   static constexpr size_t index = 0;
+   static constexpr bool   value = false;
 };
 
 /// @brief program
@@ -113,10 +111,7 @@ class TProgram<TName, std::tuple<TProgramInput...>> : public CProgramBase, publi
 
       /// @brief program defines
       using tDefines = ct::string_all_rep<
-         ct::string_toupper<typename std::conditional<-1 == ct::string_find<TName, cts("-")>::value,
-                                                      cts(""),
-                                                      ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>
-                                                      >::type>,
+         ct::string_toupper<ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>>,
          cts("_"),
          cts("\n#define ")>;
 

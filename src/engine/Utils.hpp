@@ -53,23 +53,21 @@ namespace ct
    template<typename T, typename T1, typename... TRest>
    struct type_index_in_pack_impl<T, std::tuple<T1, TRest...>>
    {
-         static constexpr int rIndex = std::is_same<T, T1>::value ? sizeof...(TRest) : type_index_in_pack_impl<T, std::tuple<TRest...>>::rIndex;
-         static constexpr int value = (-1 == rIndex) ? -1 : sizeof...(TRest) - rIndex;
+      static constexpr size_t value = std::is_same<T1, T>::value ? 0 : 1 + type_index_in_pack_impl<T, std::tuple<TRest...>>::value;
    };
 
    /// @brief terminator specialization for tuple
    template<typename T>
    struct type_index_in_pack_impl<T, std::tuple<>>
    {
-         static constexpr int rIndex = -1;
-         static constexpr int value = -1;
+         static constexpr size_t value = 0;
    };
 
    /// @brief shortcut
    template<typename T, typename... Pack>
    struct type_index_in_pack
    {
-         static constexpr int value = type_index_in_pack_impl<T, std::tuple<Pack...>>::value;
+         static constexpr size_t value = type_index_in_pack_impl<T, std::tuple<Pack...>>::value;
    };
 
    /// @brief compile time string
@@ -99,6 +97,13 @@ namespace ct
       using type = string<str...>;
    };
 
+   /// @brief string concatanation impl empty terminator
+   template<>
+   struct string_cat_impl<>
+   {
+         using type = string<>;
+   };
+
    /// @brief string concatanation shortcut
    template<typename... TStrings>
    using string_cat = typename string_cat_impl<TStrings...>::type;
@@ -123,40 +128,40 @@ namespace ct
    template<typename TString, size_t start, size_t end = TString::length>
    using string_sub = decltype(string_sub_helper<start, end>(TString{}, std::make_index_sequence<TString::length>{}));
 
-   /// @brief string rfind
-   template<typename TString, typename TSubString> struct string_rfind;
+   /// @brief string find
+   template<typename TString, typename TSubString> struct string_find;
 
-   /// @brief string rfind
+   /// @brief string find
    template<char first, char... rest, char... substr>
-   struct string_rfind<string<first, rest...>, string<substr...>>
+   struct string_find<string<first, rest...>, string<substr...>>
    {
-         static constexpr int value = std::is_same<string<substr...>,
-                                                   string_sub<string<first, rest...>, 0, string<substr...>::length>
-                                                  >::value
-                                      ? int(sizeof...(rest)) : string_rfind<string<rest...>, string<substr...>>::value;
-   };
-
-   /// @brief string rfind
-   template<char... substr>
-   struct string_rfind<string<>, string<substr...>>
-   {
-         static constexpr int value = -1;
+         static constexpr size_t value = std::is_same<string<substr...>,
+                                                      string_sub<string<first, rest...>, 0, string<substr...>::length>
+                                                     >::value
+                                         ? 0 : 1 + string_find<string<rest...>, string<substr...>>::value;
    };
 
    /// @brief string find
-   template<typename TString, typename TSubString> struct string_find
+   template<char... substr>
+   struct string_find<string<>, string<substr...>>
    {
-         static constexpr int value = (-1 == string_rfind<TString, TSubString>::value) ? -1
-            : int(TString::length) - string_rfind<TString, TSubString>::value - 1;
+         static constexpr int value = 0;
+   };
+
+   /// @brief string rfind
+   template<typename TString, typename TSubString> struct string_rfind
+   {
+         static constexpr size_t value = (TString::length == string_find<TString, TSubString>::value) ? TString::length
+            : TString::length - string_find<TString, TSubString>::value - 1;
    };
 
    /// @brief string single replace
    template<typename TString, typename TOld, typename TNew>
    struct string_single_rep_impl
    {
-         using type = typename std::conditional<-1 == string_find<TString, TOld>::value,
+         using type = typename std::conditional<TString::length == string_find<TString, TOld>::value,
                                                 TString,
-                                                string_cat<string_sub<TString, 0, size_t(string_find<TString, TOld>::value)>,
+                                                string_cat<string_sub<TString, 0, string_find<TString, TOld>::value>,
                                                            TNew,
                                                            string_sub<TString, string_find<TString, TOld>::value + TOld::length>>
                                                 >::type;
