@@ -105,10 +105,11 @@ class CIndexBuffer : public TBufferObject<unsigned char>
          mType = id;
       }
 
-      /// @brief draw with this index buffer
-      void draw() const
+      /// @brief draw with this index buffer, if size provided draw exactly size
+      /// indices, otherwise draw whole buffer
+      void draw(GLsizei size = -1) const
       {
-         gl(glDrawElements, mMode, mSize, mType, nullptr);
+         gl(glDrawElements, mMode, (-1 == size) ? mSize : size, mType, nullptr);
       }
 
       /// @brief unbind index buffer

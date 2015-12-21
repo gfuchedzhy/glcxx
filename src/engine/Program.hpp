@@ -28,12 +28,13 @@ class CProgramBase
          gl(glUseProgram, mObject);
       }
 
-      /// @brief draw with current index buffer
-      void draw(const std::shared_ptr<CIndexBuffer>& buffer) const
+      /// @brief draw with current index buffer, if size provided draw exactly
+      /// size indices, otherwise draw whole buffer
+      void draw(const std::shared_ptr<CIndexBuffer>& buffer, GLsizei size = -1) const
       {
          assert(buffer);
          buffer->bind();
-         buffer->draw();
+         buffer->draw(size);
       }
 
       /// @brief draw with given pointer
