@@ -9,7 +9,6 @@ CJetFlame::CJetFlame(float radius)
    : tParticleSystem(300, 700)
 {
    size({radius, radius});
-   texture(std::make_shared<CTexture>("res/flame-sprite.dds"));
    mAtlasSize = {4, 4};
 }
 

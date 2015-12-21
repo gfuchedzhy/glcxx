@@ -37,6 +37,10 @@ CAircraft::CAircraft()
       mMeshes.emplace_back(std::make_unique<CMesh>(*mesh, materials[mesh->mMaterialIndex]));
    }
 
+   auto flameTex = std::make_shared<CTexture>("res/flame-sprite.dds");
+   for(auto& f : mFlames)
+      f.texture(flameTex);
+
    for (auto&& h : mHealthBars)
       h.size({3, 0.5});
 }
