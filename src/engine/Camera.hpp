@@ -91,7 +91,7 @@ class CCamera
       /// @brief returns up
       glm::vec3 up() const;
 
-      /// @brief returns up
+      /// @brief returns right
       glm::vec3 right() const;
 
       /// @brief returns back

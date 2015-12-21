@@ -80,6 +80,12 @@ class CModel
 
       /// @brief returns model's forward vector
       glm::vec3 forward() const;
+
+      /// @brief returns model's up
+      glm::vec3 up() const;
+
+      /// @brief returns model's right
+      glm::vec3 right() const;
 };
 
 class IRenderableModel : public IRenderable, public CModel {};
@@ -88,6 +94,18 @@ inline glm::vec3 CModel::forward() const
 {
    auto&& m = model();
    return glm::vec3(m[1][0], m[1][1], m[1][2]);
+}
+
+inline glm::vec3 CModel::right() const
+{
+   auto&& m = model();
+   return glm::vec3(m[0][0], m[0][1], m[0][2]);
+}
+
+inline glm::vec3 CModel::up() const
+{
+   auto&& m = model();
+   return glm::vec3(m[2][0], m[2][1], m[2][2]);
 }
 
 inline bool CModel::dirty() const
