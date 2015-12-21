@@ -21,14 +21,18 @@ class TBufferObject
       /// @brief target
       GLenum mTarget;
 
+      /// @brief usage
+      GLenum mUsage;
+
    public:
       /// @brief constructor
-      TBufferObject(const TData* data, size_t size, GLenum target = GL_ARRAY_BUFFER)
+      TBufferObject(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
          : mTarget(target)
+         , mUsage(usage)
       {
          gl(glGenBuffers, 1, &mID);
          bind();
-         gl(glBufferData, mTarget, size*sizeof(TData), data, GL_STATIC_DRAW);
+         gl(glBufferData, mTarget, size*sizeof(TData), data, mUsage);
          unBind();
       }
 
@@ -36,6 +40,14 @@ class TBufferObject
       ~TBufferObject()
       {
          gl(glDeleteBuffers, 1, &mID);
+      }
+
+      /// @brief uploads new data to buffer
+      void upload(const TData* data, size_t size)
+      {
+         bind();
+         gl(glBufferData, mTarget, size*sizeof(TData), data, mUsage);
+         unBind();
       }
 
       /// @brief binds buffer
@@ -72,14 +84,25 @@ class CIndexBuffer : public TBufferObject<unsigned char>
       /// @brief constructor
       template<typename T>
       CIndexBuffer(const T* data, size_t size, GLenum mode)
-         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), GL_ELEMENT_ARRAY_BUFFER)
+         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), GL_STATIC_DRAW, GL_ELEMENT_ARRAY_BUFFER)
          , mSize(size)
          , mMode(mode)
          , mType(glsl::TTypeID<T>::id)
       {
          constexpr GLenum id = glsl::TTypeID<T>::id;
          static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
+      }
+
+      /// @brief uploads new data to buffer
+      template<typename T>
+      void upload(const T* data, size_t size, GLenum mode)
+      {
+         constexpr GLenum id = glsl::TTypeID<T>::id;
+         static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
+         tBase::upload(reinterpret_cast<const unsigned char*>(data), size*sizeof(T));
          mSize = size;
+         mMode = mode;
+         mType = id;
       }
 
       /// @brief draw with this index buffer
