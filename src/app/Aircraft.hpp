@@ -5,13 +5,13 @@
 #ifndef AIRCRAFT_HPP
 #define AIRCRAFT_HPP
 
-#include "ComplexRenderable.hpp"
-#include "Rect.hpp"
+#include "Model.hpp"
 #include "Mesh.hpp"
+#include "Rect.hpp"
 #include "Flame.hpp"
 
 /// @brief simple model of aircraft made out of boxes
-class CAircraft : public CComplexRenderable
+class CAircraft : public IRenderableModel
 {
       /// @brief meshes
       std::vector<std::unique_ptr<CMesh>> mMeshes;
@@ -19,20 +19,12 @@ class CAircraft : public CComplexRenderable
       /// @brief flames, left and right
       std::array<CJetFlame, 2> mFlames;
 
-      /// @brief propeller, we need this field separately to apply animation to
-      /// it, raw pointer because ownership of objects is private and managed by
-      /// CComplexRenderable
-      CComplexRenderable* mProp;
-
-      /// @brief healthbar, raw pointer because ownership of objects is private
-      /// and managed by CComplexRenderable
-      using tHealthBar = std::pair<CHealthBar, IRenderableModel*>;
-
-      /// @brief healthbar list
-      std::vector<tHealthBar> mHealthBars;
-
       /// @brief aircrafts speed in m/s
       float mSpeed = 80;
+
+      /// @brief healthbar list
+      std::array<CHealthBar, 3> mHealthBars;
+
    public:
       /// @brief constructor
       CAircraft();
