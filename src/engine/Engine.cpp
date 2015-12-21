@@ -21,12 +21,11 @@ CEngine::CEngine(const size_t width, const size_t height)
    gl(glEnable, GL_DEPTH_TEST);
    gl(glEnable, GL_CULL_FACE);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   mClock.restart();
 }
 
 void CEngine::run()
 {
-   sf::Clock clock;
-
    while (true)
    {
       // handle events
@@ -46,8 +45,19 @@ void CEngine::run()
          }
       }
 
-      const float timeDelta = clock.restart().asSeconds();
-      mAbsTime += timeDelta;
+      const float timeDelta = mClock.restart().asSeconds();
+
+      // fps counting
+      mFPS.mTime += timeDelta;
+      mFPS.mFrameNumber++;
+      if (mFPS.mTime > 5)
+      {
+         Log::msg("fps: ", mFPS.mFrameNumber/mFPS.mTime);
+         mFPS.mFrameNumber = 0;
+         mFPS.mTime = 0;
+      }
+
+      // update scene
       update(timeDelta);
 
       // clear the buffers

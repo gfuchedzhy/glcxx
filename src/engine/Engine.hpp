@@ -37,8 +37,15 @@ class CEngine
       /// @brief aspect ratio
       float mAspect;
 
-      /// @brief absolute time in seconds
-      double mAbsTime;
+      /// @brief clock
+      sf::Clock mClock;
+
+      /// @brief struct for fps counting
+      struct
+      {
+            float mTime = 0.f;
+            unsigned int mFrameNumber = 0;
+      } mFPS;
 
       /// @brief drawing context
       SContext mContext;
