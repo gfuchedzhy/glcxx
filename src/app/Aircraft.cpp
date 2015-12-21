@@ -15,6 +15,7 @@
 #include <assimp/postprocess.h>
 
 CAircraft::CAircraft()
+   : mFlames{0.8, 0.8}
 {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile("res/Su-35_SuperFlanker/Su-35_SuperFlanker.obj",
@@ -120,7 +121,20 @@ void CAircraft::update(float timeDelta)
          h.first.value(0);
    }
 
-   pos(pos() + forward()*mSpeed*timeDelta);
+   const glm::vec3& fwd = forward();
+
+   pos(pos() + fwd*mSpeed*timeDelta);
+
+   // place flames in engines of this model
+   const glm::vec3 flamePos = pos() - 6.2f*fwd - 0.2f*up();
+   mFlames[0].pos(flamePos + 1.15f*right());
+   mFlames[1].pos(flamePos - 1.15f*right());
+   for(auto& f : mFlames)
+   {
+      f.dir(-fwd);
+      f.speed(mSpeed*fwd);
+      f.update(timeDelta);
+   }
 
    const float angularSpeed = 7*mSpeed; // @todo should be around 150x
    float angle = mProp->roll() + timeDelta*angularSpeed;
@@ -140,6 +154,9 @@ void CAircraft::draw(const SContext& context) const
    for (const auto& m: mMeshes)
       m->draw(context);
    gl(glDisable, GL_BLEND);
+
+   for (auto& f : mFlames)
+      f.draw(context);
 
    if (context.mDrawHealthBars)
    {

@@ -166,6 +166,10 @@ void CApp::update(float timeDelta)
       p->set<cts("uViewProj")>(mCamera.viewProj());
       p->set<cts("uUp")>(mCamera.up());
       p->set<cts("uRight")>(mCamera.right()); }
+   {  auto p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
+      p->set<cts("uViewProj")>(mCamera.viewProj());
+      p->set<cts("uUp")>(mCamera.up());
+      p->set<cts("uRight")>(mCamera.right()); }
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)

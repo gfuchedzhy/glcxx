@@ -69,6 +69,26 @@ auto progInputDef(cts("billboard-tex-sprite")) -> ct::tuple_append<inp_by_name("
 auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboard"),
    TProgramInput<cts("uValue"), TUniform<glm::tvec1, float>, tag::fragment>>;
 
+auto progInputDef(cts("particlesys")) -> std::tuple<
+   TProgramInput<cts("aPos"), TAttrib<glm::tvec3, float>>,
+   TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4, float>>,
+   TProgramInput<cts("uSize"), TUniform<glm::tvec2, float>>,
+   TProgramInput<cts("uRight"), TUniform<glm::tvec3, float>>,
+   TProgramInput<cts("uUp"), TUniform<glm::tvec3, float>>>;
+
+auto progInputDef(cts("particlesys-tex")) -> ct::tuple_append<inp_by_name("particlesys"),
+   TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
+
+auto progInputDef(cts("particlesys-tex-sprite")) -> ct::tuple_append<inp_by_name("particlesys-tex"),
+   // aTime.x is age of particle, aTime.y is age of death
+   TProgramInput<cts("aTime"), TAttrib<glm::tvec2, float>>,
+   // for optimization purposes aSpeed.xyz is unit speed directon, aSpeed.w is
+   // scalar speed value
+   TProgramInput<cts("aSpeed"), TAttrib<glm::tvec4, float>>,
+   TProgramInput<cts("uAtlasSize"), TUniform<glm::tvec2, int, int>>>;
+
+auto progInputDef(cts("particlesys-tex-sprite-flame")) -> inp_by_name("particlesys-tex-sprite");
+
 #include "Renderer.hpp"
 
 using tRenderer = TRenderer<cts("regular-col"),
@@ -78,7 +98,8 @@ using tRenderer = TRenderer<cts("regular-col"),
                             cts("shaded-tex-nmap"),
                             cts("billboard-tex"),
                             cts("billboard-tex-sprite"),
-                            cts("billboard-hb")>;
+                            cts("billboard-hb"),
+                            cts("particlesys-tex-sprite-flame")>;
 extern tRenderer gRenderer;
 
 #endif // ENGINE_PROGRAMS_HPP
