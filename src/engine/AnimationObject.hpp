@@ -14,16 +14,27 @@ class CAnimationObject
       /// @brief local time measured in frames
       float mCurrentFrame = 0.f;
 
+      /// @brief number of completed animation cycles
+      unsigned int mCycles = 0;
+
    public:
       /// @brief set total frame number
       void frameNumber(unsigned int frameNumber) { mFrameNumber = frameNumber; }
+
+      /// @brief return number of completed cycles
+      unsigned int cycles() const { return mCycles; }
+
+      /// @brief reset number of cycles
+      void resetCycles() { mCycles = 0; }
 
       /// @brief update current frame
       void update(float timeDelta)
       {
          static int fps = 30;
          mCurrentFrame += fps*timeDelta;
-         mCurrentFrame -= mFrameNumber*int(mCurrentFrame/mFrameNumber);
+         const unsigned int cyclesPassed = int(mCurrentFrame/mFrameNumber);
+         mCycles += cyclesPassed;
+         mCurrentFrame -= mFrameNumber*cyclesPassed;
       }
 };
 
@@ -40,6 +51,9 @@ class CAtlasedAnimationObject : protected CAnimationObject
       std::shared_ptr<CTexture> mTexture;
 
    public:
+      using CAnimationObject::cycles;
+      using CAnimationObject::resetCycles;
+
       /// @brief set size of the atlas
       void atlasSize(glm::ivec2 atlasSize)
       {
