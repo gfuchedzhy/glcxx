@@ -133,9 +133,9 @@ void CApp::update(float timeDelta)
 
    if (mIsCameraControl || !animate([this]{return mAircraft.pitch();},
                                     [this](float val){ mAircraft.pitch(val);},
-                                    timeDelta, 70.f, sf::Keyboard::Up, sf::Keyboard::Down, -60.f, (mAircraft.speed() - 80.f)*60.f/100.f))
+                                    timeDelta, 20.f, sf::Keyboard::Up, sf::Keyboard::Down, -inf, inf))
    {
-      mAircraft.pitch(damp(mAircraft.pitch(), timeDelta, 0));
+      mAircraft.pitch(damp(mAircraft.pitch() - 360*int(round(mAircraft.pitch()/360)), timeDelta, 0, 1));
    }
 
    /// @todo make automatic uniforms in renderer to remove this code
