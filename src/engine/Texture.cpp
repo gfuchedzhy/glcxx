@@ -59,7 +59,10 @@ void CTextureProgramInputImpl::set(const tTexturePtr& value)
    if (mTexture != value)
    {
       if (mTexture)
+      {
+         gl(glActiveTexture, GL_TEXTURE0 + mSamplerID);
          mTexture->unBind();
+      }
       mTexture = value;
       attach();
    }
