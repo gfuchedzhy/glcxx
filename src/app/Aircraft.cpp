@@ -63,9 +63,9 @@ void CAircraft::update(float timeDelta)
       mHealthBars[i].pos(pos() + (-5.f + 7*i)*fwd);
 
    // place flames in engines of this model
-   const glm::vec3 flamePos = pos() - 6.2f*fwd - 0.2f*up();
-   mFlames[0].pos(flamePos + 1.15f*right());
-   mFlames[1].pos(flamePos - 1.15f*right());
+   const glm::vec3 flamePos = pos() - 5.5f*fwd - 0.15f*up();
+   mFlames[0].pos(flamePos + 1.2f*right());
+   mFlames[1].pos(flamePos - 1.2f*right());
    for(auto& f : mFlames)
    {
       f.dir(-fwd);
