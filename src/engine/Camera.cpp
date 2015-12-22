@@ -23,17 +23,6 @@ void CCamera::perspective(float fovY, float aspect, float near, float far)
    }
 }
 
-void CCamera::dollyZoom(float dollyZoom)
-{
-   if (dollyZoom != mDollyZoom)
-   {
-      mDollyZoom = dollyZoom;
-      mCache.mIsDirty.set(eProj);
-      mCache.mIsDirty.set(eView);
-      mCache.mIsDirty.set(eViewProj);
-   }
-}
-
 void CCamera::lookAt(const glm::vec3& lookAt)
 {
    if (lookAt != mLookAt)
@@ -78,8 +67,7 @@ const glm::mat4& CCamera::proj() const
 {
    if (mCache.mIsDirty.test(eProj))
    {
-      const float dollyFov = 2*atan(tan(0.5f*glm::radians(mFovY)) / mDollyZoom);
-      mCache.mProj = glm::perspective(dollyFov, mAspect, mNear, mFar);
+      mCache.mProj = glm::perspective(glm::radians(mFovY), mAspect, mNear, mFar);
       mCache.mIsDirty.reset(eProj);
    }
    return mCache.mProj;
@@ -89,7 +77,7 @@ const glm::mat4& CCamera::view() const
 {
    if (mCache.mIsDirty.test(eView))
    {
-      mCache.mView = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -mDollyZoom*mEyeDistance});
+      mCache.mView = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -mEyeDistance});
       mCache.mView = glm::rotate(mCache.mView, glm::radians(mPitch-90.f), glm::vec3{1.f, 0.f, 0.f});
       mCache.mView = glm::rotate(mCache.mView, glm::radians(-mOrientation), glm::vec3{0.f, 0.f, 1.f});
       mCache.mView = glm::translate(mCache.mView, -mLookAt);
