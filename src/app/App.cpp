@@ -61,9 +61,10 @@ inline bool animate(Get get, Set set,
 void CApp::update(float timeDelta)
 {
    mAircraft.update(timeDelta);
-   mCamera.lookAt(mAircraft.pos());
+   if (mCameraFollowsAircraft)
+      mCamera.lookAt(mAircraft.pos());
 
-   const auto& pos = mAircraft.pos();
+   const auto& pos = mCamera.eye();
    mSky.pos({pos.x, pos.y, mSky.pos().z});
    mTerrain.pos({pos.x, pos.y, 0});
 
@@ -177,8 +178,8 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
    switch (keyEvent.code)
    {
       case sf::Keyboard::Num1:
-         mContext.mDrawDebugFrames = !mContext.mDrawDebugFrames;
-         Log::msg("debug frames turned ", Log::SOnOff(mContext.mDrawDebugFrames));
+         mCameraFollowsAircraft = !mCameraFollowsAircraft;
+         Log::msg("camera aircraft followin turned ", Log::SOnOff(mCameraFollowsAircraft));
          break;
       case sf::Keyboard::Num2:
          mContext.mDrawHealthBars = !mContext.mDrawHealthBars;

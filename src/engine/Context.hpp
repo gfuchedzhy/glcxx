@@ -8,9 +8,6 @@
 /// @brief additional context info for drawing
 struct SContext
 {
-      /// @brief if true objects should draw their frames of reference
-      bool mDrawDebugFrames = false;
-
       /// @brief if true draw health bars
       bool mDrawHealthBars  = false;
 

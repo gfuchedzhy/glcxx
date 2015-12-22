@@ -38,6 +38,9 @@ class CApp : public CEngine
       /// @brief if true arrows control camera, otherwise aircraft
       bool mIsCameraControl = false;
 
+      /// @brief if true camera is bound to aircraft
+      bool mCameraFollowsAircraft = true;
+
       /// @brief camera orientation in degrees relative to aircraft's yaw
       float mRelativeCameraOrientation = 0.f;
 
