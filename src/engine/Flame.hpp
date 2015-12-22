@@ -18,21 +18,30 @@ class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, C
       /// @brief atlas size
       glm::ivec2 mAtlasSize;
 
-      /// @brief speed of particle source
-      glm::vec3 mSpeed;
+      /// @brief velocity of particle source
+      glm::vec3 mSourceVelocity;
+
+      /// @brief initial particle speed
+      float mParticleSpeed;
 
       /// @brief direction in which particles are emmited
-      glm::vec3 mDir;
+      glm::vec3 mParticleSpeedDir;
 
    public:
       /// @brief constructor
-      CJetFlame(float radius);
+      CJetFlame(float radius, float rate, float particleSpeed);
+
+      /// @brief get speed
+      const glm::vec3& sourceVelocity() const { return mSourceVelocity; }
 
       /// @brief set speed
-      void speed(const glm::vec3& speed) { mSpeed = speed; }
+      void sourceVelocity(const glm::vec3& velocity) { mSourceVelocity = velocity; }
+
+      /// @brief get dir
+      const glm::vec3& dir() const { return mParticleSpeedDir; }
 
       /// @brief set dir
-      void dir(const glm::vec3& dir) { mDir = dir; }
+      void dir(const glm::vec3& dir) { mParticleSpeedDir = dir; }
 
       /// @brief update
       void update(float timeDelta)
@@ -44,14 +53,14 @@ class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, C
       void resetParticle(SParticle& p, float timeDelta) const
       {
          std::uniform_real_distribution<float> distr(-0.01, 0.01);
-         const glm::vec3 speed = mSpeed + 100.f * (mDir + glm::vec3{distr(random_gen), distr(random_gen), distr(random_gen)});
+         const glm::vec3 speed = mSourceVelocity + mParticleSpeed * (mParticleSpeedDir + glm::vec3{distr(random_gen), distr(random_gen), distr(random_gen)});
 
          // most of particles die young
          std::normal_distribution<float> tdistr(0, 0.5);
 
          // consider that particle was born some time ago, therefore it was born
          // not in exactly this position
-         p.reset(mPos - mSpeed*timeDelta, 0.5 + 4*std::abs(tdistr(random_gen)), speed);
+         p.reset(mPos - mSourceVelocity*timeDelta, 0.5 + 4*std::abs(tdistr(random_gen)), speed);
       }
 
       /// @brief draw

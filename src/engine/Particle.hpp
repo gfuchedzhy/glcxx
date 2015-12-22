@@ -58,8 +58,9 @@ class TParticleSystem
       /// @brief birth rate in units per second
       float mRate;
 
-      /// @brief how much time passed since last particle was created
-      float mTimeSinceLastCreation = 0;
+      /// @brief how many particles should be created since last update, @note
+      /// that it is float to accumulate particle number correctly
+      float mParticlesToCreate = 0;
 
       /// @brief particle pool
       using tParticlePool = std::vector<TParticle>;
@@ -105,6 +106,12 @@ class TParticleSystem
          mPoolPos = begin(mParticlePool);
       }
 
+      /// @brief set rate
+      void rate(float rate) { mRate = rate; }
+
+      /// @brief return number of currently alive particles
+      unsigned int aliveParticleNum() const { return mAliveParticleNum; }
+
       /// @brief update particle system
       void update(TParticleManager& particleMgr, float timeDelta)
       {
@@ -112,21 +119,15 @@ class TParticleSystem
             if (p.mIsAlive)
                updateParticle(p, timeDelta);
 
-         mTimeSinceLastCreation += timeDelta;
-         // number of particles that should be created since last update
-         const int particlesToCreate = mTimeSinceLastCreation*mRate;
-         mTimeSinceLastCreation -= particlesToCreate/mRate;
-
-         // @note that they should be created and updated with proper timing to
-         // avoid of creating bunch of particles at single point
-         float t = mTimeSinceLastCreation;
-         for (int i = 0; i < particlesToCreate; ++i)
+         mParticlesToCreate += mRate*timeDelta;
+         for (; mParticlesToCreate >= 1; --mParticlesToCreate)
          {
+            // how long ago particle was created
+            const float t = mParticlesToCreate/mRate;
             TParticle& p = allocate();
             particleMgr.resetParticle(p, t);
             if (p.mIsAlive)
                updateParticle(p, t);
-            t += 1/mRate;
          }
 
          /// upload to gpu

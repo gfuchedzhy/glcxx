@@ -12,7 +12,7 @@
 #include <assimp/postprocess.h>
 
 CAircraft::CAircraft()
-   : mFlames{0.8, 0.8}
+   : mFlames{{{0.8, 300, 100}, {0.8, 300, 100}}}
 {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile("res/Su-35_SuperFlanker/Su-35_SuperFlanker.obj",
@@ -69,7 +69,7 @@ void CAircraft::update(float timeDelta)
    for(auto& f : mFlames)
    {
       f.dir(-fwd);
-      f.speed(mSpeed*fwd);
+      f.sourceVelocity(mSpeed*fwd);
       f.update(timeDelta);
    }
 }

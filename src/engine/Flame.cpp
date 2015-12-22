@@ -5,8 +5,9 @@
 #include "Flame.hpp"
 #include "Programs.hpp"
 
-CJetFlame::CJetFlame(float radius)
-   : tParticleSystem(300, 700)
+CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
+   : tParticleSystem(rate, 2.35*rate)
+   , mParticleSpeed(particleSpeed)
 {
    size({radius, radius});
    mAtlasSize = {4, 4};
