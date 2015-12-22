@@ -31,20 +31,20 @@ void main()
 #if defined FLAME
    vColor.rgb = mix(vec3(0, 0.2, 1),
                     vec3(1, 0.6, 0),
-                    min(1, aTime.x/0.1));
+                    min(1, aTime.x/0.06));
    vColor.rgb = mix(vColor.rgb,
                     vec3(1, 1, 1),
-                    clamp((aTime.x - 0.1)/0.3, 0, 1));
+                    clamp((aTime.x - 0.05)/0.1, 0, 1));
 
    vColor.a = 1
-      - smoothstep(0, 0.15, aTime.x)
-      + 0.4*smoothstep(0.2, 0.3, aTime.x)
+      - smoothstep(0, 0.1, aTime.x)
+      + 0.4*smoothstep(0.1, 0.3, aTime.x)
       - 0.4*smoothstep(0.3, aTime.y, aTime.x);
 
-   float size = (1 + 2*aTime.x)
+   float size = (1 + 2.5*aTime.x)
       * (1
-         - smoothstep(0, 0.2, aTime.x)
-         + 0.7*smoothstep(0.2, 0.3, aTime.x));
+         - smoothstep(0, 0.15, aTime.x)
+         + 0.7*smoothstep(0.1, 0.15, aTime.x));
 
    // d2x/dt2 = - airResistance * (dx/dt)^2
    const float airResistance = 0.05;
