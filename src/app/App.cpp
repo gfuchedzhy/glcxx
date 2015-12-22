@@ -193,6 +193,9 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
          mIsCameraControl = !mIsCameraControl;
          Log::msg("camera control turned ", Log::SOnOff(mIsCameraControl));
          break;
+      case sf::Keyboard::Return:
+         Log::msg(mAircraft.launchRocket() ? "rocket launched" : "out of rockets");
+         break;
       case sf::Keyboard::D:
          mAircraft.randomDamage();
          Log::msg("apply random damage to aircraft");

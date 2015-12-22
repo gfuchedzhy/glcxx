@@ -41,8 +41,29 @@ CAircraft::CAircraft()
    for(auto& f : mFlames)
       f.texture(flameTex);
 
+   auto explosionTex = std::make_shared<CTexture>("res/explosion-sprite.dds");
+   for(auto& r : mRockets)
+   {
+      r.flameTexture(flameTex);
+      r.explosionTexture(explosionTex);
+   }
+
    for (auto&& h : mHealthBars)
       h.size({3, 0.5});
+}
+
+bool CAircraft::launchRocket()
+{
+   for (size_t i = 0; i < mRockets.size(); ++i)
+   {
+      if (!mRockets[i].active())
+      {
+         const glm::vec3& fwd = forward();
+         mRockets[i].launch(pos() + (i%2 ? -3.f : +3.f) * right() - 2.5f*fwd - up(), fwd, mSpeed);
+         return true;
+      }
+   }
+   return false;
 }
 
 void CAircraft::update(float timeDelta)
@@ -61,6 +82,9 @@ void CAircraft::update(float timeDelta)
    // place healthbars
    for (size_t i = 0; i < mHealthBars.size(); ++i)
       mHealthBars[i].pos(pos() + (-5.f + 7*i)*fwd);
+
+   for (auto& r : mRockets)
+      r.update(timeDelta);
 
    // place flames in engines of this model
    const glm::vec3 flamePos = pos() - 5.5f*fwd - 0.15f*up();
@@ -88,6 +112,9 @@ void CAircraft::draw(const SContext& context) const
 
    for (auto& f : mFlames)
       f.draw(context);
+
+   for (auto& r : mRockets)
+      r.draw(context);
 
    if (context.mDrawHealthBars)
    {

@@ -9,6 +9,7 @@
 #include "Mesh.hpp"
 #include "Rect.hpp"
 #include "Flame.hpp"
+#include "Rocket.hpp"
 
 /// @brief simple model of aircraft made out of boxes
 class CAircraft : public IRenderableModel
@@ -19,6 +20,9 @@ class CAircraft : public IRenderableModel
       /// @brief flames, left and right
       std::array<CJetFlame, 2> mFlames;
 
+      /// @brief rockets, left and right
+      std::array<CRocket, 6> mRockets;
+
       /// @brief aircrafts speed in m/s
       float mSpeed = 80;
 
@@ -28,6 +32,9 @@ class CAircraft : public IRenderableModel
    public:
       /// @brief constructor
       CAircraft();
+
+      /// @brief launch rocket
+      bool launchRocket();
 
       /// @brief return speed
       float speed() const { return mSpeed; }
