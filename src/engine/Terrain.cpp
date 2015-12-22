@@ -7,7 +7,7 @@
 CTerrain::CTerrain()
 {
    texture(std::make_shared<CTexture>("res/ground.dds"));
-   const float s = 1e4;
+   const float s = 3e4;
    scale(glm::vec3(s, s, s));
 }
 

@@ -66,7 +66,6 @@ void CApp::update(float timeDelta)
 
    const auto& pos = mCamera.eye();
    mSky.pos({pos.x, pos.y, mSky.pos().z});
-   mTerrain.pos({pos.x, pos.y, 0});
 
    for (auto&& s : mStars)
    {
