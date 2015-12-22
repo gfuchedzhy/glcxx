@@ -92,6 +92,7 @@ void CAircraft::update(float timeDelta)
    mFlames[1].pos(flamePos - 1.2f*right());
    for(auto& f : mFlames)
    {
+      f.rate(0.05f*mSpeed*mSpeed);
       f.dir(-fwd);
       f.sourceVelocity(mSpeed*fwd);
       f.update(timeDelta);
