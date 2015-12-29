@@ -101,10 +101,10 @@ void CAircraft::update(float timeDelta)
 
 void CAircraft::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("shaded-tex")>();
-   p->set<cts("uModel")>(model());
-   auto p2 = gRenderer.get<cts("shaded-tex-nmap")>();
-   p2->set<cts("uModel")>(model());
+   auto& p = gRenderer.get<cts("shaded-tex")>();
+   p.set<cts("uModel")>(model());
+   auto& p2 = gRenderer.get<cts("shaded-tex-nmap")>();
+   p2.set<cts("uModel")>(model());
 
    gl(glEnable, GL_BLEND);
    for (const auto& m: mMeshes)

@@ -36,9 +36,9 @@ namespace
 
 void CBox::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("regular-col")>();
-   p->set<cts("aPos")>(vertexBuffer());
-   p->set<cts("uModel")>(model());
-   p->set<cts("uColor")>(mColor);
-   p->draw(indexBuffer());
+   auto& p = gRenderer.get<cts("regular-col")>();
+   p.set<cts("aPos")>(vertexBuffer());
+   p.set<cts("uModel")>(model());
+   p.set<cts("uColor")>(mColor);
+   p.draw(indexBuffer());
 }

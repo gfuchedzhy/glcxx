@@ -59,13 +59,13 @@ void CSky::draw(const SContext& context) const
    gl(glEnable, GL_BLEND);
    glDepthMask(GL_FALSE);
    // @todo this is a hack, should rethink model of complex objects
-   auto p = gRenderer.get<cts("billboard-tex")>();
-   p->set<cts("uExternalPos")>({pos().x, pos().y, 0});
+   auto& p = gRenderer.get<cts("billboard-tex")>();
+   p.set<cts("uExternalPos")>({pos().x, pos().y, 0});
    for (auto&& c : mClouds)
    {
       c.draw(context);
    }
-   p->set<cts("uExternalPos")>({0, 0, 0});
+   p.set<cts("uExternalPos")>({0, 0, 0});
    glDepthMask(GL_TRUE);
    gl(glDisable, GL_BLEND);
 }

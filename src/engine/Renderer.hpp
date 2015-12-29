@@ -43,7 +43,7 @@ class TRenderer
       /// another program will invalidate it, to discourage caching this
       /// function returns raw pointer
       template<typename TName>
-      auto get()
+      auto& get()
       {
          constexpr int index = ct::type_index_in_pack<TName, TProgramName...>::value;
          static_assert(-1 != index, "program name not found");
@@ -53,7 +53,7 @@ class TRenderer
             p->select();
             mCurrent = p;
          }
-         return p;
+         return *p;
       }
 
    private:

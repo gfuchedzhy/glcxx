@@ -48,33 +48,33 @@ void CMesh::draw(const SContext& context) const
    assert(mMaterial->mDiffuseMap);
    if (mMaterial->mNormalMap)
    {
-      auto p = gRenderer.get<cts("shaded-tex-nmap")>();
-      p->set<cts("aPos")>(mPos);
-      p->set<cts("aUV")>(mUV);
-      p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
+      auto& p = gRenderer.get<cts("shaded-tex-nmap")>();
+      p.set<cts("aPos")>(mPos);
+      p.set<cts("aUV")>(mUV);
+      p.set<cts("uTexture")>(mMaterial->mDiffuseMap);
 
-      p->set<cts("aNorm")>(mNormals);
-      p->set<cts("uAmbient")>(mMaterial->mAmbient);
-      p->set<cts("uDiffuse")>(mMaterial->mDiffuse);
-      p->set<cts("uSpecular")>(mMaterial->mSpecular);
-      p->set<cts("uShininess")>(mMaterial->mShininess);
+      p.set<cts("aNorm")>(mNormals);
+      p.set<cts("uAmbient")>(mMaterial->mAmbient);
+      p.set<cts("uDiffuse")>(mMaterial->mDiffuse);
+      p.set<cts("uSpecular")>(mMaterial->mSpecular);
+      p.set<cts("uShininess")>(mMaterial->mShininess);
 
-      p->set<cts("aTan")>(mTan);
-      p->set<cts("uNormalMap")>(mMaterial->mNormalMap);
-      p->draw(mInd);
+      p.set<cts("aTan")>(mTan);
+      p.set<cts("uNormalMap")>(mMaterial->mNormalMap);
+      p.draw(mInd);
    }
    else
    {
-      auto p = gRenderer.get<cts("shaded-tex")>();
-      p->set<cts("aPos")>(mPos);
-      p->set<cts("aUV")>(mUV);
-      p->set<cts("uTexture")>(mMaterial->mDiffuseMap);
+      auto& p = gRenderer.get<cts("shaded-tex")>();
+      p.set<cts("aPos")>(mPos);
+      p.set<cts("aUV")>(mUV);
+      p.set<cts("uTexture")>(mMaterial->mDiffuseMap);
 
-      p->set<cts("aNorm")>(mNormals);
-      p->set<cts("uAmbient")>(mMaterial->mAmbient);
-      p->set<cts("uDiffuse")>(mMaterial->mDiffuse);
-      p->set<cts("uSpecular")>(mMaterial->mSpecular);
-      p->set<cts("uShininess")>(mMaterial->mShininess);
-      p->draw(mInd);
+      p.set<cts("aNorm")>(mNormals);
+      p.set<cts("uAmbient")>(mMaterial->mAmbient);
+      p.set<cts("uDiffuse")>(mMaterial->mDiffuse);
+      p.set<cts("uSpecular")>(mMaterial->mSpecular);
+      p.set<cts("uShininess")>(mMaterial->mShininess);
+      p.draw(mInd);
    }
 }

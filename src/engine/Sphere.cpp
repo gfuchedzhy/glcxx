@@ -143,49 +143,49 @@ CTexturedSphere::CTexturedSphere()
 
 void CSphere::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("shaded-col")>();
-   p->set<cts("aPos")>(buffer);
-   p->set<cts("aNorm")>(buffer);
-   p->set<cts("uModel")>(model());
-   p->set<cts("uColor")>(mColor);
-   p->set<cts("uAmbient")>({1, 1, 1});
-   p->set<cts("uDiffuse")>({1, 1, 1});
-   p->set<cts("uSpecular")>({1, 1, 1});
-   p->set<cts("uShininess")>(20);
-   p->draw(indexBuffer);
+   auto& p = gRenderer.get<cts("shaded-col")>();
+   p.set<cts("aPos")>(buffer);
+   p.set<cts("aNorm")>(buffer);
+   p.set<cts("uModel")>(model());
+   p.set<cts("uColor")>(mColor);
+   p.set<cts("uAmbient")>({1, 1, 1});
+   p.set<cts("uDiffuse")>({1, 1, 1});
+   p.set<cts("uSpecular")>({1, 1, 1});
+   p.set<cts("uShininess")>(20);
+   p.draw(indexBuffer);
 
    if (context.mDrawNormals)
    {
-      auto p = gRenderer.get<cts("regular-col")>();
-      p->set<cts("aPos")>(normalBuffer);
-      p->set<cts("uModel")>(model());
-      p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      p->draw(normalIndexBuffer);
+      auto& p = gRenderer.get<cts("regular-col")>();
+      p.set<cts("aPos")>(normalBuffer);
+      p.set<cts("uModel")>(model());
+      p.set<cts("uColor")>({1.f, 1.f, 1.f});
+      p.draw(normalIndexBuffer);
    }
 }
 
 void CTexturedSphere::draw(const SContext& context) const
 {
-   auto p = gRenderer.get<cts("shaded-tex-nmap")>();
-   p->set<cts("aPos")>(buffer);
-   p->set<cts("aUV")>(texBuffer);
-   p->set<cts("aNorm")>(buffer);
-   p->set<cts("aTan")>(tanBuffer);
-   p->set<cts("uModel")>(model());
-   p->set<cts("uTexture")>(mTexture);
-   p->set<cts("uNormalMap")>(mNormalMap);
-   p->set<cts("uAmbient")>({0.2, 0.2, 0.2});
-   p->set<cts("uDiffuse")>({0.5, 0.5, 0.5});
-   p->set<cts("uSpecular")>({1, 1, 1});
-   p->set<cts("uShininess")>(20);
-   p->draw(indexBuffer);
+   auto& p = gRenderer.get<cts("shaded-tex-nmap")>();
+   p.set<cts("aPos")>(buffer);
+   p.set<cts("aUV")>(texBuffer);
+   p.set<cts("aNorm")>(buffer);
+   p.set<cts("aTan")>(tanBuffer);
+   p.set<cts("uModel")>(model());
+   p.set<cts("uTexture")>(mTexture);
+   p.set<cts("uNormalMap")>(mNormalMap);
+   p.set<cts("uAmbient")>({0.2, 0.2, 0.2});
+   p.set<cts("uDiffuse")>({0.5, 0.5, 0.5});
+   p.set<cts("uSpecular")>({1, 1, 1});
+   p.set<cts("uShininess")>(20);
+   p.draw(indexBuffer);
 
    if (context.mDrawNormals)
    {
-      auto p = gRenderer.get<cts("regular-col")>();
-      p->set<cts("aPos")>(normalBuffer);
-      p->set<cts("uModel")>(model());
-      p->set<cts("uColor")>({1.f, 1.f, 1.f});
-      p->draw(normalIndexBuffer);
+      auto& p = gRenderer.get<cts("regular-col")>();
+      p.set<cts("aPos")>(normalBuffer);
+      p.set<cts("uModel")>(model());
+      p.set<cts("uColor")>({1.f, 1.f, 1.f});
+      p.draw(normalIndexBuffer);
    }
 }
