@@ -8,8 +8,8 @@
 
 namespace
 {
-   std::uniform_real_distribution<> distr(0.8f, 1.05f);
-   std::uniform_real_distribution<> distr2(-1, 1);
+   std::uniform_real_distribution<float> distr(0.8f, 1.05f);
+   std::uniform_real_distribution<float> distr2(-1, 1);
 }
 
 CApp::CApp()

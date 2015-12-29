@@ -32,8 +32,8 @@ CSky::CSky()
    sky[4]->yaw(180);
    sky[4]->pos(glm::vec3(0, -size/2, 0));
 
-   std::uniform_real_distribution<> distr1(0.8f, 1.5f);
-   std::uniform_real_distribution<> distr2(-0.1f, 0.f);
+   std::uniform_real_distribution<float> distr1(0.8f, 1.5f);
+   std::uniform_real_distribution<float> distr2(-0.1f, 0.f);
    float angle = 0;
    const float bbRadius = 3e3;
    auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
