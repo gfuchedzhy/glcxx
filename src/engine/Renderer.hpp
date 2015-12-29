@@ -6,6 +6,7 @@
 #define ENGINE_RENDERER_HPP
 
 #include "Program.hpp"
+#include <SFML/Window.hpp>
 
 /// @brief renderer, implements program creation and program selection
 /// @tparam list of program names
@@ -25,13 +26,8 @@ class TRenderer
       using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
 
    public:
-      TRenderer() = default;
-
-      /// @brief initializes all programs of this renderer, @note actually it
-      /// would be better to do this in constructor, however for this gl context
-      /// should be created in constructor too, but sfml doesn't work well with
-      /// custom context initialization
-      void init()
+      /// @brief initializes all programs of this rendererq
+      TRenderer()
       {
          mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(programSrc<base_name<TProgramName>>())...);
       }
@@ -57,6 +53,9 @@ class TRenderer
       }
 
    private:
+      /// @brief context necessaty to allow early program creation
+      sf::Context mContext;
+
       /// @brief program list
       std::tuple<std::unique_ptr<program_type<TProgramName>>...> mPrograms;
 
