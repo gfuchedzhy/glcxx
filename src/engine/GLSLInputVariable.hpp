@@ -286,16 +286,16 @@ namespace glsl
 }
 
 /// @brief shortcuts
-template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+template<template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
 using TAttrib = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, false, EXTRA, 1>;
 
-template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
 using TAttribArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, false, EXTRA, N>;
 
-template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+template<template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
 using TUniform = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, 1>;
 
-template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo = float, size_t EXTRA = 0>
+template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
 using TUniformArr = glsl::TInputVarTraits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
 
 #endif // ENGINE_GLSLINPUTVARIABLE_HPP
