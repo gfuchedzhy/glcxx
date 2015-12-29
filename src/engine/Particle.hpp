@@ -73,19 +73,19 @@ class TParticleSystem
       std::vector<glm::vec3> mPositions;
 
       /// @brief position buffer
-      std::shared_ptr<TBufferObject<glm::vec3>> mPosBuffer = std::make_shared<TBufferObject<glm::vec3>>(nullptr, 0, GL_DYNAMIC_DRAW);
+      tBufferPtr<glm::vec3> mPosBuffer = make_buffer<glm::vec3>(nullptr, 0, GL_DYNAMIC_DRAW);
 
       /// @brief speed
       std::vector<glm::vec4> mSpeeds;
 
       /// @brief speed buffer
-      std::shared_ptr<TBufferObject<glm::vec4>> mSpeedBuffer = std::make_shared<TBufferObject<glm::vec4>>(nullptr, 0, GL_DYNAMIC_DRAW);
+      tBufferPtr<glm::vec4> mSpeedBuffer = make_buffer<glm::vec4>(nullptr, 0, GL_DYNAMIC_DRAW);
 
       /// @brief time parameters
       std::vector<glm::vec2> mTimes;
 
       /// @brief time buffer
-      std::shared_ptr<TBufferObject<glm::vec2>> mTimeBuf = std::make_shared<TBufferObject<glm::vec2>>(nullptr, 0, GL_DYNAMIC_DRAW);
+      tBufferPtr<glm::vec2> mTimeBuf = make_buffer<glm::vec2>(nullptr, 0, GL_DYNAMIC_DRAW);
 
       /// @brief number of alive particles
       unsigned int mAliveParticleNum = 0;

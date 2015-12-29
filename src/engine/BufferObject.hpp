@@ -6,6 +6,7 @@
 #define ENGINE_BUFFEROBJECT_HPP
 
 #include "GLSLInputVariable.hpp"
+#include <memory>
 
 /// @brief buffer object
 template<typename TData>
@@ -63,6 +64,17 @@ class TBufferObject
       }
 };
 
+/// @brief buffer ptr
+template<typename TData>
+using tBufferPtr = std::shared_ptr<TBufferObject<TData>>;
+
+/// @brief make buffer
+template<typename TData, typename... TArgs>
+inline tBufferPtr<TData> make_buffer(TArgs&&... args)
+{
+   return std::make_shared<TBufferObject<TData>>(std::forward<TArgs>(args)...);
+}
+
 /// @brief index buffer object, though underlying implementation is buffer of
 /// unsigned chars, this buffer accepts ubyte, ushort and uint indices, also it
 /// saves mode, e.g. GL_TRIANGLE_STRIP
@@ -118,5 +130,15 @@ class CIndexBuffer : public TBufferObject<unsigned char>
          gl(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
       }
 };
+
+/// @brief index buffer ptr
+using tIndexBufferPtr = std::shared_ptr<CIndexBuffer>;
+
+/// @brief make index buffer
+template<typename... TArgs>
+inline tIndexBufferPtr make_indexBuffer(TArgs&&... args)
+{
+   return std::make_shared<CIndexBuffer>(std::forward<TArgs>(args)...);
+}
 
 #endif

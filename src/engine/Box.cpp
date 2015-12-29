@@ -20,7 +20,7 @@ namespace
          { 0.5f, 0.5f,-0.5f},
          {-0.5f, 0.5f,-0.5f}
       };
-      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer<glm::vec3>(data, sizeof(data)/sizeof(data[0]));
       return buffer;
    }
 
@@ -29,7 +29,7 @@ namespace
       const GLubyte data[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                                  1, 5, 2, 6,
                                  6, 3, 3, 7, 0, 4};
-      static auto buffer = std::make_shared<CIndexBuffer>(data, sizeof(data)/sizeof(data[0]), GL_TRIANGLE_STRIP);
+      static auto buffer = make_indexBuffer(data, sizeof(data)/sizeof(data[0]), GL_TRIANGLE_STRIP);
       return buffer;
    }
 }

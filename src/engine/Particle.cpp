@@ -6,7 +6,7 @@
 
 std::shared_ptr<CIndexBuffer> getCachedParticleIndices(size_t particleNum)
 {
-   static std::shared_ptr<CIndexBuffer> buf = std::make_shared<CIndexBuffer>((GLubyte*)nullptr, 0, GL_TRIANGLES);
+   static tIndexBufferPtr buf = make_indexBuffer((GLubyte*)nullptr, 0, GL_TRIANGLES);
    static size_t num = 0;
 
    // if current buffer fits requirements just return it

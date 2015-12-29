@@ -27,13 +27,13 @@ namespace
 
    auto uvBuffer()
    {
-      static auto buffer = std::make_shared<TBufferObject<glm::vec2>>(uvData, sizeof(uvData)/sizeof(uvData[0]));
+      static auto buffer = make_buffer<glm::vec2>(uvData, sizeof(uvData)/sizeof(uvData[0]));
       return buffer;
    }
 
    auto posBuffer()
    {
-      static auto buffer = std::make_shared<TBufferObject<glm::vec3>>(posVertexData, sizeof(posVertexData)/sizeof(posVertexData[0]));
+      static auto buffer = make_buffer<glm::vec3>(posVertexData, sizeof(posVertexData)/sizeof(posVertexData[0]));
       return buffer;
    }
 }

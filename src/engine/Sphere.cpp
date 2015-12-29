@@ -67,12 +67,12 @@ namespace
       }
    }
 
-   static std::shared_ptr<TBufferObject<glm::vec3>> buffer;
-   static std::shared_ptr<TBufferObject<glm::vec2>> texBuffer;
-   static std::shared_ptr<TBufferObject<glm::vec3>> tanBuffer;
-   static std::shared_ptr<TBufferObject<glm::vec3>> normalBuffer;
-   static std::shared_ptr<CIndexBuffer> indexBuffer;
-   static std::shared_ptr<CIndexBuffer> normalIndexBuffer;
+   static tBufferPtr<glm::vec3> buffer;
+   static tBufferPtr<glm::vec2> texBuffer;
+   static tBufferPtr<glm::vec3> tanBuffer;
+   static tBufferPtr<glm::vec3> normalBuffer;
+   static tIndexBufferPtr indexBuffer;
+   static tIndexBufferPtr normalIndexBuffer;
 
    void initSphere()
    {
@@ -107,10 +107,10 @@ namespace
             // shift index unless it is index of equator vertex
             indices.push_back(indices[j] + (indices[j] < vertNumWithoutEquator ? vertNum : 0));
          }
-         buffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
-         texBuffer = std::make_shared<TBufferObject<glm::vec2>>(&texCoords[0], texCoords.size());
-         tanBuffer = std::make_shared<TBufferObject<glm::vec3>>(&tangents[0], tangents.size());
-         indexBuffer = std::make_shared<CIndexBuffer>(&indices[0], indices.size(), GL_TRIANGLES);
+         buffer = make_buffer<glm::vec3>(&vertices[0], vertices.size());
+         texBuffer = make_buffer<glm::vec2>(&texCoords[0], texCoords.size());
+         tanBuffer = make_buffer<glm::vec3>(&tangents[0], tangents.size());
+         indexBuffer = make_indexBuffer(&indices[0], indices.size(), GL_TRIANGLES);
 
          // indices for normals, last vertex would be (0,0,0)
          const size_t lastIndex = vertices.size();
@@ -124,8 +124,8 @@ namespace
          for (auto&& v : vertices)
             v *= 1.5f;
          vertices.emplace_back(0, 0, 0);
-         normalBuffer = std::make_shared<TBufferObject<glm::vec3>>(&vertices[0], vertices.size());
-         normalIndexBuffer = std::make_shared<CIndexBuffer>(&normalIndices[0], normalIndices.size(), GL_LINE_STRIP);
+         normalBuffer = make_buffer<glm::vec3>(&vertices[0], vertices.size());
+         normalIndexBuffer = make_indexBuffer(&normalIndices[0], normalIndices.size(), GL_LINE_STRIP);
       }
    }
 }
