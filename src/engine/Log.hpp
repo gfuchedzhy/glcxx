@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_LOG_HPP
@@ -12,6 +12,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace Log
 {
@@ -58,6 +59,16 @@ namespace std
    inline ostream& operator<<(ostream& stream, const glm::tvec4<T, P>& vec)
    {
       return stream << "vec4(" << vec.x << ',' << vec.y << ',' << vec.z << ',' << vec.w << ')';
+   }
+
+   /// @brief stream mat4x4
+   template<typename T, glm::precision P>
+   inline ostream& operator<<(ostream& stream, const glm::tmat4x4<T, P>& mat)
+   {
+      stream << "mat4x4(" << mat[0][0] << ',' << mat[1][0] << ',' << mat[2][0] << ',' << mat[3][0] << std::endl;
+      stream << "       " << mat[0][1] << ',' << mat[1][1] << ',' << mat[2][1] << ',' << mat[3][1] << std::endl;
+      stream << "       " << mat[0][2] << ',' << mat[1][2] << ',' << mat[2][2] << ',' << mat[3][2] << std::endl;
+      return stream << "       " << mat[0][3] << ',' << mat[1][3] << ',' << mat[2][3] << ',' << mat[3][3] << std::endl;
    }
 
    /// @brief stream vector
