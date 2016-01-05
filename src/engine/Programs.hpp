@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_PROGRAMS_HPP
@@ -73,8 +73,7 @@ auto progInputDef(cts("particlesys")) -> std::tuple<
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TProgramInput<cts("uSize"), TUniform<glm::tvec2>>,
-   TProgramInput<cts("uRight"), TUniform<glm::tvec3>>,
-   TProgramInput<cts("uUp"), TUniform<glm::tvec3>>>;
+   TProgramInput<cts("uPerspectiveScale"), TUniform<glm::tvec2>>>;
 
 auto progInputDef(cts("particlesys-tex")) -> ct::tuple_append<inp_by_name("particlesys"),
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;

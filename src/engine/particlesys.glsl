@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifdef TEX
@@ -50,11 +50,13 @@ void main()
    const float airResistance = 0.05;
    vec3 pos = aPos + aSpeed.xyz*log(1+airResistance*aSpeed.w*aTime.x)/airResistance;
 
-   vec2 shift = squad[i]*uSize*size;
-   gl_Position = uViewProj*vec4(pos + shift.x*uRight + shift.y*uUp, 1);
+   gl_Position = uViewProj*vec4(pos, 1);
+   // expand billboard
+   gl_Position.xy += squad[i]*uPerspectiveScale*uSize*size;
 #else
-   vec2 shift = squad[i]*uSize;
-   gl_Position = uViewProj*vec4(aPos + shift.x*uRight + shift.y*uUp, 1);
+   gl_Position = uViewProj*vec4(aPos, 1);
+   // expand billboard
+   gl_Position.xy += squad[i]*uPerspectiveScale*uSize;
 #endif
 
 #if defined FLAME

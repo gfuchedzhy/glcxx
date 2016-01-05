@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "App.hpp"
@@ -161,8 +161,7 @@ void CApp::update(float timeDelta)
       p.set<cts("uRight")>(mCamera.right()); }
    {  auto& p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
-      p.set<cts("uUp")>(mCamera.up());
-      p.set<cts("uRight")>(mCamera.right()); }
+      p.set<cts("uPerspectiveScale")>(mCamera.perspectiveScale()); }
 }
 
 void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)

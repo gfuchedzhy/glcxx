@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_CAMERA_HPP
@@ -89,6 +89,11 @@ class CCamera
       /// @brief returns eye position
       glm::vec3 eye() const;
 
+      /// @brief return perspective scale, multiplier to convert from eye space
+      /// into projective space (world coordinates after viewProjection
+      /// traansformation or NDC before perspective division) by x and y axes
+      glm::vec2 perspectiveScale() const;
+
       /// @brief returns projection matrix
       const glm::mat4& proj() const;
 
@@ -120,6 +125,13 @@ inline glm::vec3 CCamera::back() const
 inline glm::vec3 CCamera::eye() const
 {
    return lookAt() + eyeDistance()*back();
+}
+
+inline glm::vec2 CCamera::perspectiveScale() const
+{
+   // proj[1][1] = 1/tan(fovY)
+   const float p11 = proj()[1][1];
+   return {p11/mAspect, p11};
 }
 
 inline const glm::vec3& CCamera::lookAt() const
