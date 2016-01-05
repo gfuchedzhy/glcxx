@@ -4,14 +4,17 @@
 
 #include "Program.hpp"
 
-CProgramBase::CProgramBase(const std::string& src)
+CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
    : mVertexShader("#define VERTEX\n" + src, GL_VERTEX_SHADER)
    , mFragmentShader("#define FRAGMENT\n" + src, GL_FRAGMENT_SHADER)
+   , mGeometryShader(hasGeometryShader ? std::make_unique<CShader>("#define GEOMETRY\n" + src, GL_GEOMETRY_SHADER) : nullptr)
 {
    mObject = gl(glCreateProgram);
    Log::msg("creating program ", mObject);
    gl(glAttachShader, mObject, mVertexShader.mObject);
    gl(glAttachShader, mObject, mFragmentShader.mObject);
+   if (mGeometryShader)
+      gl(glAttachShader, mObject, mGeometryShader->mObject);
    gl(glLinkProgram,  mObject);
    GLint linked;
    gl(glGetProgramiv, mObject, GL_LINK_STATUS, &linked);
@@ -36,5 +39,7 @@ CProgramBase::~CProgramBase()
    Log::msg("destroying program ", mObject);
    gl(glDetachShader, mObject, mVertexShader.mObject);
    gl(glDetachShader, mObject, mFragmentShader.mObject);
+   if (mGeometryShader)
+      gl(glDetachShader, mObject, mGeometryShader->mObject);
    gl(glDeleteProgram, mObject);
 }

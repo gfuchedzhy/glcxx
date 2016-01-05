@@ -17,7 +17,7 @@ class CProgramBase
       CProgramBase& operator=(const CProgramBase& other) = delete;
    public:
       /// @brief constuctor
-      CProgramBase(const std::string& src);
+      CProgramBase(const std::string& src, bool hasGeometryShader = false);
 
       /// @brief destructor
       ~CProgramBase();
@@ -52,9 +52,10 @@ class CProgramBase
       GLuint mObject = 0;
 
    private:
-      /// @brief shaders
+      /// @brief shaders, geometry shader is optional
       CShader mVertexShader;
       CShader mFragmentShader;
+      std::unique_ptr<CShader> mGeometryShader;
 };
 
 /// @brief value is true it T has valid instance of set<TName> member
