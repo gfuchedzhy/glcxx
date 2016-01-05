@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_RENDERER_HPP
@@ -29,6 +29,7 @@ class TRenderer
       /// @brief initializes all programs of this rendererq
       TRenderer()
       {
+         Log::msg("openGL ", mContextSettings.majorVersion, '.', mContextSettings.minorVersion,  " version loaded");
          mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(programSrc<base_name<TProgramName>>())...);
       }
 
@@ -52,9 +53,18 @@ class TRenderer
          return *p;
       }
 
+      /// @brief return context settings
+      auto& contextSettings() const
+      {
+         return mContextSettings;
+      }
+
    private:
-      /// @brief context necessaty to allow early program creation
-      sf::Context mContext;
+      /// @brief context settings
+      sf::ContextSettings mContextSettings{24, 0, 0, 3, 3, sf::ContextSettings::Core};
+
+      /// @brief context necessety to allow early program creation
+      sf::Context mContext{mContextSettings, 1, 1};
 
       /// @brief program list
       std::tuple<std::unique_ptr<program_type<TProgramName>>...> mPrograms;

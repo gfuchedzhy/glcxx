@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_ENGINE_HPP
@@ -16,7 +16,7 @@ class CEngine
       CEngine(const size_t width, const size_t height);
 
       /// @brief destructor
-      virtual ~CEngine() = default;
+      virtual ~CEngine();
 
       /// @brief draw
       virtual void update(float timeDelta) = 0;
@@ -49,6 +49,9 @@ class CEngine
 
       /// @brief drawing context
       SContext mContext;
+
+      /// @brief @todo workaround before proper move to VAOs
+      unsigned int mVAO;
 };
 
 #endif // ENGINE_ENGINE_HPP

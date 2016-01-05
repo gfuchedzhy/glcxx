@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Engine.hpp"
@@ -9,18 +9,25 @@
 #include <SFML/System/Clock.hpp>
 
 CEngine::CEngine(const size_t width, const size_t height)
-   : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close,
-             sf::ContextSettings(24, 0, 0, 3, 0))
+   : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close, gRenderer.contextSettings())
    , mAspect(width/float(height))
 {
    mWindow.setVerticalSyncEnabled(true);
-   sf::ContextSettings settings = mWindow.getSettings();
-   Log::msg("openGL ", settings.majorVersion, '.', settings.minorVersion,  " version loaded");
+
+   /// @todo workaround before proper move to VAOs
+   gl(glGenVertexArrays, 1, &mVAO);
+   gl(glBindVertexArray, mVAO);
 
    gl(glEnable, GL_DEPTH_TEST);
    gl(glEnable, GL_CULL_FACE);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    mClock.restart();
+}
+
+CEngine::~CEngine()
+{
+   /// @todo workaround before proper move to VAOs
+   gl(glDeleteVertexArrays, 1, &mVAO);
 }
 
 void CEngine::run()
