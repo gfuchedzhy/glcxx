@@ -1,12 +1,12 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Program.hpp"
 
-CProgramBase::CProgramBase(const std::string& vertexSrc, const std::string& fragmentSrc)
-   : mVertexShader(vertexSrc, GL_VERTEX_SHADER)
-   , mFragmentShader(fragmentSrc, GL_FRAGMENT_SHADER)
+CProgramBase::CProgramBase(const std::string& src)
+   : mVertexShader("#define VERTEX\n" + src, GL_VERTEX_SHADER)
+   , mFragmentShader("#define FRAGMENT\n" + src, GL_FRAGMENT_SHADER)
 {
    mObject = gl(glCreateProgram);
    Log::msg("creating program ", mObject);

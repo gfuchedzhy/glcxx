@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_PROGRAM_HPP
@@ -17,7 +17,7 @@ class CProgramBase
       CProgramBase& operator=(const CProgramBase& other) = delete;
    public:
       /// @brief constuctor
-      CProgramBase(const std::string& vertexSrc, const std::string& fragmentSrc);
+      CProgramBase(const std::string& src);
 
       /// @brief destructor
       ~CProgramBase();
@@ -117,12 +117,12 @@ class TProgram<TName, std::tuple<TProgramInput...>> : public CProgramBase, publi
          cts("\n#define ")>;
 
       /// @brief ctstring containing glsl declarations of all program inputs
-      using tVertexShaderDeclaration = ct::string_cat<tDefines, cts("\n#define VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration...>;
-      using tFragmentShaderDeclaration = ct::string_cat<tDefines, cts("\n#define FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration...>;
-
+      using tShaderDeclarations = ct::string_cat<tDefines,
+                                                 cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
+                                                 cts("\n#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
       /// @brief constructor
       TProgram(const std::string& src)
-         : CProgramBase(tVertexShaderDeclaration::chars + src, tFragmentShaderDeclaration::chars + src)
+         : CProgramBase(tShaderDeclarations::chars + src)
          , TProgramInput(mObject)...
       {}
 
