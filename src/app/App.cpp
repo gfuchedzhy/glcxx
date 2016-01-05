@@ -170,7 +170,7 @@ void CApp::onKeyPressed(const sf::Event::KeyEvent& keyEvent)
    {
       case sf::Keyboard::Num1:
          mCameraFollowsAircraft = !mCameraFollowsAircraft;
-         Log::msg("camera aircraft followin turned ", Log::SOnOff(mCameraFollowsAircraft));
+         Log::msg("camera aircraft following turned ", Log::SOnOff(mCameraFollowsAircraft));
          break;
       case sf::Keyboard::Num2:
          mContext.mDrawHealthBars = !mContext.mDrawHealthBars;
