@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_UTILS_HPP
@@ -42,10 +42,6 @@ namespace ct
          using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
    };
 
-   /// @brief append more types to given tuple
-   template<typename Tuple, typename... T>
-   using tuple_append = decltype(std::tuple_cat(std::declval<Tuple>(), std::declval<std::tuple<T...>>()));
-
    /// @brief value contains index of type in tuple
    template<typename T, typename Tuple> struct type_index_in_pack_impl;
 
@@ -60,7 +56,7 @@ namespace ct
    template<typename T>
    struct type_index_in_pack_impl<T, std::tuple<>>
    {
-         static constexpr size_t value = 0;
+      static constexpr size_t value = 0;
    };
 
    /// @brief shortcut
@@ -69,6 +65,62 @@ namespace ct
    {
          static constexpr size_t value = type_index_in_pack_impl<T, std::tuple<Pack...>>::value;
    };
+
+   /// @brief tuple concatanation impl
+   template<typename... Tuples> struct tuple_cat_impl;
+   template<typename... T1, typename... T2, typename... TRestTuples>
+   struct tuple_cat_impl<std::tuple<T1...>, std::tuple<T2...>, TRestTuples...>
+   {
+         using type = typename tuple_cat_impl<std::tuple<T1..., T2...>, TRestTuples...>::type;
+   };
+
+   /// @brief tuple concatanation impl terminator
+   template<typename... T>
+   struct tuple_cat_impl<std::tuple<T...>>
+   {
+      using type = std::tuple<T...>;
+   };
+
+   /// @brief tuple concatanation impl empty terminator
+   template<>
+   struct tuple_cat_impl<>
+   {
+         using type = std::tuple<>;
+   };
+
+   /// @brief tuple concatanation shortcut
+   template<typename... Tuples>
+   using tuple_cat = typename tuple_cat_impl<Tuples...>::type;
+
+   /// @brief append more types to given tuple
+   template<typename Tuple, typename... T>
+   using tuple_append = tuple_cat<Tuple, std::tuple<T...>>;
+
+   /// @brief strip TStrip types from tuple
+   template<typename TStrip, typename Tuple> struct tuple_strip_impl;
+
+   /// @brief specialization for tuple
+   template<typename TStrip, typename... T>
+   struct tuple_strip_impl<TStrip, std::tuple<T...>>
+   {
+         using type = tuple_cat<
+            typename std::conditional<std::is_same<TStrip, T>::value,
+                                      std::tuple<>,
+                                      std::tuple<T> >::type...>;
+   };
+
+   /// @brief shortcut
+   template<typename TStrip, typename Tuple>
+   using tuple_strip = typename tuple_strip_impl<TStrip, Tuple>::type;
+
+   /// @brief true if tuple contains given type
+   template<typename T, typename Tuple> struct tuple_contains;
+
+   /// @brief specialization for tuple
+   template<typename T, typename... TupleMembers>
+   struct tuple_contains<T, std::tuple<TupleMembers...>>
+      : public std::integral_constant<bool, sizeof...(TupleMembers) != type_index_in_pack<T, TupleMembers...>::value>
+   {};
 
    /// @brief compile time string
    template<char... s>
