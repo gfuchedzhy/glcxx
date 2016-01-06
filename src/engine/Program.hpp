@@ -21,7 +21,7 @@ class CProgramBase
 
    public:
       /// @brief constuctor
-      CProgramBase(const char* declarations, const char* src, bool hasGeometryShader);
+      CProgramBase(const char* name, const char* declarations, const char* src, bool hasGeometryShader);
 
       /// @brief destructor
       ~CProgramBase();
@@ -59,7 +59,7 @@ class CProgramBase
 
    protected:
       /// @brief program object id
-      GLuint mObject = 0;
+      GLuint mObject;
 
    private:
       /// @brief shaders, geometry shader is optional
@@ -134,7 +134,7 @@ class TProgram<TName, hasGeometryShader, std::tuple<TProgramInput...>> : public 
                                                  cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
       /// @brief constructor
       TProgram(const char* src)
-         : CProgramBase(tShaderDeclarations::chars, src, hasGeometryShader)
+         : CProgramBase(tName::chars, tShaderDeclarations::chars, src, hasGeometryShader)
          , TProgramInput(mObject)...
       {}
 

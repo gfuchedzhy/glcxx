@@ -44,18 +44,18 @@ namespace
 )";
 }
 
-// concat declarations, helper code and sources, then pass them to delegate constructor
-CProgramBase::CProgramBase(const char* declarations, const char* src, bool hasGeometryShader)
-   : CProgramBase(std::string(declarations) + glslHelperMacros + src, hasGeometryShader)
+// log program creation, concat declarations, helper code and sources, then pass
+// them to delegate constructor
+CProgramBase::CProgramBase(const char* name, const char* declarations, const char* src, bool hasGeometryShader)
+   : CProgramBase((Log::msg("creating program ", name), std::string(declarations) + glslHelperMacros + src), hasGeometryShader)
 {}
 
 CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
-   : mVertexShader("#define VERTEX\n" + src, GL_VERTEX_SHADER)
-   , mFragmentShader("#define FRAGMENT\n" + src, GL_FRAGMENT_SHADER)
-   , mGeometryShader(hasGeometryShader ? std::make_unique<CShader>("#define GEOMETRY\n" + src, GL_GEOMETRY_SHADER) : nullptr)
+   : mObject(gl(glCreateProgram))
+   , mVertexShader(src, GL_VERTEX_SHADER)
+   , mFragmentShader(src, GL_FRAGMENT_SHADER)
+   , mGeometryShader(hasGeometryShader ? std::make_unique<CShader>(src, GL_GEOMETRY_SHADER) : nullptr)
 {
-   mObject = gl(glCreateProgram);
-   Log::msg("creating program ", mObject);
    gl(glAttachShader, mObject, mVertexShader.mObject);
    gl(glAttachShader, mObject, mFragmentShader.mObject);
    if (mGeometryShader)
@@ -81,7 +81,6 @@ CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
 
 CProgramBase::~CProgramBase()
 {
-   Log::msg("destroying program ", mObject);
    gl(glDetachShader, mObject, mVertexShader.mObject);
    gl(glDetachShader, mObject, mFragmentShader.mObject);
    if (mGeometryShader)

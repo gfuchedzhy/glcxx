@@ -7,12 +7,18 @@
 
 CShader::CShader(const std::string& src, const GLenum shaderType)
 {
-   mObject = gl(glCreateShader, shaderType);
-   Log::msg("creating shader ", mObject);
+   const char* strType
+      = (GL_VERTEX_SHADER == shaderType) ? "VERTEX"
+      : (GL_GEOMETRY_SHADER == shaderType) ? "GEOMETRY" : "FRAGMENT";
+   Log::msg("creating ", strType, " shader");
 #ifdef GL_LOG_ALL
    Log::msg(src);
 #endif
-   std::string versionedSrc("#version 330\n");
+   mObject = gl(glCreateShader, shaderType);
+   std::string versionedSrc("#version 330\n"
+                            "#define ");
+   versionedSrc += strType;
+   versionedSrc += '\n';
    versionedSrc += src;
    const GLint length = versionedSrc.length();
    const GLchar* source = versionedSrc.c_str();
@@ -38,6 +44,5 @@ CShader::CShader(const std::string& src, const GLenum shaderType)
 
 CShader::~CShader()
 {
-   Log::msg("destroying shader ", mObject);
    gl(glDeleteShader, mObject);
 }
