@@ -1,12 +1,12 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Flame.hpp"
 #include "Programs.hpp"
 
 CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
-   : tParticleSystem(rate, 2.35*rate)
+   : tParticleSystem(rate, 0.6*rate)
    , mParticleSpeed(particleSpeed)
 {
    size({radius, radius});
@@ -15,7 +15,7 @@ CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
 
 void CJetFlame::draw(const SContext& context) const
 {
-   if (mInd) // at least one alive particle
+   if (hasAliveParticles())
    {
       auto& p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
       p.set<cts("aPos")>(mPosBuffer);
@@ -27,7 +27,7 @@ void CJetFlame::draw(const SContext& context) const
       gl(glEnable, GL_BLEND);
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE);
       glDepthMask(GL_FALSE);
-      p.draw(mInd, 6*mAliveParticleNum);
+      gl(glDrawArrays, GL_POINTS, 0, aliveParticleNum());
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glDepthMask(GL_TRUE);
       gl(glDisable, GL_BLEND);

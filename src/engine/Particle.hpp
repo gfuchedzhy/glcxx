@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_PARTICLE_HPP
@@ -46,10 +46,6 @@ struct SParticle
       }
 };
 
-/// @brief returns cached index buffer that has indices for particleNum or more
-/// particles
-std::shared_ptr<CIndexBuffer> getCachedParticleIndices(size_t particleNum);
-
 /// @brief particle system
 template<typename TParticle, typename TParticleManager>
 class TParticleSystem
@@ -87,13 +83,6 @@ class TParticleSystem
       /// @brief time buffer
       tBufferPtr<glm::vec2> mTimeBuf = make_buffer<glm::vec2>(nullptr, 0, GL_DYNAMIC_DRAW);
 
-      /// @brief number of alive particles
-      unsigned int mAliveParticleNum = 0;
-
-      /// @brief index buffer containing indices for at least mAliveParticleNum
-      /// particles
-      std::shared_ptr<CIndexBuffer> mInd;
-
    public:
       /// @brief constructor
       TParticleSystem(float rate, int maxParticleNumHint)
@@ -109,12 +98,20 @@ class TParticleSystem
       /// @brief set rate
       void rate(float rate) { mRate = rate; }
 
-      /// @brief return number of currently alive particles
-      unsigned int aliveParticleNum() const { return mAliveParticleNum; }
+      /// @brief return true if there are currently some alive particles in this
+      /// system
+      bool hasAliveParticles() const { return !mPositions.empty(); }
+
+      /// @brief return number of currently alive particles in this system
+      size_t aliveParticleNum() const { return mPositions.size(); }
 
       /// @brief update particle system
       void update(TParticleManager& particleMgr, float timeDelta)
       {
+         mPositions.clear();
+         mSpeeds.clear();
+         mTimes.clear();
+
          for (auto& p : mParticlePool)
             if (p.mIsAlive)
                updateParticle(p, timeDelta);
@@ -134,14 +131,6 @@ class TParticleSystem
          mPosBuffer->upload(&mPositions[0], mPositions.size());
          mSpeedBuffer->upload(&mSpeeds[0], mSpeeds.size());
          mTimeBuf->upload(&mTimes[0], mTimes.size());
-
-         mAliveParticleNum = mPositions.size()/4;
-         mInd = getCachedParticleIndices(mAliveParticleNum);
-
-         /// clear, do not shrink to avoid reallocations on next update
-         mPositions.clear();
-         mSpeeds.clear();
-         mTimes.clear();
       }
 
    private:
@@ -151,9 +140,9 @@ class TParticleSystem
          p.update(timeDelta);
          if (p.mIsAlive)
          {
-            mTimes.insert(end(mTimes), 4, {p.mTime, p.mLifeTime});
-            mPositions.insert(end(mPositions), 4, p.mPos);
-            mSpeeds.insert(end(mSpeeds), 4, p.mSpeed);
+            mTimes.emplace_back(p.mTime, p.mLifeTime);
+            mPositions.push_back(p.mPos);
+            mSpeeds.push_back(p.mSpeed);
          }
       }
 

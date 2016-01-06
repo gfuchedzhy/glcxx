@@ -4,6 +4,51 @@
 
 #include "Program.hpp"
 
+namespace
+{
+   // macros to declare and access in/out variables between shaders
+   static const char glslHelperMacros[] = R"(
+#ifdef VERTEX
+#define DECL_VERT_GEOM(type, name) out type vg##name
+#elif defined GEOMETRY
+#define DECL_VERT_GEOM(type, name) in type vg##name[]
+#else
+#define DECL_VERT_GEOM(type, name) void
+#endif
+
+#ifdef GEOMETRY
+#define DECL_GEOM_FRAG(type, name) out type gf##name
+#elif defined FRAGMENT
+#define DECL_GEOM_FRAG(type, name) in type gf##name
+#else
+#define DECL_GEOM_FRAG(type, name) void
+#endif
+
+#ifdef VERTEX
+#define DECL_VERT_FRAG(type, name) out type vf##name
+#elif defined FRAGMENT
+#define DECL_VERT_FRAG(type, name) in type vf##name
+#else
+#define DECL_VERT_FRAG(type, name) void
+#endif
+
+#ifdef VERTEX
+#define out(name) vg##name
+#elif defined GEOMETRY
+#define in(name) vg##name
+#define out(name) gf##name
+#elif defined FRAGMENT
+#define in(name) gf##name
+#endif
+#line 0
+)";
+}
+
+// concat declarations, helper code and sources, then pass them to delegate constructor
+CProgramBase::CProgramBase(const char* declarations, const char* src, bool hasGeometryShader)
+   : CProgramBase(std::string(declarations) + glslHelperMacros + src, hasGeometryShader)
+{}
+
 CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
    : mVertexShader("#define VERTEX\n" + src, GL_VERTEX_SHADER)
    , mFragmentShader("#define FRAGMENT\n" + src, GL_FRAGMENT_SHADER)

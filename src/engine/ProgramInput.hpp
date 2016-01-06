@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_PROGRAMINPUT_HPP
@@ -14,6 +14,10 @@ namespace tag
 {
    struct vertex;
    struct fragment;
+   struct geometry;
+   struct vertgeom;
+   struct geomfrag;
+   struct vertfrag;
    struct all;
 }
 
@@ -47,10 +51,20 @@ struct TProgramInput : public TProgramInputSelector<T>::type
 
       /// @brief ctstrings containing glsl declarations for this input
       using tVertexShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::vertex>::value
+                                                                 || std::is_same<DeclarationTag, tag::vertfrag>::value
+                                                                 || std::is_same<DeclarationTag, tag::vertgeom>::value
                                                                  || std::is_same<DeclarationTag, tag::all>::value,
                                                                  typename tImpl::template tDeclaration<TInputName>,
                                                                  cts("")>::type;
+      using tGeometryShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::geometry>::value
+                                                                   || std::is_same<DeclarationTag, tag::vertgeom>::value
+                                                                   || std::is_same<DeclarationTag, tag::geomfrag>::value
+                                                                   || std::is_same<DeclarationTag, tag::all>::value,
+                                                                   typename tImpl::template tDeclaration<TInputName>,
+                                                                   cts("")>::type;
       using tFragmentShaderDeclaration = typename std::conditional<std::is_same<DeclarationTag, tag::fragment>::value
+                                                                   || std::is_same<DeclarationTag, tag::vertfrag>::value
+                                                                   || std::is_same<DeclarationTag, tag::geomfrag>::value
                                                                    || std::is_same<DeclarationTag, tag::all>::value,
                                                                    typename tImpl::template tDeclaration<TInputName>,
                                                                    cts("")>::type;

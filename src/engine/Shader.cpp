@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Shader.hpp"
@@ -12,7 +12,7 @@ CShader::CShader(const std::string& src, const GLenum shaderType)
 #ifdef GL_LOG_ALL
    Log::msg(src);
 #endif
-   std::string versionedSrc("#version 130\n");
+   std::string versionedSrc("#version 330\n");
    versionedSrc += src;
    const GLint length = versionedSrc.length();
    const GLchar* source = versionedSrc.c_str();

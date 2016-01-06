@@ -15,9 +15,13 @@ class CProgramBase
       /// @brief disabled stuff
       CProgramBase(const CProgramBase&) = delete;
       CProgramBase& operator=(const CProgramBase& other) = delete;
+
+      /// @brief delegate constructor
+      CProgramBase(const std::string& src, bool hasGeometryShader);
+
    public:
       /// @brief constuctor
-      CProgramBase(const std::string& src, bool hasGeometryShader = false);
+      CProgramBase(const char* declarations, const char* src, bool hasGeometryShader);
 
       /// @brief destructor
       ~CProgramBase();
@@ -90,11 +94,11 @@ struct THasNamedSetMethod<TName, std::tuple<>>
 };
 
 /// @brief program
-template<typename TName, typename TProgramInputTuple> class TProgram;
+template<typename TName, bool hasGeometryShader, typename TProgramInputTuple> class TProgram;
 
 /// @brief only tuple of program inputs is a valid parameter for program
-template<typename TName, typename... TProgramInput>
-class TProgram<TName, std::tuple<TProgramInput...>> : public CProgramBase, public TProgramInput...
+template<typename TName, bool hasGeometryShader, typename... TProgramInput>
+class TProgram<TName, hasGeometryShader, std::tuple<TProgramInput...>> : public CProgramBase, public TProgramInput...
 {
       /// @brief inputs tuple
       using tInputs = std::tuple<TProgramInput...>;
@@ -120,10 +124,11 @@ class TProgram<TName, std::tuple<TProgramInput...>> : public CProgramBase, publi
       /// @brief ctstring containing glsl declarations of all program inputs
       using tShaderDeclarations = ct::string_cat<tDefines,
                                                  cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
-                                                 cts("\n#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
+                                                 cts("#ifdef GEOMETRY\n"),  typename TProgramInput::tGeometryShaderDeclaration..., cts("#endif\n"),
+                                                 cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
       /// @brief constructor
-      TProgram(const std::string& src)
-         : CProgramBase(tShaderDeclarations::chars + src)
+      TProgram(const char* src)
+         : CProgramBase(tShaderDeclarations::chars, src, hasGeometryShader)
          , TProgramInput(mObject)...
       {}
 

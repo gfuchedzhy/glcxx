@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Rocket.hpp"
@@ -37,7 +37,7 @@ void CRocket::update(float timeDelta)
          mFlame.rate(0);
          mExplosion.pos(mFlame.pos());
          mExplosion.update(timeDelta);
-         mIsActive = mExplosion.cycles() == 0 || mFlame.aliveParticleNum() > 0;
+         mIsActive = mExplosion.cycles() == 0 || mFlame.hasAliveParticles();
       }
    }
 }

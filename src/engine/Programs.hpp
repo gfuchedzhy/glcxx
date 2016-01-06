@@ -70,10 +70,11 @@ auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboar
    TProgramInput<cts("uValue"), TUniform<glm::tvec1>, tag::fragment>>;
 
 auto progInputDef(cts("particlesys")) -> std::tuple<
+   tag::geometry, // has geometry shader
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
-   TProgramInput<cts("uSize"), TUniform<glm::tvec2>>,
-   TProgramInput<cts("uPerspectiveScale"), TUniform<glm::tvec2>>>;
+   TProgramInput<cts("uSize"), TUniform<glm::tvec2>, tag::geometry>,
+   TProgramInput<cts("uPerspectiveScale"), TUniform<glm::tvec2>, tag::geometry>>;
 
 auto progInputDef(cts("particlesys-tex")) -> ct::tuple_append<inp_by_name("particlesys"),
    TProgramInput<cts("uTexture"), TTextureProgramInput<>, tag::fragment>>;
@@ -84,7 +85,7 @@ auto progInputDef(cts("particlesys-tex-sprite")) -> ct::tuple_append<inp_by_name
    // for optimization purposes aSpeed.xyz is unit speed directon, aSpeed.w is
    // scalar speed value
    TProgramInput<cts("aSpeed"), TAttrib<glm::tvec4>>,
-   TProgramInput<cts("uAtlasSize"), TUniform<glm::tvec2, int, int>>>;
+   TProgramInput<cts("uAtlasSize"), TUniform<glm::tvec2, int, int>, tag::geometry>>;
 
 auto progInputDef(cts("particlesys-tex-sprite-flame")) -> inp_by_name("particlesys-tex-sprite");
 

@@ -23,7 +23,9 @@ class TRenderer
 
       /// @brief program type by its name
       template<typename TName>
-      using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
+      using program_type = TProgram<TName,
+                                    ct::tuple_contains<tag::geometry, decltype(progInputDef(TName{}))>::value, // has geometry shader?
+                                    ct::tuple_strip<tag::geometry, decltype(progInputDef(TName{}))>>; // remove tag
 
    public:
       /// @brief initializes all programs of this rendererq
