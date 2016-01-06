@@ -113,14 +113,19 @@ namespace ct
    template<typename TStrip, typename Tuple>
    using tuple_strip = typename tuple_strip_impl<TStrip, Tuple>::type;
 
-   /// @brief true if tuple contains given type
-   template<typename T, typename Tuple> struct tuple_contains;
+   /// @brief true if predicate Pred is true for any of tuple members
+   template<template<typename> class Pred, typename Tuple> struct tuple_any_of;
 
    /// @brief specialization for tuple
-   template<typename T, typename... TupleMembers>
-   struct tuple_contains<T, std::tuple<TupleMembers...>>
-      : public std::integral_constant<bool, sizeof...(TupleMembers) != type_index_in_pack<T, TupleMembers...>::value>
+   template<template<typename> class Pred, typename First, typename... Rest>
+   struct tuple_any_of<Pred, std::tuple<First, Rest...>>
+      : public std::integral_constant<bool, Pred<First>::value || tuple_any_of<Pred, std::tuple<Rest...> >::value>
    {};
+
+   /// @brief terminator specialization
+   template<template<typename> class Pred>
+   struct tuple_any_of<Pred, std::tuple<>>
+      : public std::false_type {};
 
    /// @brief compile time string
    template<char... s>

@@ -35,7 +35,7 @@ auto progInputDef(cts("shaded")) -> std::tuple<
    TProgramInput<cts("uDiffuse"), TUniform<glm::tvec3>, tag::fragment>,
    TProgramInput<cts("uSpecular"), TUniform<glm::tvec3>, tag::fragment>,
    TProgramInput<cts("uShininess"), TUniform<glm::tvec1>, tag::fragment>,
-   TProgramInput<cts("uSunDir"), TUniform<glm::tvec3>, tag::all>,
+   TProgramInput<cts("uSunDir"), TUniform<glm::tvec3>, tag::vertfrag>,
    TProgramInput<cts("uEye"), TUniform<glm::tvec3>>>;
 
 auto progInputDef(cts("shaded-col")) -> ct::tuple_append<inp_by_name("shaded"),
@@ -70,7 +70,6 @@ auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboar
    TProgramInput<cts("uValue"), TUniform<glm::tvec1>, tag::fragment>>;
 
 auto progInputDef(cts("particlesys")) -> std::tuple<
-   tag::geometry, // has geometry shader
    TProgramInput<cts("aPos"), TAttrib<glm::tvec3>>,
    TProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TProgramInput<cts("uSize"), TUniform<glm::tvec2>, tag::geometry>,
