@@ -42,28 +42,21 @@ namespace ct
          using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
    };
 
-   /// @brief value contains index of type in tuple
-   template<typename T, typename Tuple> struct type_index_in_pack_impl;
+   /// @brief return index of type in tuple
+   template<typename T, typename Tuple> struct tuple_find;
 
    /// @brief specialization for tuple
    template<typename T, typename T1, typename... TRest>
-   struct type_index_in_pack_impl<T, std::tuple<T1, TRest...>>
+   struct tuple_find<T, std::tuple<T1, TRest...>>
    {
-      static constexpr size_t value = std::is_same<T1, T>::value ? 0 : 1 + type_index_in_pack_impl<T, std::tuple<TRest...>>::value;
+         static constexpr size_t value = std::is_same<T1, T>::value ? 0 : 1 + tuple_find<T, std::tuple<TRest...>>::value;
    };
 
    /// @brief terminator specialization for tuple
    template<typename T>
-   struct type_index_in_pack_impl<T, std::tuple<>>
+   struct tuple_find<T, std::tuple<>>
    {
-      static constexpr size_t value = 0;
-   };
-
-   /// @brief shortcut
-   template<typename T, typename... Pack>
-   struct type_index_in_pack
-   {
-         static constexpr size_t value = type_index_in_pack_impl<T, std::tuple<Pack...>>::value;
+         static constexpr size_t value = 0;
    };
 
    /// @brief tuple concatanation impl
