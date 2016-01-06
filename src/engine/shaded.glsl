@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-varying vec3 vEyeDir;
+DECL_VERT_FRAG(vec3, eyeDir);
 
 #ifdef NMAP
-varying vec3 vSunDir;
+DECL_VERT_FRAG(vec3, sunDir);
 #else
-varying vec3 vNorm;
+DECL_VERT_FRAG(vec3, norm);
 #endif
 
 #ifdef TEX
-varying vec2 vUV;
+DECL_VERT_FRAG(vec2, UV);
 #endif
 
 #if defined VERTEX
@@ -24,15 +24,15 @@ void main()
 #ifdef NMAP
    mat3 tbn = transpose(mat3(uModel)
                       * mat3(aTan, cross(aNorm, aTan), aNorm));
-   vSunDir = tbn*uSunDir;
-   vEyeDir = normalize(tbn*(uEye - pos.xyz));
+   out(sunDir) = tbn*uSunDir;
+   out(eyeDir) = normalize(tbn*(uEye - pos.xyz));
 #else
-   vEyeDir = normalize(uEye - pos.xyz);
-   vNorm = (uModel*vec4(aNorm, 0.0)).xyz;
+   out(eyeDir) = normalize(uEye - pos.xyz);
+   out(norm) = (uModel*vec4(aNorm, 0.0)).xyz;
 #endif
 
 #ifdef TEX
-   vUV = aUV;
+   out(UV) = aUV;
 #endif
 }
 
@@ -45,12 +45,12 @@ const float specularIntensity = 2;
 void main()
 {
 #ifdef NMAP
-   vec2 normXY = 2*texture2D(uNormalMap, vUV).xy - 1;
+   vec2 normXY = 2*texture2D(uNormalMap, in(UV)).xy - 1;
    vec3 norm = vec3(normXY.x, -normXY.y, sqrt(1-length(normXY)));
    vec3 geomNorm = vec3(0, 0, 1); // tbn space
-   vec3 sunDirNorm = normalize(vSunDir);
+   vec3 sunDirNorm = normalize(in(sunDir));
 #else
-   vec3 norm = normalize(vNorm);
+   vec3 norm = normalize(in(norm));
    vec3 geomNorm = norm;
    vec3 sunDirNorm = uSunDir;
 #endif
@@ -59,13 +59,13 @@ void main()
    vec4 ambient = vec4(uAmbient, 1.0)*ambientIntensity*clamp(dot(norm, geomNorm), 0, 1);
    vec3 reflected = reflect(-sunDirNorm, norm);
    vec4 specular = step(0.0, dot(sunDirNorm, geomNorm)) * vec4(uSpecular, 1.0)
-      * specularIntensity * pow(clamp(dot(normalize(vEyeDir), reflected), 0, 1), uShininess);
+      * specularIntensity * pow(clamp(dot(normalize(in(eyeDir)), reflected), 0, 1), uShininess);
 
 #ifdef COL
    vec4 color = vec4(uColor, 1.0);
 #endif
 #ifdef TEX
-   vec4 color = texture2D(uTexture, vUV);
+   vec4 color = texture2D(uTexture, in(UV));
 #endif
    gl_FragColor = color * (ambient + diffuse + specular/color.w);
 }

@@ -1,13 +1,13 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifdef TEX
-varying vec2 vUV;
+DECL_VERT_FRAG(vec2, UV);
 #endif
 
 #ifdef HB
-varying vec2 vPos;
+DECL_VERT_FRAG(vec2, pos);
 #endif
 
 #if defined VERTEX
@@ -22,12 +22,12 @@ void main()
    gl_Position = uViewProj*vec4(uExternalPos + uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
 
 #if defined SPRITE
-   vUV = (aUV + uAtlasPos)/uAtlasSize;
+   out(UV) = (aUV + uAtlasPos)/uAtlasSize;
 #elif defined TEX
-   vUV = aUV;
+   out(UV) = aUV;
 #elif defined HB
-   vPos = vec2(xCoef*aPos.x + 0.5,
-               yCoef*aPos.y + 0.5);
+   out(pos) = vec2(xCoef*aPos.x + 0.5,
+                   yCoef*aPos.y + 0.5);
 #endif
 }
 
@@ -36,9 +36,9 @@ void main()
 void main()
 {
 #if defined TEX
-   gl_FragColor = texture2D(uTexture, vUV);
+   gl_FragColor = texture2D(uTexture, in(UV));
 #elif defined HB
-   vec2 stepRes = step(vec2(0.0, 0.0), vPos) - step(vec2(uValue, 1.0), vPos);
+   vec2 stepRes = step(vec2(0.0, 0.0), in(pos)) - step(vec2(uValue, 1.0), in(pos));
    float colorWeight = stepRes.x * stepRes.y;
    gl_FragColor = mix(vec4(0.0, 0.0, 0.0, 1.0), vec4(1.0, 0.0, 0.0, 1.0), colorWeight);
 #endif

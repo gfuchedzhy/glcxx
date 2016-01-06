@@ -131,6 +131,7 @@ class TProgram<TName, hasGeometryShader, std::tuple<TProgramInput...>> : public 
       using tShaderDeclarations = ct::string_cat<tDefines,
                                                  cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
                                                  cts("#ifdef GEOMETRY\n"),  typename TProgramInput::tGeometryShaderDeclaration..., cts("#endif\n"),
+                                                 typename std::conditional<hasGeometryShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type,
                                                  cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
       /// @brief constructor
       TProgram(const char* src)
