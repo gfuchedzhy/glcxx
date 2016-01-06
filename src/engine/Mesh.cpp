@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Mesh.hpp"
@@ -61,7 +61,7 @@ void CMesh::draw(const SContext& context) const
 
       p.set<cts("aTan")>(mTan);
       p.set<cts("uNormalMap")>(mMaterial->mNormalMap);
-      p.draw(mInd);
+      p.drawElements(mInd);
    }
    else
    {
@@ -75,6 +75,6 @@ void CMesh::draw(const SContext& context) const
       p.set<cts("uDiffuse")>(mMaterial->mDiffuse);
       p.set<cts("uSpecular")>(mMaterial->mSpecular);
       p.set<cts("uShininess")>(mMaterial->mShininess);
-      p.draw(mInd);
+      p.drawElements(mInd);
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Sphere.hpp"
@@ -152,7 +152,7 @@ void CSphere::draw(const SContext& context) const
    p.set<cts("uDiffuse")>({1, 1, 1});
    p.set<cts("uSpecular")>({1, 1, 1});
    p.set<cts("uShininess")>(20);
-   p.draw(indexBuffer);
+   p.drawElements(indexBuffer);
 
    if (context.mDrawNormals)
    {
@@ -160,7 +160,7 @@ void CSphere::draw(const SContext& context) const
       p.set<cts("aPos")>(normalBuffer);
       p.set<cts("uModel")>(model());
       p.set<cts("uColor")>({1.f, 1.f, 1.f});
-      p.draw(normalIndexBuffer);
+      p.drawElements(normalIndexBuffer);
    }
 }
 
@@ -178,7 +178,7 @@ void CTexturedSphere::draw(const SContext& context) const
    p.set<cts("uDiffuse")>({0.5, 0.5, 0.5});
    p.set<cts("uSpecular")>({1, 1, 1});
    p.set<cts("uShininess")>(20);
-   p.draw(indexBuffer);
+   p.drawElements(indexBuffer);
 
    if (context.mDrawNormals)
    {
@@ -186,6 +186,6 @@ void CTexturedSphere::draw(const SContext& context) const
       p.set<cts("aPos")>(normalBuffer);
       p.set<cts("uModel")>(model());
       p.set<cts("uColor")>({1.f, 1.f, 1.f});
-      p.draw(normalIndexBuffer);
+      p.drawElements(normalIndexBuffer);
    }
 }

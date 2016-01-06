@@ -27,7 +27,7 @@ void CJetFlame::draw(const SContext& context) const
       gl(glEnable, GL_BLEND);
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE);
       glDepthMask(GL_FALSE);
-      gl(glDrawArrays, GL_POINTS, 0, aliveParticleNum());
+      p.drawArrays(aliveParticleNum(), GL_POINTS);
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glDepthMask(GL_TRUE);
       gl(glDisable, GL_BLEND);

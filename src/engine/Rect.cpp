@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Rect.hpp"
@@ -45,7 +45,7 @@ void CTexturedRect::draw(const SContext&) const
    p.set<cts("aUV")>(uvBuffer());
    p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
-   p.draw(indices, 4, GL_TRIANGLE_STRIP);
+   p.drawElements(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CTexturedBillboard::draw(const SContext&) const
@@ -56,7 +56,7 @@ void CTexturedBillboard::draw(const SContext&) const
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uTexture")>(mTexture);
-   p.draw(indices, 4, GL_TRIANGLE_STRIP);
+   p.drawElements(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CAnimatedBillboard::draw(const SContext& context) const
@@ -69,7 +69,7 @@ void CAnimatedBillboard::draw(const SContext& context) const
    p.set<cts("uAtlasSize")>(mAtlasSize);
    p.set<cts("uAtlasPos")>(mAtlasPos);
    p.set<cts("uTexture")>(mTexture);
-   p.draw(indices, 4, GL_TRIANGLE_STRIP);
+   p.drawElements(indices, 4, GL_TRIANGLE_STRIP);
 }
 
 void CHealthBar::draw(const SContext&) const
@@ -81,6 +81,6 @@ void CHealthBar::draw(const SContext&) const
    p.set<cts("uValue")>(mValue);
 
    gl(glDisable, GL_DEPTH_TEST);
-   p.draw(indices, 4, GL_TRIANGLE_STRIP);
+   p.drawElements(indices, 4, GL_TRIANGLE_STRIP);
    gl(glEnable, GL_DEPTH_TEST);
 }

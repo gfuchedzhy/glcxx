@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Box.hpp"
@@ -40,5 +40,5 @@ void CBox::draw(const SContext& context) const
    p.set<cts("aPos")>(vertexBuffer());
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
-   p.draw(indexBuffer());
+   p.drawElements(indexBuffer());
 }

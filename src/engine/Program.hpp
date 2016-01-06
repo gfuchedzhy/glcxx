@@ -32,23 +32,29 @@ class CProgramBase
          gl(glUseProgram, mObject);
       }
 
-      /// @brief draw with current index buffer, if size provided draw exactly
-      /// size indices, otherwise draw whole buffer
-      void draw(const std::shared_ptr<CIndexBuffer>& buffer, GLsizei size = -1) const
+      /// @brief draw elements with given index buffer, if size provided draw
+      /// exactly size indices, otherwise draw whole buffer of indices
+      void drawElements(const std::shared_ptr<CIndexBuffer>& buffer, GLsizei size = -1) const
       {
          assert(buffer);
          buffer->bind();
          buffer->draw(size);
       }
 
-      /// @brief draw with given pointer
+      /// @brief draw elements with given pointer
       template<typename T>
-      void draw(const T* data, GLsizei size, GLenum mode) const
+      void drawElements(const T* data, GLsizei size, GLenum mode) const
       {
          constexpr GLenum id = glsl::TTypeID<T>::id;
          static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
          CIndexBuffer::unBind();
          gl(glDrawElements, mode, size, id, data);
+      }
+
+      /// @brief draw arrays
+      void drawArrays(GLsizei size, GLenum mode) const
+      {
+         gl(glDrawArrays, mode, 0, size);
       }
 
    protected:
