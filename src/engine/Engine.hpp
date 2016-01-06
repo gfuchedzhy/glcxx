@@ -38,7 +38,7 @@ class CEngine
       /// @brief aspect ratio
       float mAspect;
 
-      /// @brief clock
+      /// @brief current absolute time
       std::chrono::steady_clock::time_point mTime;
 
       /// @brief struct for fps counting
