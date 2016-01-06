@@ -6,6 +6,7 @@
 #define ENGINE_ENGINE_HPP
 
 #include <SFML/Window.hpp>
+#include <chrono>
 #include "Context.hpp"
 
 /// @brief engine class
@@ -38,7 +39,7 @@ class CEngine
       float mAspect;
 
       /// @brief clock
-      sf::Clock mClock;
+      std::chrono::steady_clock::time_point mTime;
 
       /// @brief struct for fps counting
       struct

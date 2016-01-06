@@ -6,11 +6,11 @@
 #include "GL.hpp"
 #include "Log.hpp"
 #include "Programs.hpp"
-#include <SFML/System/Clock.hpp>
 
 CEngine::CEngine(const size_t width, const size_t height)
    : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close, gRenderer.contextSettings())
    , mAspect(width/float(height))
+   , mTime(std::chrono::steady_clock::now())
 {
    mWindow.setVerticalSyncEnabled(true);
 
@@ -21,7 +21,6 @@ CEngine::CEngine(const size_t width, const size_t height)
    gl(glEnable, GL_DEPTH_TEST);
    gl(glEnable, GL_CULL_FACE);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   mClock.restart();
 }
 
 CEngine::~CEngine()
@@ -51,7 +50,10 @@ void CEngine::run()
          }
       }
 
-      const float timeDelta = mClock.restart().asSeconds();
+      using namespace std::chrono;
+      const steady_clock::time_point newTime = steady_clock::now();
+      const float timeDelta = duration_cast<duration<float>>(newTime - mTime).count();
+      mTime = newTime;
 
       // fps counting
       mFPS.mTime += timeDelta;
