@@ -26,7 +26,7 @@ class TRenderer
       using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
 
    public:
-      /// @brief initializes all programs of this rendererq
+      /// @brief initializes all programs of this renderer
       TRenderer()
       {
          Log::msg("openGL ", mContextSettings.majorVersion, '.', mContextSettings.minorVersion,  " version loaded");
