@@ -68,94 +68,114 @@ class CProgramBase
       std::unique_ptr<CShader> mGeometryShader;
 };
 
-/// @brief value is true it T has valid instance of set<TName> member
-template<typename TName, typename T>
-struct THasNamedSetMethod
+namespace detail
 {
-   private:
-      template<typename U, typename = decltype(&U::template set<TName>)>
-      static std::true_type test(int*);
-      template<typename U>
-      static std::false_type test(...);
 
-   public:
-      static constexpr bool value = decltype(test<T>(nullptr))::value;
-};
+   /// @brief value is true it T has valid instance of set<TName> member
+   template<typename TName, typename T>
+   struct THasNamedSetMethod
+   {
+      private:
+         template<typename U, typename = decltype(&U::template set<TName>)>
+         static std::true_type test(int*);
+         template<typename U>
+         static std::false_type test(...);
 
-/// @brief specialization for tuple searches for tuple member that has valid
-/// set<TName> member
-template<typename TName, typename T1, typename... TRest>
-struct THasNamedSetMethod<TName, std::tuple<T1, TRest...>>
-{
-   static constexpr size_t index = THasNamedSetMethod<TName, T1>::value ? 0 : 1 + THasNamedSetMethod<TName, std::tuple<TRest...>>::index;
-   static constexpr bool   value = (index != sizeof...(TRest) + 1);
-};
+      public:
+         static constexpr bool value = decltype(test<T>(nullptr))::value;
+   };
 
-/// @brief terminator of specialization for tuple
-template<typename TName>
-struct THasNamedSetMethod<TName, std::tuple<>>
-{
-   static constexpr size_t index = 0;
-   static constexpr bool   value = false;
-};
+   /// @brief specialization for tuple searches for tuple member that has valid
+   /// set<TName> member
+   template<typename TName, typename T1, typename... TRest>
+   struct THasNamedSetMethod<TName, std::tuple<T1, TRest...>>
+   {
+         static constexpr size_t index = THasNamedSetMethod<TName, T1>::value ? 0 : 1 + THasNamedSetMethod<TName, std::tuple<TRest...>>::index;
+         static constexpr bool   value = (index != sizeof...(TRest) + 1);
+   };
+
+   /// @brief terminator of specialization for tuple
+   template<typename TName>
+   struct THasNamedSetMethod<TName, std::tuple<>>
+   {
+         static constexpr size_t index = 0;
+         static constexpr bool   value = false;
+   };
+
+   /// @brief program impl
+   template<typename TName, bool hasGeometryShader, typename TProgramInputTuple>
+   class TProgramImpl;
+
+   /// @brief only tuple of program inputs is a valid parameter for program
+   template<typename TName, bool hasGeometryShader, typename... TProgramInput>
+   class TProgramImpl<TName, hasGeometryShader, std::tuple<TProgramInput...>> : public CProgramBase, public TProgramInput...
+   {
+         /// @brief inputs tuple
+         using tInputs = std::tuple<TProgramInput...>;
+
+         /// @brief returns input type which has valid set<TSetName> method
+         template<typename TSetName>
+         using input_type = typename std::tuple_element<THasNamedSetMethod<TSetName, tInputs>::index, tInputs>::type;
+
+         /// @brief returns argument type of set<TSetName> method found in input tuple
+         template<typename TSetName>
+         using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
+
+      public:
+         /// @brief program name
+         using tName = TName;
+
+         /// @brief program defines
+         using tDefines = ct::string_all_rep<
+            ct::string_toupper<ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>>,
+            cts("_"),
+            cts("\n#define ")>;
+
+         /// @brief ctstring containing glsl declarations of all program inputs
+         using tShaderDeclarations = ct::string_cat<tDefines,
+                                                    cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
+                                                    cts("#ifdef GEOMETRY\n"),  typename TProgramInput::tGeometryShaderDeclaration..., cts("#endif\n"),
+                                                    typename std::conditional<hasGeometryShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type,
+                                                    cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
+         /// @brief constructor
+         TProgramImpl(const char* src)
+            : CProgramBase(tName::chars, tShaderDeclarations::chars, src, hasGeometryShader)
+            , TProgramInput(mObject)...
+         {}
+
+         /// @brief @see CProgramBase::select
+         void select() const
+         {
+            CProgramBase::select();
+            swallow(TProgramInput::select());
+         }
+
+         /// @brief forward named set method to base class which has valid
+         /// definition of it
+         /// @note unfortunately it is impossible to write something like
+         /// using TProgramInput::set...; to bring all base setter into current
+         /// class' scope, so we need this forwarding function
+         template<typename TSetName>
+         void set(set_arg_type<TSetName> value)
+         {
+            input_type<TSetName>::template set<TSetName>(value);
+         }
+   };
+
+   /// @brief return true if program input requires geometry shader, either it
+   /// has uniform for geometry shader, or marked explicitly with tag::geometry
+   template<typename T>
+   struct is_geom
+   {
+         static constexpr bool value = (0 != T::tGeometryShaderDeclaration::length);
+   };
+   template<> struct is_geom<tag::geometry> { static constexpr bool value = true; };
+}
 
 /// @brief program
-template<typename TName, bool hasGeometryShader, typename TProgramInputTuple> class TProgram;
-
-/// @brief only tuple of program inputs is a valid parameter for program
-template<typename TName, bool hasGeometryShader, typename... TProgramInput>
-class TProgram<TName, hasGeometryShader, std::tuple<TProgramInput...>> : public CProgramBase, public TProgramInput...
-{
-      /// @brief inputs tuple
-      using tInputs = std::tuple<TProgramInput...>;
-
-      /// @brief returns input type which has valid set<TSetName> method
-      template<typename TSetName>
-      using input_type = typename std::tuple_element<THasNamedSetMethod<TSetName, tInputs>::index, tInputs>::type;
-
-      /// @brief returns argument type of set<TSetName> method found in input tuple
-      template<typename TSetName>
-      using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
-
-   public:
-      /// @brief program name
-      using tName = TName;
-
-      /// @brief program defines
-      using tDefines = ct::string_all_rep<
-         ct::string_toupper<ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>>,
-         cts("_"),
-         cts("\n#define ")>;
-
-      /// @brief ctstring containing glsl declarations of all program inputs
-      using tShaderDeclarations = ct::string_cat<tDefines,
-                                                 cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
-                                                 cts("#ifdef GEOMETRY\n"),  typename TProgramInput::tGeometryShaderDeclaration..., cts("#endif\n"),
-                                                 typename std::conditional<hasGeometryShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type,
-                                                 cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
-      /// @brief constructor
-      TProgram(const char* src)
-         : CProgramBase(tName::chars, tShaderDeclarations::chars, src, hasGeometryShader)
-         , TProgramInput(mObject)...
-      {}
-
-      /// @brief @see CProgramBase::select
-      void select() const
-      {
-         CProgramBase::select();
-         swallow(TProgramInput::select());
-      }
-
-      /// @brief forward named set method to base class which has valid
-      /// definition of it
-      /// @note unfortunately it is impossible to write something like
-      /// using TProgramInput::set...; to bring all base setter into current
-      /// class' scope, so we need this forwarding function
-      template<typename TSetName>
-      void set(set_arg_type<TSetName> value)
-      {
-         input_type<TSetName>::template set<TSetName>(value);
-      }
-};
+template<typename TName, typename TInputTuple>
+using TProgram = detail::TProgramImpl<TName,
+                                      ct::tuple_any_of<detail::is_geom, TInputTuple>::value, // has geometry shader?
+                                      ct::tuple_strip<tag::geometry, TInputTuple>>; // remove tag
 
 #endif // ENGINE_PROGRAM_HPP

@@ -21,23 +21,9 @@ class TRenderer
       template<typename TFullName>
       using base_name = ct::string_sub<TFullName, 0, ct::string_find<TFullName, cts("-")>::value>;
 
-      /// @brief return true if program input requires geometry shader, either
-      /// it has input for geometry shader, or marked explicitly with
-      /// tag::geometry
-      /// @note dummy type because full specializations are not allowed in class
-      template<typename T, typename Dummy = void>
-      struct is_geom_impl
-      {
-            static constexpr bool value = (0 != T::tGeometryShaderDeclaration::length);
-      };
-      template<typename Dummy> struct is_geom_impl<tag::geometry, Dummy> { static constexpr bool value = true; };
-      template<typename T> struct is_geom : is_geom_impl<T> {};
-
       /// @brief program type by its name
       template<typename TName>
-      using program_type = TProgram<TName,
-                                    ct::tuple_any_of<is_geom, decltype(progInputDef(TName{}))>::value, // has geometry shader?
-                                    ct::tuple_strip<tag::geometry, decltype(progInputDef(TName{}))>>; // remove tag
+      using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
 
    public:
       /// @brief initializes all programs of this rendererq
