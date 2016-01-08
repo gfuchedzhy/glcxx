@@ -42,7 +42,7 @@ class TRenderer
       template<typename TName>
       auto& get()
       {
-         constexpr size_t index = ct::tuple_find<TName, std::tuple<TProgramName...>>::value;
+         constexpr size_t index = ct::tuple_find<std::tuple<TProgramName...>, TName>::value;
          static_assert(sizeof...(TProgramName) != index, "program name not found");
          auto p = std::get<index>(mPrograms).get();
          if (static_cast<CProgramBase*>(p) != mCurrent)

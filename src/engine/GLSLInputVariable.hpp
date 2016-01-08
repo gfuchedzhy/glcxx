@@ -29,17 +29,20 @@ namespace glsl
    template<typename DeclTag>
    struct TShaderHasDecl<tag::vertex, DeclTag>
    {
-         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::vertex, tag::vertgeom, tag::vertfrag, tag::all>>::value;
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::vertex, tag::vertgeom, tag::vertfrag, tag::all>,
+                                                          DeclTag>::value;
    };
    template<typename DeclTag>
    struct TShaderHasDecl<tag::geometry, DeclTag>
    {
-         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::geometry, tag::vertgeom, tag::geomfrag, tag::all>>::value;
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::geometry, tag::vertgeom, tag::geomfrag, tag::all>,
+                                                          DeclTag>::value;
    };
    template<typename DeclTag>
    struct TShaderHasDecl<tag::fragment, DeclTag>
    {
-         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::fragment, tag::vertfrag, tag::geomfrag, tag::all>>::value;
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::fragment, tag::vertfrag, tag::geomfrag, tag::all>,
+                                                          DeclTag>::value;
    };
 
    /// @brief compile time conversion from c++ types to glsl types

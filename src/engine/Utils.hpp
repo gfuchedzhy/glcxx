@@ -42,31 +42,40 @@ namespace ct
          using arg_type = typename std::tuple_element<I, std::tuple<Args...>>::type;
    };
 
-   /// @brief return index of type in tuple
-   template<typename T, typename Tuple> struct tuple_find;
+   /// @brief return index of first type T in tuple that has
+   /// Pred<T,PredParams>::value == true
+   template<typename Tuple, template<typename...> class Pred, typename... PredParams> struct tuple_find_if;
 
    /// @brief specialization for tuple
-   template<typename T, typename T1, typename... TRest>
-   struct tuple_find<T, std::tuple<T1, TRest...>>
+   template<template<typename...> class Pred, typename... PredParams, typename T1, typename... TRest>
+   struct tuple_find_if<std::tuple<T1, TRest...>, Pred, PredParams...>
    {
-         static constexpr size_t value = std::is_same<T1, T>::value ? 0 : 1 + tuple_find<T, std::tuple<TRest...>>::value;
+         static constexpr size_t value = Pred<T1, PredParams...>::value
+            ? 0 : 1 + tuple_find_if<std::tuple<TRest...>, Pred, PredParams...>::value;
    };
 
    /// @brief terminator specialization for tuple
-   template<typename T>
-   struct tuple_find<T, std::tuple<>>
+   template<template<typename...> class Pred, typename... PredParams>
+   struct tuple_find_if<std::tuple<>, Pred, PredParams...>
    {
          static constexpr size_t value = 0;
    };
 
+   /// @brief return index of T in Tuple
+   template<typename Tuple, typename T>
+   struct tuple_find
+   {
+         static constexpr size_t value = tuple_find_if<Tuple, std::is_same, T>::value;
+   };
+
    /// @brief return true if tuple contains T
-   template<typename T, typename Tuple> struct tuple_contains;
+   template<typename Tuple, typename T> struct tuple_contains;
 
    /// @brief specialization for tuple
-   template<typename T, typename... TupleArgs>
-   struct tuple_contains<T, std::tuple<TupleArgs...>>
+   template<typename... TupleArgs, typename T>
+   struct tuple_contains<std::tuple<TupleArgs...>, T>
    {
-         static constexpr bool value = tuple_find<T, std::tuple<TupleArgs...>>::value != sizeof...(TupleArgs);
+         static constexpr bool value = tuple_find<std::tuple<TupleArgs...>, T>::value != sizeof...(TupleArgs);
    };
 
    /// @brief tuple concatanation impl
