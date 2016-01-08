@@ -11,17 +11,17 @@ CShader::CShader(const std::string& src, const GLenum shaderType)
       = (GL_VERTEX_SHADER == shaderType) ? "VERTEX"
       : (GL_GEOMETRY_SHADER == shaderType) ? "GEOMETRY" : "FRAGMENT";
    Log::msg("creating ", strType, " shader");
-#ifdef GL_LOG_ALL
-   Log::msg(src);
-#endif
    mObject = gl(glCreateShader, shaderType);
-   std::string versionedSrc("#version 330\n"
-                            "#define ");
-   versionedSrc += strType;
-   versionedSrc += '\n';
-   versionedSrc += src;
-   const GLint length = versionedSrc.length();
-   const GLchar* source = versionedSrc.c_str();
+   std::string fullSrc("#version 330\n"
+                       "#define ");
+   fullSrc += strType;
+   fullSrc += '\n';
+   fullSrc += src;
+#ifdef GL_LOG_ALL
+   Log::msg(fullSrc);
+#endif
+   const GLint length = fullSrc.length();
+   const GLchar* source = fullSrc.c_str();
    gl(glShaderSource, mObject, 1, &source, &length);
    gl(glCompileShader, mObject);
    GLint compiled;
