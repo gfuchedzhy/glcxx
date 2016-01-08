@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_GL_HPP
@@ -47,7 +47,7 @@ namespace detail
       return static_cast<decltype(glFunc(args...))>(retVal);
    }
 }
-#define gl(glFunc, ...) detail::callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
+#define gl(glFunc, ...) ::detail::callGL(glFunc, #glFunc, __FILE__, __LINE__, ##__VA_ARGS__)
 #else // no logging
 #define gl(glFunc, ...) glFunc(__VA_ARGS__)
 #endif
