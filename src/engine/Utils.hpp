@@ -59,6 +59,16 @@ namespace ct
          static constexpr size_t value = 0;
    };
 
+   /// @brief return true if tuple contains T
+   template<typename T, typename Tuple> struct tuple_contains;
+
+   /// @brief specialization for tuple
+   template<typename T, typename... TupleArgs>
+   struct tuple_contains<T, std::tuple<TupleArgs...>>
+   {
+         static constexpr bool value = tuple_find<T, std::tuple<TupleArgs...>>::value != sizeof...(TupleArgs);
+   };
+
    /// @brief tuple concatanation impl
    template<typename... Tuples> struct tuple_cat_impl;
    template<typename... T1, typename... T2, typename... TRestTuples>
