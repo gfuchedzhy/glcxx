@@ -6,7 +6,7 @@
 #define ENGINE_PROGRAM_HPP
 
 #include "Shader.hpp"
-#include "ProgramInput.hpp"
+#include "BufferObject.hpp"
 #include <tuple>
 
 /// @brief resource holder for opengl program object
@@ -70,7 +70,6 @@ class CProgramBase
 
 namespace detail
 {
-
    /// @brief value is true it T has valid instance of set<TName> member
    template<typename TName, typename T>
    struct THasNamedSetMethod
@@ -133,10 +132,20 @@ namespace detail
 
          /// @brief ctstring containing glsl declarations of all program inputs
          using tShaderDeclarations = ct::string_cat<tDefines,
-                                                    cts("\n#ifdef VERTEX\n"), typename TProgramInput::tVertexShaderDeclaration..., cts("#endif\n"),
-                                                    cts("#ifdef GEOMETRY\n"),  typename TProgramInput::tGeometryShaderDeclaration..., cts("#endif\n"),
-                                                    typename std::conditional<hasGeometryShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type,
-                                                    cts("#ifdef FRAGMENT\n"),  typename TProgramInput::tFragmentShaderDeclaration..., cts("#endif\n")>;
+                                                    cts("\n#ifdef VERTEX\n"),
+                                                    typename std::conditional<glsl::TShaderHasDecl<tag::vertex, typename TProgramInput::tDeclTag>::value,
+                                                                              typename TProgramInput::tDeclaration,
+                                                                              cts("")>::type...,
+                                                    cts("#elif defined GEOMETRY\n"),
+                                                    typename std::conditional<glsl::TShaderHasDecl<tag::geometry, typename TProgramInput::tDeclTag>::value,
+                                                                              typename TProgramInput::tDeclaration,
+                                                                              cts("")>::type...,
+                                                    cts("#else\n"),
+                                                    typename std::conditional<glsl::TShaderHasDecl<tag::fragment, typename TProgramInput::tDeclTag>::value,
+                                                                              typename TProgramInput::tDeclaration,
+                                                                              cts("")>::type...,
+                                                    cts("#endif\n"),
+                                                    typename std::conditional<hasGeometryShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type>;
          /// @brief constructor
          TProgramImpl(const char* src)
             : CProgramBase(tName::chars, tShaderDeclarations::chars, src, hasGeometryShader)
@@ -164,10 +173,9 @@ namespace detail
 
    /// @brief return true if program input requires geometry shader, either it
    /// has uniform for geometry shader, or marked explicitly with tag::geometry
-   template<typename T>
-   struct is_geom
+   template<typename T> struct is_geom
    {
-         static constexpr bool value = (0 != T::tGeometryShaderDeclaration::length);
+         static constexpr bool value = glsl::TShaderHasDecl<tag::geometry, typename T::tDeclTag>::value;
    };
    template<> struct is_geom<tag::geometry> { static constexpr bool value = true; };
 }

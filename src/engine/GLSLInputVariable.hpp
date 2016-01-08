@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_GLSLINPUTVARIABLE_HPP
@@ -9,8 +9,39 @@
 #include "GL.hpp"
 #include "Utils.hpp"
 
+/// @brief tags to place declarations to proper shaders
+namespace tag
+{
+   struct vertex;
+   struct geometry;
+   struct fragment;
+   struct vertgeom;
+   struct geomfrag;
+   struct vertfrag;
+   struct all;
+}
+
 namespace glsl
 {
+   /// @brief return true if shader of type ShaderTag has declaration with
+   /// DeclTag declaration tag
+   template<typename ShaderTag, typename DeclTag> struct TShaderHasDecl;
+   template<typename DeclTag>
+   struct TShaderHasDecl<tag::vertex, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::vertex, tag::vertgeom, tag::vertfrag, tag::all>>::value;
+   };
+   template<typename DeclTag>
+   struct TShaderHasDecl<tag::geometry, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::geometry, tag::vertgeom, tag::geomfrag, tag::all>>::value;
+   };
+   template<typename DeclTag>
+   struct TShaderHasDecl<tag::fragment, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<DeclTag, std::tuple<tag::fragment, tag::vertfrag, tag::geomfrag, tag::all>>::value;
+   };
+
    /// @brief compile time conversion from c++ types to glsl types
    template<typename T> struct TTypeID {};
    template<> struct TTypeID<float>          { static constexpr GLenum id = GL_FLOAT; };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_TEXTURE_HPP
@@ -49,7 +49,7 @@ class CTexture
 /// @brief texture ptr
 using tTexturePtr = std::shared_ptr<CTexture>;
 
-/// @brief impl class for texture program input
+/// @brief base implementation for TTextureProgramInput
 class CTextureProgramInputImpl
 {
       /// @brief location of program input inside program
@@ -83,18 +83,28 @@ class CTextureProgramInputImpl
 };
 
 /// @brief holds state of program's texture object
-template<GLint samplerID = 0>
+template<typename TName, GLint samplerID = 0, typename DeclTag = tag::fragment>
 struct TTextureProgramInput : public CTextureProgramInputImpl
 {
    public:
+      /// @brief declaration tag
+      using tDeclTag = DeclTag;
+
       /// @brief ctstring containing glsl declaration of texture uniform
-      template<typename TName>
       using tDeclaration = ct::string_cat<cts("uniform sampler2D "), TName, cts(";\n")>;
 
       /// @brief constructor
-      TTextureProgramInput(const GLuint program, const char* name)
-         : CTextureProgramInputImpl(glsl::getUniformLocation(program, name), samplerID)
+      TTextureProgramInput(const GLuint program)
+         : CTextureProgramInputImpl(glsl::getUniformLocation(program, TName::chars), samplerID)
       {}
+
+      /// @brief named set method
+      template<typename TInputName>
+      typename std::enable_if<std::is_same<TInputName, TName>::value>::type
+      set(const tTexturePtr& value)
+      {
+         CTextureProgramInputImpl::set(value);
+      }
 };
 
 #endif // ENGINE_TEXTURE_HPP
