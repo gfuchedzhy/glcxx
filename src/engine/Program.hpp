@@ -7,6 +7,7 @@
 
 #include "Shader.hpp"
 #include "BufferObject.hpp"
+#include "VAOProgramInput.hpp"
 #include <tuple>
 
 /// @brief resource holder for opengl program object
@@ -30,25 +31,6 @@ class CProgramBase
       void select() const
       {
          gl(glUseProgram, mObject);
-      }
-
-      /// @brief draw elements with given index buffer, if size provided draw
-      /// exactly size indices, otherwise draw whole buffer of indices
-      void drawElements(const std::shared_ptr<CIndexBuffer>& buffer, GLsizei size = -1) const
-      {
-         assert(buffer);
-         buffer->bind();
-         buffer->draw(size);
-      }
-
-      /// @brief draw elements with given pointer
-      template<typename T>
-      void drawElements(const T* data, GLsizei size, GLenum mode) const
-      {
-         constexpr GLenum id = glsl::TTypeID<T>::id;
-         static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
-         CIndexBuffer::unBind();
-         gl(glDrawElements, mode, size, id, data);
       }
 
       /// @brief draw arrays
@@ -178,12 +160,40 @@ namespace detail
          static constexpr bool value = glsl::TShaderHasDecl<tag::geometry, typename T::tDeclTag>::value;
    };
    template<> struct is_geom<tag::geometry> { static constexpr bool value = true; };
+
+   /// @brief find all separate TNamedAttribs in TInputTuple, replace them with
+   /// aggregated vao input
+   template<typename TInputTuple>
+   class program_input_traits
+   {
+         /// @brief check if type is instantiation of TNamedAttrib template
+         template<typename T> struct instantiation_of_named_attrib
+            : ct::instantiation_of<T, TNamedAttrib> {};
+
+         /// @brief all TNamedAttribs
+         using tVAOInputs = ct::tuple_filter<TInputTuple, instantiation_of_named_attrib>;
+
+         /// @brief rest inputs
+         using tRestOfInputs = ct::tuple_filter<TInputTuple, instantiation_of_named_attrib, true>;
+
+         /// @brief rest inputs with tag stripped
+         using tRestOfInputsNoTags = ct::tuple_strip<tag::geometry, tRestOfInputs>;
+
+     public:
+         /// @brief true if has geometry shader
+         static constexpr bool hasGeometryShader = ct::tuple_any_of<is_geom, tRestOfInputs>::value;
+
+         /// @brief resulting program inputs
+         using resultingInputs = typename std::conditional<0 == std::tuple_size<tVAOInputs>::value, //empty?
+                                                           tRestOfInputsNoTags,
+                                                           ct::tuple_append<tRestOfInputsNoTags, TVertexArrayObjectProgramInput<tVAOInputs>>>::type;
+   };
 }
 
 /// @brief program
 template<typename TName, typename TInputTuple>
 using TProgram = detail::TProgramImpl<TName,
-                                      ct::tuple_any_of<detail::is_geom, TInputTuple>::value, // has geometry shader?
-                                      ct::tuple_strip<tag::geometry, TInputTuple>>; // remove tag
+                                      detail::program_input_traits<TInputTuple>::hasGeometryShader,
+                                      typename detail::program_input_traits<TInputTuple>::resultingInputs>;
 
 #endif // ENGINE_PROGRAM_HPP

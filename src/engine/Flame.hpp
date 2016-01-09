@@ -8,12 +8,17 @@
 #include "Renderable.hpp"
 #include "Rect.hpp"
 #include "Particle.hpp"
+#include "Programs.hpp"
 
 /// @brief jet flame with trail
 class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, CJetFlame>
 {
       /// @brief base class
       using tParticleSystem = TParticleSystem<SParticle, CJetFlame>;
+
+      /// @brief vao
+      tRenderer::program_vao_ptr<cts("particlesys-tex-sprite-flame")> mVAO
+         =   tRenderer::make_vao<cts("particlesys-tex-sprite-flame")>();
 
       /// @brief atlas size
       glm::ivec2 mAtlasSize;
@@ -44,10 +49,7 @@ class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, C
       void dir(const glm::vec3& dir) { mParticleSpeedDir = dir; }
 
       /// @brief update
-      void update(float timeDelta)
-      {
-         tParticleSystem::update(*this, timeDelta);
-      }
+      void update(float timeDelta);
 
       /// @brief fill parameters for resurrected particle
       void resetParticle(SParticle& p, float timeDelta) const

@@ -8,7 +8,7 @@
 
 namespace
 {
-   auto vertexBuffer()
+   auto& posBuffer()
    {
       static const typename glm::vec3 data[] = {
          {-0.5f,-0.5f, 0.5f},
@@ -24,11 +24,11 @@ namespace
       return buffer;
    }
 
-   auto indexBuffer()
+   auto& indexBuffer()
    {
-      const GLubyte data[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
-                                 1, 5, 2, 6,
-                                 6, 3, 3, 7, 0, 4};
+      static const GLubyte data[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
+                                     1, 5, 2, 6,
+                                     6, 3, 3, 7, 0, 4};
       static auto buffer = make_indexBuffer(data, sizeof(data)/sizeof(data[0]), GL_TRIANGLE_STRIP);
       return buffer;
    }
@@ -36,9 +36,13 @@ namespace
 
 void CBox::draw(const SContext& context) const
 {
+   static auto vao = gRenderer.make_vao<cts("regular-col"),
+                                        cts("aPos"),
+                                        cts("indices")>(posBuffer(), indexBuffer());
+
    auto& p = gRenderer.get<cts("regular-col")>();
-   p.set<cts("aPos")>(vertexBuffer());
+   p.set<cts("vao")>(vao);
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
-   p.drawElements(indexBuffer());
+   p.drawElements();
 }

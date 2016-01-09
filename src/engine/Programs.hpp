@@ -7,7 +7,7 @@
 
 #include "Program.hpp"
 #include "Texture.hpp"
-#include "BufferObjectProgramInput.hpp"
+#include "VAOProgramInput.hpp"
 #include "UniformProgramInput.hpp"
 #include <functional>
 
@@ -17,7 +17,7 @@ const char* programSrc();
 #define inp_by_name(name) decltype(progInputDef(cts(name){}))
 
 auto progInputDef(cts("regular")) -> std::tuple<
-   TBufferObjectProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
+   TNamedAttrib<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TUniformProgramInput<cts("uModel"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>>;
 
@@ -25,12 +25,12 @@ auto progInputDef(cts("regular-col")) -> ct::tuple_append<inp_by_name("regular")
    TUniformProgramInput<cts("uColor"), TUniform<glm::tvec3>, tag::fragment>>;
 
 auto progInputDef(cts("regular-tex")) -> ct::tuple_append<inp_by_name("regular"),
-   TBufferObjectProgramInput<cts("aUV"), TAttrib<glm::tvec2>>,
+   TNamedAttrib<cts("aUV"), TAttrib<glm::tvec2>>,
    TTextureProgramInput<cts("uTexture")>>;
 
 auto progInputDef(cts("shaded")) -> std::tuple<
-   TBufferObjectProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
-   TBufferObjectProgramInput<cts("aNorm"), TAttrib<glm::tvec3>>,
+   TNamedAttrib<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
+   TNamedAttrib<cts("aNorm"), TAttrib<glm::tvec3>>,
    TUniformProgramInput<cts("uModel"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uAmbient"), TUniform<glm::tvec3>, tag::fragment>,
@@ -44,15 +44,15 @@ auto progInputDef(cts("shaded-col")) -> ct::tuple_append<inp_by_name("shaded"),
    TUniformProgramInput<cts("uColor"), TUniform<glm::tvec3>, tag::fragment>>;
 
 auto progInputDef(cts("shaded-tex")) -> ct::tuple_append<inp_by_name("shaded"),
-   TBufferObjectProgramInput<cts("aUV"), TAttrib<glm::tvec2>>,
+   TNamedAttrib<cts("aUV"), TAttrib<glm::tvec2>>,
    TTextureProgramInput<cts("uTexture")>>;
 
 auto progInputDef(cts("shaded-tex-nmap")) -> ct::tuple_append<inp_by_name("shaded-tex"),
-   TBufferObjectProgramInput<cts("aTan"), TAttrib<glm::tvec3>>,
+   TNamedAttrib<cts("aTan"), TAttrib<glm::tvec3>>,
    TTextureProgramInput<cts("uNormalMap"), 1>>;
 
 auto progInputDef(cts("billboard")) -> std::tuple<
-   TBufferObjectProgramInput<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
+   TNamedAttrib<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TUniformProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uPos"), TUniform<glm::tvec3>>,
    TUniformProgramInput<cts("uExternalPos"), TUniform<glm::tvec3>>,
@@ -61,7 +61,7 @@ auto progInputDef(cts("billboard")) -> std::tuple<
    TUniformProgramInput<cts("uUp"), TUniform<glm::tvec3>>>;
 
 auto progInputDef(cts("billboard-tex")) -> ct::tuple_append<inp_by_name("billboard"),
-   TBufferObjectProgramInput<cts("aUV"), TAttrib<glm::tvec2>>,
+   TNamedAttrib<cts("aUV"), TAttrib<glm::tvec2>>,
    TTextureProgramInput<cts("uTexture")>>;
 
 auto progInputDef(cts("billboard-tex-sprite")) -> ct::tuple_append<inp_by_name("billboard-tex"),
@@ -72,7 +72,7 @@ auto progInputDef(cts("billboard-hb")) -> ct::tuple_append<inp_by_name("billboar
    TUniformProgramInput<cts("uValue"), TUniform<glm::tvec1>, tag::fragment>>;
 
 auto progInputDef(cts("particlesys")) -> std::tuple<
-   TBufferObjectProgramInput<cts("aPos"), TAttrib<glm::tvec3>>,
+   TNamedAttrib<cts("aPos"), TAttrib<glm::tvec3>>,
    TUniformProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uSize"), TUniform<glm::tvec2>, tag::geometry>,
    TUniformProgramInput<cts("uPerspectiveScale"), TUniform<glm::tvec2>, tag::geometry>>;
@@ -82,10 +82,10 @@ auto progInputDef(cts("particlesys-tex")) -> ct::tuple_append<inp_by_name("parti
 
 auto progInputDef(cts("particlesys-tex-sprite")) -> ct::tuple_append<inp_by_name("particlesys-tex"),
    // aTime.x is age of particle, aTime.y is age of death
-   TBufferObjectProgramInput<cts("aTime"), TAttrib<glm::tvec2>>,
+   TNamedAttrib<cts("aTime"), TAttrib<glm::tvec2>>,
    // for optimization purposes aSpeed.xyz is unit speed directon, aSpeed.w is
    // scalar speed value
-   TBufferObjectProgramInput<cts("aSpeed"), TAttrib<glm::tvec4>>,
+   TNamedAttrib<cts("aSpeed"), TAttrib<glm::tvec4>>,
    TUniformProgramInput<cts("uAtlasSize"), TUniform<glm::tvec2, int, int>, tag::geometry>>;
 
 auto progInputDef(cts("particlesys-tex-sprite-flame")) -> inp_by_name("particlesys-tex-sprite");

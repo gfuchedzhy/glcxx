@@ -17,7 +17,7 @@ class CEngine
       CEngine(const size_t width, const size_t height);
 
       /// @brief destructor
-      virtual ~CEngine();
+      virtual ~CEngine() = default;
 
       /// @brief draw
       virtual void update(float timeDelta) = 0;
@@ -50,9 +50,6 @@ class CEngine
 
       /// @brief drawing context
       SContext mContext;
-
-      /// @brief @todo workaround before proper move to VAOs
-      unsigned int mVAO;
 };
 
 #endif // ENGINE_ENGINE_HPP

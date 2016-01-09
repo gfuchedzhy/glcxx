@@ -68,20 +68,11 @@ class TParticleSystem
       /// @brief positions
       std::vector<glm::vec3> mPositions;
 
-      /// @brief position buffer
-      tBufferPtr<glm::vec3> mPosBuffer = make_buffer<glm::vec3>(nullptr, 0, GL_DYNAMIC_DRAW);
-
       /// @brief speed
       std::vector<glm::vec4> mSpeeds;
 
-      /// @brief speed buffer
-      tBufferPtr<glm::vec4> mSpeedBuffer = make_buffer<glm::vec4>(nullptr, 0, GL_DYNAMIC_DRAW);
-
       /// @brief time parameters
       std::vector<glm::vec2> mTimes;
-
-      /// @brief time buffer
-      tBufferPtr<glm::vec2> mTimeBuf = make_buffer<glm::vec2>(nullptr, 0, GL_DYNAMIC_DRAW);
 
    public:
       /// @brief constructor
@@ -126,11 +117,6 @@ class TParticleSystem
             if (p.mIsAlive)
                updateParticle(p, t);
          }
-
-         /// upload to gpu
-         mPosBuffer->upload(&mPositions[0], mPositions.size());
-         mSpeedBuffer->upload(&mSpeeds[0], mSpeeds.size());
-         mTimeBuf->upload(&mTimes[0], mTimes.size());
       }
 
    private:

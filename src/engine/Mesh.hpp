@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_MESH_HPP
@@ -8,6 +8,7 @@
 #include "Renderable.hpp"
 #include "BufferObject.hpp"
 #include "Material.hpp"
+#include "Programs.hpp"
 #include <memory>
 
 class aiMesh;
@@ -18,20 +19,9 @@ class CMesh : public IRenderable
       /// @brief material properties
       std::shared_ptr<SMaterial> mMaterial;
 
-      /// @brief position buffer
-      std::shared_ptr<TBufferObject<glm::vec3>> mPos;
+      tRenderer::program_vao_ptr<cts("shaded-tex")> mVao;
 
-      /// @brief index buffer
-      std::shared_ptr<CIndexBuffer> mInd;
-
-      /// @brief texture coord buffer
-      std::shared_ptr<TBufferObject<glm::vec2>> mUV;
-
-      /// @brief normal buffer
-      std::shared_ptr<TBufferObject<glm::vec3>> mNormals;
-
-      /// @brief tangent buffer
-      std::shared_ptr<TBufferObject<glm::vec3>> mTan;
+      tRenderer::program_vao_ptr<cts("shaded-tex-nmap")> mVaoNMap;
 
    public:
       /// @brief constructor

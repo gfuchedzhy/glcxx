@@ -14,19 +14,9 @@ CEngine::CEngine(const size_t width, const size_t height)
 {
    mWindow.setVerticalSyncEnabled(true);
 
-   /// @todo workaround before proper move to VAOs
-   gl(glGenVertexArrays, 1, &mVAO);
-   gl(glBindVertexArray, mVAO);
-
    gl(glEnable, GL_DEPTH_TEST);
    gl(glEnable, GL_CULL_FACE);
    gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-CEngine::~CEngine()
-{
-   /// @todo workaround before proper move to VAOs
-   gl(glDeleteVertexArrays, 1, &mVAO);
 }
 
 void CEngine::run()
