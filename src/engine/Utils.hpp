@@ -19,6 +19,22 @@ extern std::mt19937 random_gen;
 /// @brief ct stands for compile time
 namespace ct
 {
+   /// @brief return true if T is instantiation of Template
+   template<typename T, template<typename...> class Template>
+   struct instantiation_of : public std::false_type {};
+
+   /// @brief specialization
+   template<template<typename...> class Template, typename... Params>
+   struct instantiation_of<Template<Params...>, Template> : public std::true_type {};
+
+   /// @brief wrapper for naming arbitrary type
+   template<typename TName, typename T>
+   struct TNamedType
+   {
+         using tName = TName;
+         using type  = T;
+   };
+
    /// @brief function traits
    template<typename Func> struct function_traits;
 
@@ -107,6 +123,32 @@ namespace ct
    /// @brief append more types to given tuple
    template<typename Tuple, typename... T>
    using tuple_append = tuple_cat<Tuple, std::tuple<T...>>;
+
+   /// @brief build tuple that contains only types T for which
+   /// Pred<T,PredParams>::value != inverse
+   template<typename Tuple, template<typename...> class Pred, bool inverse = false, typename... PredParams>
+   struct tuple_filter_impl;
+
+   /// @brief specialization for tuple
+   template<template<typename...> class Pred, typename... PredParams, typename T1, typename... TRest, bool inverse>
+   struct tuple_filter_impl<std::tuple<T1, TRest...>, Pred, inverse, PredParams...>
+   {
+         using type = tuple_cat<typename std::conditional<inverse != Pred<T1, PredParams...>::value,
+                                                          std::tuple<T1>,
+                                                          std::tuple<>>::type,
+                                typename tuple_filter_impl<std::tuple<TRest...>, Pred, inverse, PredParams...>::type>;
+   };
+
+   /// @brief terminator specialization
+   template<template<typename...> class Pred, typename... PredParams, bool inverse>
+   struct tuple_filter_impl<std::tuple<>, Pred, inverse, PredParams...>
+   {
+         using type = std::tuple<>;
+   };
+
+   /// @brief shortcut
+   template<typename Tuple, template<typename...> class Pred, bool inverse = false, typename... PredParams>
+   using tuple_filter = typename tuple_filter_impl<Tuple, Pred, inverse, PredParams...>::type;
 
    /// @brief strip TStrip types from tuple
    template<typename TStrip, typename Tuple> struct tuple_strip_impl;
