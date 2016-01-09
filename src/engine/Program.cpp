@@ -60,7 +60,7 @@ CProgramBase::CProgramBase(const char* name, const char* declarations, const cha
 
 CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
    : mObject(gl(glCreateProgram))
-   , mVertexShader(src, GL_VERTEX_SHADER)
+   , mVertexShader((Log::msg("program id ", mObject), src), GL_VERTEX_SHADER)
    , mFragmentShader(src, GL_FRAGMENT_SHADER)
    , mGeometryShader(hasGeometryShader ? std::make_unique<CShader>(src, GL_GEOMETRY_SHADER) : nullptr)
 {
@@ -68,7 +68,7 @@ CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
    gl(glAttachShader, mObject, mFragmentShader.mObject);
    if (mGeometryShader)
       gl(glAttachShader, mObject, mGeometryShader->mObject);
-   gl(glLinkProgram,  mObject);
+   gl(glLinkProgram, mObject);
    GLint linked;
    gl(glGetProgramiv, mObject, GL_LINK_STATUS, &linked);
    if (!linked)
