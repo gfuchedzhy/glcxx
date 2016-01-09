@@ -44,9 +44,11 @@ class TBufferObject
       }
 
       /// @brief uploads new data to buffer
-      void upload(const TData* data, size_t size)
+      void upload(const TData* data, size_t size, GLenum usage = 0)
       {
          bind();
+         if (usage)
+            mUsage = usage;
          gl(glBufferData, mTarget, size*sizeof(TData), data, mUsage);
          unBind();
       }
