@@ -10,8 +10,8 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
 {
    if (!mesh.HasPositions())
       throw std::runtime_error{"loaded mesh doesn't have positions"};
-   auto pos = make_buffer<glm::vec3>(reinterpret_cast<const glm::vec3*>(mesh.mVertices),
-                                     mesh.mNumVertices);
+   auto pos = make_buffer(reinterpret_cast<const glm::vec3*>(mesh.mVertices),
+                          mesh.mNumVertices);
    if (!mesh.HasTextureCoords(0))
       throw std::runtime_error{"loaded mesh doesn't have texture coords"};
 
@@ -25,13 +25,13 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
 
    if (!mesh.HasNormals())
       throw std::runtime_error{"loaded mesh doesn't have normals"};
-   auto normals = make_buffer<glm::vec3>(reinterpret_cast<const glm::vec3*>(mesh.mNormals),
-                                         mesh.mNumVertices);
+   auto normals = make_buffer(reinterpret_cast<const glm::vec3*>(mesh.mNormals),
+                              mesh.mNumVertices);
 
    if (material->mNormalMap && !mesh.HasTangentsAndBitangents())
       throw std::runtime_error{"loaded mesh has normal map but doesn't have tangents"};
-   auto tan = make_buffer<glm::vec3>(reinterpret_cast<const glm::vec3*>(mesh.mTangents),
-                                     mesh.mNumVertices);
+   auto tan = make_buffer(reinterpret_cast<const glm::vec3*>(mesh.mTangents),
+                          mesh.mNumVertices);
    std::vector<GLushort> indices;
    for (size_t f = 0; f < mesh.mNumFaces; ++f)
    {

@@ -24,7 +24,7 @@ namespace
          {1.f, 0.f},
          {0.f, 0.f}
       };
-      static auto buffer = make_buffer<glm::vec2>(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer(data, sizeof(data)/sizeof(data[0]));
       return buffer;
    }
 
@@ -36,7 +36,7 @@ namespace
          { 0.5f, 0.5f, 0.f},
          {-0.5f, 0.5f, 0.f}
       };
-      static auto buffer = make_buffer<glm::vec3>(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer(data, sizeof(data)/sizeof(data[0]));
       return buffer;
    }
 }

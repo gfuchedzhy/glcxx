@@ -20,7 +20,7 @@ namespace
          { 0.5f, 0.5f,-0.5f},
          {-0.5f, 0.5f,-0.5f}
       };
-      static auto buffer = make_buffer<glm::vec3>(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer(data, sizeof(data)/sizeof(data[0]));
       return buffer;
    }
 

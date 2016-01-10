@@ -141,19 +141,15 @@ class TVertexArrayObject<std::tuple<TNamedAttribs...>> : public CIndexedVertexAr
 
       /// @brief upload data to current vbo, if none is current, create one,
       /// mark dirty
-      template<typename TName,
-               // vbo index
-               size_t I = ct::tuple_find_if<std::tuple<TNamedAttribs...>, name_equals, TName>::value,
-               // data type for current input, also used for SFINAE
-               typename TData = typename std::tuple_element<I, tAttribTraits>::type::tData>
-      void upload(const TData* data, size_t size, GLenum usage = 0)
+      template<typename TName, size_t I = ct::tuple_find_if<std::tuple<TNamedAttribs...>, name_equals, TName>::value>
+      void upload(const typename std::tuple_element<I, tAttribTraits>::type::tData* data, size_t size, GLenum usage = 0)
       {
          auto& ptr = std::get<I>(mVBOs);
          if (ptr)
             ptr->upload(data, size, usage);
          else
          {
-            ptr = make_buffer<TData>(data, size, usage ? usage : GL_STATIC_DRAW);
+            ptr = make_buffer(data, size, usage ? usage : GL_STATIC_DRAW);
             mDirty.set(I);
          }
       }

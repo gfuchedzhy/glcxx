@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_BUFFEROBJECT_HPP
@@ -71,10 +71,10 @@ template<typename TData>
 using tBufferPtr = std::shared_ptr<TBufferObject<TData>>;
 
 /// @brief make buffer
-template<typename TData, typename... TArgs>
-inline tBufferPtr<TData> make_buffer(TArgs&&... args)
+template<typename TData>
+inline tBufferPtr<TData> make_buffer(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW)
 {
-   return std::make_shared<TBufferObject<TData>>(std::forward<TArgs>(args)...);
+   return std::make_shared<TBufferObject<TData>>(data, size, usage);
 }
 
 /// @brief index buffer object, though underlying implementation is buffer of
