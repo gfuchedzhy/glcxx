@@ -6,6 +6,7 @@
 #define ENGINE_GLSLINPUTVARIABLE_HPP
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "GL.hpp"
 #include "Utils.hpp"
 
@@ -171,22 +172,22 @@ namespace glsl
    template<size_t N>                                                   \
    inline void attachUniform(GLint location, const std::array<type, N>& val) \
    {                                                                    \
-      gl(glUniform1##functionSuffix##v, location, N, &val[0]);          \
+      gl(glUniform1##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attachUniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
    {                                                                    \
-      gl(glUniform2##functionSuffix##v, location, N, &val[0][0]);       \
+      gl(glUniform2##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attachUniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
    {                                                                    \
-      gl(glUniform3##functionSuffix##v, location, &val[0][0]);          \
+      gl(glUniform3##functionSuffix##v, location, glm::value_ptr(val[0])); \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attachUniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
    {                                                                    \
-      gl(glUniform4##functionSuffix##v, location, &val[0][0]);          \
+      gl(glUniform4##functionSuffix##v, location, glm::value_ptr(val[0])); \
    }
 
    /// @brief actual function definitions
@@ -198,12 +199,12 @@ namespace glsl
    template<glm::precision P>
    inline void attachUniform(GLint location, const glm::tmat4x4<float, P>& val)
    {
-      gl(glUniformMatrix4fv, location, 1, GL_FALSE, &val[0][0]);
+      gl(glUniformMatrix4fv, location, 1, GL_FALSE, glm::value_ptr(val));
    }
    template<size_t N, glm::precision P>
    inline void attachUniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
    {
-      gl(glUniformMatrix4fv, location, N, GL_FALSE, &val[0][0][0]);
+      gl(glUniformMatrix4fv, location, N, GL_FALSE, glm::value_ptr(val[0]));
    }
 
    /// @brief converter which does nothing if cpu type and glsl type exactly
