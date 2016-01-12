@@ -22,16 +22,13 @@ template<typename TNamedAttribTuple> class TVertexArrayObjectProgramInput;
 template<typename... TNamedAttribs>
 class TVertexArrayObjectProgramInput<std::tuple<TNamedAttribs...>>
 {
+      /// @brief return true if Tuple doesn't contain T
+      template<typename T, typename Tuple> struct doesnt_contain
+      {
+            static constexpr bool value = !ct::tuple_contains<Tuple, T>::value;
+      };
+
    public:
-      /// @brief vao type
-      using tVAO = TVertexArrayObject<std::tuple<TNamedAttribs...>>;
-
-      /// @brief vao ptr
-      using tVAOPtr = std::shared_ptr<tVAO>;
-
-      /// @brief locations for all buffers inside vao
-      using tLocations = typename tVAO::tLocations;
-
       /// @brief vao holds VBOs, which are always vertex shader inputs
       using tDeclTag = tag::vertex;
 
@@ -41,43 +38,65 @@ class TVertexArrayObjectProgramInput<std::tuple<TNamedAttribs...>>
       /// @brief constructor
       TVertexArrayObjectProgramInput(const GLuint program)
          : mLocations{{glsl::getAttribLocation(program, TNamedAttribs::tName::chars)...}}
+         , mProgramID(program)
       {}
 
-      /// @brief named set method
-      template<typename TName>
-      typename std::enable_if<std::is_same<TName, cts("vao")>::value>::type
-      set(const tVAOPtr& value)
-      {
-         if(mVAO != value)
-         {
-            mVAO = value;
-            if (mVAO)
-               mVAO->attach(mLocations);
-            else
-               tVAO::unBind();
-         }
-      }
-
-      /// @brief called after program was selected, attaches current vao
+      /// @brief called after program was selected, nothing to do as vao gets
+      /// passed to draw function
       void select() const
-      {
-         if (mVAO)
-            mVAO->attach(mLocations);
-      }
+      {}
 
       /// @brief draw using index buffer from vao
-      void drawElements() const
+      template<typename...TName, typename...TData>
+      void drawElements(const TVertexArrayObject<true, ct::named_type<TName, TData>...>& vao) const
       {
-         assert(mVAO);
-         mVAO->drawElements();
+         using tVAOTuple = std::tuple<ct::named_type<TName, TData>...>;
+         using tRequiredVAOTuple =  std::tuple<ct::named_type<typename TNamedAttribs::tName,
+                                                              typename TNamedAttribs::tAttribTraits::tData>...>;
+         static_assert(!ct::tuple_any_of<tRequiredVAOTuple, doesnt_contain, tVAOTuple>::value, "not all or not matching type inputs for program was provided by given vao");
+
+         vao.bind();
+         // if was attached to different program or wasn't attached at all
+         if (mProgramID != vao.mProgramID)
+         {
+            Log::msg("attaching vao to a program id ", mProgramID);
+            vao.mProgramID = mProgramID;
+            vao.template bindBuffer<cts("indices")>();
+            swallow(vao.template bindBuffer<typename TNamedAttribs::tName>() &&
+                    (TNamedAttribs::tAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<typename TNamedAttribs::tName...>, typename TNamedAttribs::tName>::value]), true));
+         }
+         vao.drawElements();
+      }
+
+      /// @brief draw arrays
+      template<typename...TName, typename...TData>
+      void drawArrays(const TVertexArrayObject<false, ct::named_type<TName, TData>...>& vao, GLsizei size, GLenum mode) const
+      {
+         using tVAOTuple = std::tuple<ct::named_type<TName, TData>...>;
+         using tRequiredVAOTuple =  std::tuple<ct::named_type<typename TNamedAttribs::tName,
+                                                              typename TNamedAttribs::tAttribTraits::tData>...>;
+         static_assert(!ct::tuple_any_of<tRequiredVAOTuple, doesnt_contain, tVAOTuple>::value, "not all or not matching type inputs for program was provided by given vao");
+
+         vao.bind();
+         // if was attached to different program or wasn't attached at all
+         if (mProgramID != vao.mProgramID)
+         {
+            Log::msg("attaching vao to a program id ", mProgramID);
+            vao.mProgramID = mProgramID;
+            swallow(vao.template bindBuffer<typename TNamedAttribs::tName>() &&
+                    (TNamedAttribs::tAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<typename TNamedAttribs::tName...>, typename TNamedAttribs::tName>::value]), true));
+         }
+         gl(glDrawArrays, mode, 0, size);
       }
 
   private:
-      /// @brief locations for all buffers inside vao
+      /// @brief locations for all VBOs inside vao
+      using tLocations = std::array<GLint, sizeof...(TNamedAttribs)>;
       tLocations mLocations;
 
-      /// @brief currently bound vao
-      tVAOPtr mVAO;
+      /// @brief program id to check in runtime if input vao is ready to be
+      /// bound for this program or it should be reattached for this program
+      GLuint mProgramID;
 };
 
 #endif

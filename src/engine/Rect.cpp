@@ -43,56 +43,44 @@ namespace
 
 void CTexturedRect::draw(const SContext&) const
 {
-   static auto vao = gRenderer.make_vao<cts("regular-tex"),
-                                        cts("aPos"), cts("aUV"), cts("indices")>(
-                                           posBuffer(), uvBuffer(), indexBuffer());
+   static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
    auto& p = gRenderer.get<cts("regular-tex")>();
-   p.set<cts("vao")>(vao);
    p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements();
+   p.drawElements(*vao);
 }
 
 void CTexturedBillboard::draw(const SContext&) const
 {
-   static auto vao = gRenderer.make_vao<cts("billboard-tex"),
-                                        cts("aPos"), cts("aUV"), cts("indices")>(
-                                           posBuffer(), uvBuffer(), indexBuffer());
+   static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
    auto& p = gRenderer.get<cts("billboard-tex")>();
-   p.set<cts("vao")>(vao);
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements();
+   p.drawElements(*vao);
 }
 
 void CAnimatedBillboard::draw(const SContext& context) const
 {
-   static auto vao = gRenderer.make_vao<cts("billboard-tex-sprite"),
-                                        cts("aPos"), cts("aUV"), cts("indices")>(
-                                           posBuffer(), uvBuffer(), indexBuffer());
+   static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
    auto& p = gRenderer.get<cts("billboard-tex-sprite")>();
-   p.set<cts("vao")>(vao);
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uAtlasSize")>(mAtlasSize);
    p.set<cts("uAtlasPos")>(mAtlasPos);
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements();
+   p.drawElements(*vao);
 }
 
 void CHealthBar::draw(const SContext&) const
 {
-   static auto vao = gRenderer.make_vao<cts("billboard-hb"),
-                                        cts("aPos"), cts("indices")>(
-                                           posBuffer(), indexBuffer());
+   static auto vao = make_vao<cts("aPos")>(indexBuffer(), posBuffer());
    auto& p = gRenderer.get<cts("billboard-hb")>();
-   p.set<cts("vao")>(vao);
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uValue")>(mValue);
 
    gl(glDisable, GL_DEPTH_TEST);
-   p.drawElements();
+   p.drawElements(*vao);
    gl(glEnable, GL_DEPTH_TEST);
 }

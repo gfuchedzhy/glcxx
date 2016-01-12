@@ -11,12 +11,18 @@
 /// @brief base VAO class, resource holder
 class CVertexArrayObjectBase
 {
+      /// @brief friend declaration
+      template<typename> friend class TVertexArrayObjectProgramInput;
+
       /// @brief disabled stuff
       CVertexArrayObjectBase(const CVertexArrayObjectBase&) = delete;
-      CVertexArrayObjectBase& operator=(const CVertexArrayObjectBase& other) = delete;
+      CVertexArrayObjectBase& operator=(const CVertexArrayObjectBase&) = delete;
 
       /// @brief vao id
-      GLuint mID;
+      GLuint mID = 0;
+
+      /// @brief program id this vao is enabled for
+      mutable GLuint mProgramID = 0;
 
    public:
       /// @brief constructor
@@ -28,7 +34,8 @@ class CVertexArrayObjectBase
       /// @brief destructor
       ~CVertexArrayObjectBase()
       {
-         gl(glDeleteVertexArrays, 1, &mID);
+         if (mID)
+            gl(glDeleteVertexArrays, 1, &mID);
       }
 
       /// @brief binds vao
@@ -44,144 +51,101 @@ class CVertexArrayObjectBase
       }
 };
 
-/// @brief vao that has index buffer
-class CIndexedVertexArrayObject : public CVertexArrayObjectBase
-{
-      /// @brief index buffer
-      tIndexBufferPtr mIndexBuffer;
+/// @brief vao holding specific attributes
+template<bool hasIndexBuffer, typename...TNamedAttrib> class TVertexArrayObject;
 
-      /// @brief true if index buffer was changed and it should be rebound on
-      /// attach
-      mutable bool mIndexBufferDirty = false;
+/// @brief specialization
+template<bool hasIndexBuffer, typename... TName, typename... TData>
+class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : public CVertexArrayObjectBase
+{
+      /// @brief buffer tuple
+      using tBuffers = ct::tuple_cat<std::tuple<tBufferPtr<TData>...>, // VBOs
+                                     // optional index buffer
+                                     typename std::conditional<hasIndexBuffer, std::tuple<tIndexBufferPtr>, std::tuple<>>::type>;
+
+      /// @brief buffer tuple
+      tBuffers mBuffers;
+
+      /// @brief traits for searching buffers in buffer tuple
+      template<typename Name>
+      struct traits
+      {
+            static constexpr size_t index = ct::tuple_find<std::tuple<TName..., cts("indices")>, Name>::value;
+            using tBufferPtr = typename std::tuple_element<index, tBuffers>::type;
+      };
 
    public:
-      /// @brief set index buffer
-      void indexBuffer(const tIndexBufferPtr& value)
+      /// @brief set vbo or index buffer into vao
+      template<typename Name>
+      void set(const typename traits<Name>::tBufferPtr& vbo)
       {
-         if (mIndexBuffer != value)
+         std::get<traits<Name>::index>(mBuffers) = vbo;
+      }
+
+      /// @brief bind buffer return true if bound
+      template<typename Name>
+      bool bindBuffer() const
+      {
+         const auto& p = std::get<traits<Name>::index>(mBuffers);
+         if (p)
          {
-            mIndexBufferDirty = true;
-            mIndexBuffer = value;
+            p->bind();
+            return true;
          }
+         return false;
       }
 
       /// @brief draw using index buffer
-      void drawElements() const
+      template<bool _hasIndexBuffer = hasIndexBuffer> // for SFINAE
+      typename std::enable_if<_hasIndexBuffer>::type drawElements() const
       {
-         assert(mIndexBuffer);
-         mIndexBuffer->draw();
+         const tIndexBufferPtr& p = std::get<traits<cts("indices")>::index>(mBuffers);
+         assert(p);
+         p->draw();
       }
 
-      /// @brief attach index buffer if it exists
-      void attach() const
+      /// @brief upload data to vbo, if doesn't exist, create it
+      template<typename Name, size_t I = ct::tuple_find<std::tuple<TName...>, Name>::value>
+      typename std::enable_if<!hasIndexBuffer || !std::is_same<Name, cts("indices")>::value>::type
+      upload(const typename std::tuple_element<I, std::tuple<TData...>>::type* data, size_t size, GLenum usage = 0)
       {
-         bind();
-         if (mIndexBufferDirty)
-         {
-            mIndexBufferDirty = false;
-            CIndexBuffer::unBind();
-            if (mIndexBuffer)
-               mIndexBuffer->bind();
-         }
-      }
-};
-
-/// @brief vao holding specific attributes
-template<typename TAttribTuple> class TVertexArrayObject;
-
-/// @brief specialization for tuple
-template<typename... TNamedAttribs>
-class TVertexArrayObject<std::tuple<TNamedAttribs...>> : public CIndexedVertexArrayObject
-{
-   public:
-      /// @brief base class
-      using tBase = CIndexedVertexArrayObject;
-
-      /// @brief number of inputs
-      static constexpr size_t size = sizeof...(TNamedAttribs);
-
-      /// @brief locations for all VBOs inside vao
-      using tLocations = std::array<GLint, size>;
-
-      /// @brief return true if T is type named with TName
-      template<typename T, typename TName>
-      struct name_equals : std::integral_constant<bool, std::is_same<typename T::tName, TName>::value>
-      {};
-
-   private:
-      /// @brief VBO tuple
-      using tVBOs = std::tuple<tBufferPtr<typename TNamedAttribs::tAttribTraits::tData>...>;
-
-      /// @brief tuple with attribute traits
-      using tAttribTraits = std::tuple<typename TNamedAttribs::tAttribTraits...>;
-
-      /// @brief VBOs
-      tVBOs mVBOs;
-
-      /// @brief bitset 
-      mutable std::bitset<size> mDirty;
-
-   public:
-      /// @brief named set indices method
-      template<typename TName>
-      typename std::enable_if<std::is_same<TName, cts("indices")>::value>::type
-      set(const tIndexBufferPtr& value)
-      {
-         tBase::indexBuffer(value);
-      }
-
-      /// @brief set vbo into vao
-      template<typename TName, int I = ct::tuple_find_if<std::tuple<TNamedAttribs...>, name_equals, TName>::value>
-      typename std::enable_if<I<size>::type
-      set(const typename std::tuple_element<I, tVBOs>::type& vbo)
-      {
-         std::get<I>(mVBOs) = vbo;
-         mDirty.set(I);
-      }
-
-      /// @brief upload data to current vbo, if none is current, create one,
-      /// mark dirty
-      template<typename TName, size_t I = ct::tuple_find_if<std::tuple<TNamedAttribs...>, name_equals, TName>::value>
-      void upload(const typename std::tuple_element<I, tAttribTraits>::type::tData* data, size_t size, GLenum usage = 0)
-      {
-         auto& ptr = std::get<I>(mVBOs);
+         auto& ptr = std::get<I>(mBuffers);
          if (ptr)
             ptr->upload(data, size, usage);
          else
-         {
             ptr = make_buffer(data, size, usage ? usage : GL_STATIC_DRAW);
-            mDirty.set(I);
-         }
       }
 
-      /// @brief attach vao, reattach VBOs if necessary
-      void attach(const tLocations& locations) const
+      /// @brief upload data to index buffer, if doesn't exist, create it
+      template<typename Name, typename T>
+      typename std::enable_if<hasIndexBuffer && std::is_same<Name, cts("indices")>::value>::type
+      upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
       {
-         CIndexedVertexArrayObject::attach();
-         if (mDirty.any())
-            doAttach(locations, std::make_index_sequence<size>{});
-      }
-
-   private: // impl
-      template<size_t...I>
-      void doAttach(const tLocations& locations, std::index_sequence<I...>) const
-      {
-         swallow(doAttachSingle<I>(locations[I]));
-      }
-
-      template<size_t I>
-      void doAttachSingle(GLint location) const
-      {
-         if (mDirty.test(I))
-         {
-            mDirty.reset(I);
-            const auto& vbo = std::get<I>(mVBOs);
-            assert(vbo);
-            vbo->bind();
-            std::tuple_element<I, std::tuple<typename TNamedAttribs::tAttribTraits...>>::type::attach(location);
-            vbo->unBind();
-         }
+         tIndexBufferPtr& ptr = std::get<traits<cts("indices")>::index>(mBuffers);
+         if (ptr)
+            ptr->upload(data, size, mode, usage);
+         else
+            ptr = make_indexBuffer(data, size, mode, usage ? usage : GL_STATIC_DRAW);
       }
 };
+
+/// @brief make new vao with given buffers, version for vao without index buffer
+template<typename...TName, typename...TData>
+inline auto make_vao(const tBufferPtr<TData>&... buf)
+{
+   auto vao = std::make_unique<TVertexArrayObject<false, ct::named_type<TName, TData>...>>();
+   swallow(vao->template set<TName>(buf));
+   return vao;
+}
+
+/// @brief make new vao with given buffers, version for vao with index buffer
+template<typename...TName, typename...TData>
+inline auto make_vao(const tIndexBufferPtr& indices, const tBufferPtr<TData>&... buf)
+{
+   auto vao = std::make_unique<TVertexArrayObject<true, ct::named_type<TName, TData>...>>();
+   vao->template set<cts("indices")>(indices);
+   swallow(vao->template set<TName>(buf));
+   return vao;
+}
 
 #endif

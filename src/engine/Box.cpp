@@ -36,13 +36,9 @@ namespace
 
 void CBox::draw(const SContext& context) const
 {
-   static auto vao = gRenderer.make_vao<cts("regular-col"),
-                                        cts("aPos"),
-                                        cts("indices")>(posBuffer(), indexBuffer());
-
+   static auto vao = make_vao<cts("aPos")>(indexBuffer(), posBuffer());
    auto& p = gRenderer.get<cts("regular-col")>();
-   p.set<cts("vao")>(vao);
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
-   p.drawElements();
+   p.drawElements(*vao);
 }

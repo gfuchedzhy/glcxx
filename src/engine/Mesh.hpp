@@ -19,9 +19,12 @@ class CMesh : public IRenderable
       /// @brief material properties
       std::shared_ptr<SMaterial> mMaterial;
 
-      tRenderer::program_vao_ptr<cts("shaded-tex")> mVao;
-
-      tRenderer::program_vao_ptr<cts("shaded-tex-nmap")> mVaoNMap;
+      /// @brief vao
+      TVertexArrayObject<true,
+                         ct::named_type<cts("aPos"),  glm::vec3>,
+                         ct::named_type<cts("aUV"),   glm::vec2>,
+                         ct::named_type<cts("aNorm"), glm::vec3>,
+                         ct::named_type<cts("aTan"),  glm::vec3>> mVAO;
 
    public:
       /// @brief constructor

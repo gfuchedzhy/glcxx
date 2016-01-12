@@ -15,9 +15,9 @@ CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
 void CJetFlame::update(float timeDelta)
 {
    tParticleSystem::update(*this, timeDelta);
-   mVAO->upload<cts("aPos")>(&mPositions[0], mPositions.size(), GL_STREAM_DRAW);
-   mVAO->upload<cts("aSpeed")>(&mSpeeds[0], mSpeeds.size(), GL_STREAM_DRAW);
-   mVAO->upload<cts("aTime")>(&mTimes[0], mTimes.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aPos")>(&mPositions[0], mPositions.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aSpeed")>(&mSpeeds[0], mSpeeds.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aTime")>(&mTimes[0], mTimes.size(), GL_STREAM_DRAW);
 }
 
 void CJetFlame::draw(const SContext& context) const
@@ -25,14 +25,13 @@ void CJetFlame::draw(const SContext& context) const
    if (hasAliveParticles())
    {
       auto& p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
-      p.set<cts("vao")>(mVAO);
       p.set<cts("uSize")>(mSize);
       p.set<cts("uAtlasSize")>(mAtlasSize);
       p.set<cts("uTexture")>(mTexture);
       gl(glEnable, GL_BLEND);
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE);
       glDepthMask(GL_FALSE);
-      p.drawArrays(aliveParticleNum(), GL_POINTS);
+      p.drawArrays(mVAO, aliveParticleNum(), GL_POINTS);
       gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glDepthMask(GL_TRUE);
       gl(glDisable, GL_BLEND);

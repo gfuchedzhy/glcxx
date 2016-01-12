@@ -33,12 +33,6 @@ class CProgramBase
          gl(glUseProgram, mObject);
       }
 
-      /// @brief draw arrays
-      void drawArrays(GLsizei size, GLenum mode) const
-      {
-         gl(glDrawArrays, mode, 0, size);
-      }
-
    protected:
       /// @brief program object id
       GLuint mObject;
@@ -181,7 +175,7 @@ namespace detail
 
      public:
          /// @brief true if has geometry shader
-         static constexpr bool hasGeometryShader = ct::tuple_any_of<is_geom, tRestOfInputs>::value;
+         static constexpr bool hasGeometryShader = ct::tuple_any_of<tRestOfInputs, is_geom>::value;
 
          /// @brief resulting program inputs
          using resultingInputs = typename std::conditional<0 == std::tuple_size<tVAOInputs>::value, //empty?

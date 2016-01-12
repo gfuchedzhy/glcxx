@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_FLAME_HPP
@@ -17,8 +17,10 @@ class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, C
       using tParticleSystem = TParticleSystem<SParticle, CJetFlame>;
 
       /// @brief vao
-      tRenderer::program_vao_ptr<cts("particlesys-tex-sprite-flame")> mVAO
-         =   tRenderer::make_vao<cts("particlesys-tex-sprite-flame")>();
+      TVertexArrayObject<false,
+                         ct::named_type<cts("aPos"),   glm::vec3>,
+                         ct::named_type<cts("aSpeed"), glm::vec4>,
+                         ct::named_type<cts("aTime"),  glm::vec2>> mVAO;
 
       /// @brief atlas size
       glm::ivec2 mAtlasSize;

@@ -22,6 +22,7 @@ class TBufferObject
       /// @brief target
       GLenum mTarget;
 
+   protected:
       /// @brief usage
       GLenum mUsage;
 
@@ -97,8 +98,8 @@ class CIndexBuffer : public TBufferObject<unsigned char>
    public:
       /// @brief constructor
       template<typename T>
-      CIndexBuffer(const T* data, size_t size, GLenum mode)
-         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), GL_STATIC_DRAW, GL_ELEMENT_ARRAY_BUFFER)
+      CIndexBuffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
+         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), usage, GL_ELEMENT_ARRAY_BUFFER)
          , mSize(size)
          , mMode(mode)
          , mType(glsl::TTypeID<T>::id)
@@ -109,10 +110,12 @@ class CIndexBuffer : public TBufferObject<unsigned char>
 
       /// @brief uploads new data to buffer
       template<typename T>
-      void upload(const T* data, size_t size, GLenum mode)
+      void upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
       {
          constexpr GLenum id = glsl::TTypeID<T>::id;
          static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
+         if (usage)
+            mUsage = usage;
          tBase::upload(reinterpret_cast<const unsigned char*>(data), size*sizeof(T));
          mSize = size;
          mMode = mode;

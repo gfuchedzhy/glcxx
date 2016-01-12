@@ -26,24 +26,6 @@ class TRenderer
       using program_type = TProgram<TName, decltype(progInputDef(TName{}))>;
 
    public:
-      /// @brief type of vao for program with given name
-      template<typename TName>
-      using program_vao = typename program_type<TName>::tVAO;
-
-      /// @brief ptr to vao for program with given name
-      template<typename TName>
-      using program_vao_ptr = std::shared_ptr<typename program_type<TName>::tVAO>;
-
-      /// @brief make vao, upload given vbos to it, @todo do we really need this
-      /// upload feature?
-      template<typename TProgName, typename...TVBOName>
-      static auto make_vao(typename ct::function_traits<decltype(&program_vao<TProgName>::template set<TVBOName>)>::template arg_type<0>... vbo)
-      {
-         auto ret = std::make_shared<program_vao<TProgName>>();
-         swallow(ret->template set<TVBOName>(vbo));
-         return ret;
-      }
-
       /// @brief initializes all programs of this renderer
       TRenderer()
       {

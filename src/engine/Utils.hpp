@@ -29,7 +29,7 @@ namespace ct
 
    /// @brief wrapper for naming arbitrary type
    template<typename TName, typename T>
-   struct TNamedType
+   struct named_type
    {
          using tName = TName;
          using type  = T;
@@ -168,17 +168,17 @@ namespace ct
    using tuple_strip = typename tuple_strip_impl<TStrip, Tuple>::type;
 
    /// @brief true if predicate Pred is true for any of tuple members
-   template<template<typename> class Pred, typename Tuple> struct tuple_any_of;
+   template<typename Tuple, template<typename...> class Pred, typename... PredParams> struct tuple_any_of;
 
    /// @brief specialization for tuple
-   template<template<typename> class Pred, typename First, typename... Rest>
-   struct tuple_any_of<Pred, std::tuple<First, Rest...>>
-      : public std::integral_constant<bool, Pred<First>::value || tuple_any_of<Pred, std::tuple<Rest...> >::value>
+   template<typename First, typename... Rest, template<typename...> class Pred, typename... PredParams>
+   struct tuple_any_of<std::tuple<First, Rest...>, Pred,  PredParams...>
+      : public std::integral_constant<bool, Pred<First, PredParams...>::value || tuple_any_of<std::tuple<Rest...>, Pred, PredParams...>::value>
    {};
 
    /// @brief terminator specialization
-   template<template<typename> class Pred>
-   struct tuple_any_of<Pred, std::tuple<>>
+   template<template<typename...> class Pred, typename... PredParams>
+   struct tuple_any_of<std::tuple<>, Pred, PredParams...>
       : public std::false_type {};
 
    /// @brief compile time string
