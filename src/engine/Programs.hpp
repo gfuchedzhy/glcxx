@@ -7,7 +7,6 @@
 
 #include "Program.hpp"
 #include "Texture.hpp"
-#include "VAOProgramInput.hpp"
 #include "UniformProgramInput.hpp"
 #include <functional>
 

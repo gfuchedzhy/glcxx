@@ -4,7 +4,6 @@
 
 #include "Box.hpp"
 #include "Programs.hpp"
-#include "Context.hpp"
 
 namespace
 {

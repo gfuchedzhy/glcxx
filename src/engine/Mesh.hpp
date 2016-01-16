@@ -6,9 +6,8 @@
 #define ENGINE_MESH_HPP
 
 #include "Renderable.hpp"
-#include "BufferObject.hpp"
 #include "Material.hpp"
-#include "Programs.hpp"
+#include "VAO.hpp"
 #include <memory>
 
 class aiMesh;

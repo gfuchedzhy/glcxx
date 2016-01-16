@@ -3,6 +3,7 @@
  */
 
 #include "Mesh.hpp"
+#include "Programs.hpp"
 #include <assimp/scene.h>
 
 CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)

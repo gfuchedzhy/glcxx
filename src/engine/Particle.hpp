@@ -5,7 +5,6 @@
 #ifndef ENGINE_PARTICLE_HPP
 #define ENGINE_PARTICLE_HPP
 
-#include "BufferObject.hpp"
 #include <algorithm>
 #include <memory>
 

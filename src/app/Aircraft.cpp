@@ -4,8 +4,9 @@
 
 #include "Aircraft.hpp"
 #include "Context.hpp"
-#include "Programs.hpp"
 #include "GLState.hpp"
+#include "Programs.hpp"
+
 #include <algorithm>
 
 #include <assimp/Importer.hpp>

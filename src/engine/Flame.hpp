@@ -8,7 +8,7 @@
 #include "Renderable.hpp"
 #include "Rect.hpp"
 #include "Particle.hpp"
-#include "Programs.hpp"
+#include "VAO.hpp"
 
 /// @brief jet flame with trail
 class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, CJetFlame>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_MATERIAL_HPP
@@ -26,10 +26,10 @@ struct SMaterial
       float mShininess = 1.f;
 
       /// @brief diffuse texture
-      std::shared_ptr<CTexture> mDiffuseMap;
+      tTexturePtr mDiffuseMap;
 
       /// @brief normal map texture
-      std::shared_ptr<CTexture> mNormalMap;
+      tTexturePtr mNormalMap;
 
       /// @brief constructor
       SMaterial(const aiMaterial& material, const std::string& textureDirectory);

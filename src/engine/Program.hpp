@@ -6,7 +6,6 @@
 #define ENGINE_PROGRAM_HPP
 
 #include "Shader.hpp"
-#include "BufferObject.hpp"
 #include "VAOProgramInput.hpp"
 #include <tuple>
 

@@ -5,7 +5,6 @@
 #ifndef ENGINE_TEXTURE_HPP
 #define ENGINE_TEXTURE_HPP
 
-#include "GL.hpp"
 #include "GLSLInputVariable.hpp"
 #include <string>
 #include <memory>
