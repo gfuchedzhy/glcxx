@@ -17,7 +17,7 @@ void CRocket::launch(const glm::vec3& pos, const glm::vec3& dir, float initialSp
    mExploded = false;
    mTime = 0;
    mFlame.rate(400);
-   mExplosion.resetCycles();
+   mExplosion.reset();
 }
 
 void CRocket::update(float timeDelta)

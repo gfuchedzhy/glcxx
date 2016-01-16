@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_ANIMATIONOBJECT_HPP
@@ -24,8 +24,12 @@ class CAnimationObject
       /// @brief return number of completed cycles
       unsigned int cycles() const { return mCycles; }
 
-      /// @brief reset number of cycles
-      void resetCycles() { mCycles = 0; }
+      /// @brief reset animation
+      void reset()
+      {
+         mCurrentFrame = 0.f;
+         mCycles = 0;
+      }
 
       /// @brief update current frame
       void update(float timeDelta)
@@ -52,7 +56,6 @@ class CAtlasedAnimationObject : protected CAnimationObject
 
    public:
       using CAnimationObject::cycles;
-      using CAnimationObject::resetCycles;
 
       /// @brief set size of the atlas
       void atlasSize(glm::ivec2 atlasSize)
@@ -63,6 +66,13 @@ class CAtlasedAnimationObject : protected CAnimationObject
 
       /// @brief set texture
       void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+
+      /// @brief reset animation
+      void reset()
+      {
+         CAnimationObject::reset();
+         mAtlasPos = {0, 0};
+      }
 
       /// @brief update current atlas pos
       void update(float timeDelta)
