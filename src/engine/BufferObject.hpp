@@ -99,7 +99,12 @@ class CIndexBuffer : public TBufferObject<unsigned char>
       /// @brief constructor
       template<typename T>
       CIndexBuffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
-         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), usage, GL_ELEMENT_ARRAY_BUFFER)
+         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), usage,
+                 // before binding index buffer for upload vao should be unbound
+                 // to preserve vao's internal state, note that this in not the
+                 // case for vertex buffers as their bindings are not part of
+                 // vao's state
+                 (gl(glBindVertexArray, 0), GL_ELEMENT_ARRAY_BUFFER))
          , mSize(size)
          , mMode(mode)
          , mType(glsl::TTypeID<T>::id)
@@ -116,6 +121,10 @@ class CIndexBuffer : public TBufferObject<unsigned char>
          static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
          if (usage)
             mUsage = usage;
+         // before binding index buffer for upload vao should be unbound to
+         // preserve vao's internal state, note that this in not the case for
+         // vertex buffers as their bindings are not part of vao's state
+         gl(glBindVertexArray, 0);
          tBase::upload(reinterpret_cast<const unsigned char*>(data), size*sizeof(T));
          mSize = size;
          mMode = mode;
