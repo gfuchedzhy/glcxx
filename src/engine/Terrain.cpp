@@ -1,8 +1,9 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Terrain.hpp"
+#include "GLState.hpp"
 
 CTerrain::CTerrain()
 {
@@ -13,7 +14,6 @@ CTerrain::CTerrain()
 
 void CTerrain::draw(const SContext& context) const
 {
-   gl(glDisable, GL_DEPTH_TEST);
+   SDisableDepthTestGuard lock;
    CTexturedRect::draw(context);
-   gl(glEnable, GL_DEPTH_TEST);
 }

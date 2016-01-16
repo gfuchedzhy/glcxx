@@ -1,10 +1,11 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Sky.hpp"
 #include "Texture.hpp"
 #include "Programs.hpp"
+#include "GLState.hpp"
 
 CSky::CSky()
 {
@@ -52,12 +53,13 @@ CSky::CSky()
 
 void CSky::draw(const SContext& context) const
 {
-   gl(glDisable, GL_DEPTH_TEST);
-   CComplexRenderable::draw(context);
-   gl(glEnable, GL_DEPTH_TEST);
+   {
+      SDisableDepthTestGuard lock;
+      CComplexRenderable::draw(context);
+   }
 
-   gl(glEnable, GL_BLEND);
-   glDepthMask(GL_FALSE);
+   SDisableDepthMaskGuard dmLock;
+   SEnableBlendingGuard bLock;
    // @todo this is a hack, should rethink model of complex objects
    auto& p = gRenderer.get<cts("billboard-tex")>();
    p.set<cts("uExternalPos")>({pos().x, pos().y, 0});
@@ -66,6 +68,4 @@ void CSky::draw(const SContext& context) const
       c.draw(context);
    }
    p.set<cts("uExternalPos")>({0, 0, 0});
-   glDepthMask(GL_TRUE);
-   gl(glDisable, GL_BLEND);
 }

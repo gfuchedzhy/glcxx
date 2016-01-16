@@ -4,6 +4,7 @@
 
 #include "Rect.hpp"
 #include "Programs.hpp"
+#include "GLState.hpp"
 
 namespace
 {
@@ -80,7 +81,6 @@ void CHealthBar::draw(const SContext&) const
    p.set<cts("uSize")>(mSize);
    p.set<cts("uValue")>(mValue);
 
-   gl(glDisable, GL_DEPTH_TEST);
+   SDisableDepthTestGuard lock;
    p.drawElements(*vao);
-   gl(glEnable, GL_DEPTH_TEST);
 }

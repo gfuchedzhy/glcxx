@@ -1,10 +1,11 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Aircraft.hpp"
 #include "Context.hpp"
 #include "Programs.hpp"
+#include "GLState.hpp"
 #include <algorithm>
 
 #include <assimp/Importer.hpp>
@@ -106,10 +107,11 @@ void CAircraft::draw(const SContext& context) const
    auto& p2 = gRenderer.get<cts("shaded-tex-nmap")>();
    p2.set<cts("uModel")>(model());
 
-   gl(glEnable, GL_BLEND);
-   for (const auto& m: mMeshes)
-      m->draw(context);
-   gl(glDisable, GL_BLEND);
+   {
+      SEnableBlendingGuard lock;
+      for (const auto& m: mMeshes)
+         m->draw(context);
+   }
 
    for (auto& f : mFlames)
       f.draw(context);

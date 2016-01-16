@@ -3,6 +3,7 @@
  */
 
 #include "Rocket.hpp"
+#include "GLState.hpp"
 
 void CRocket::launch(const glm::vec3& pos, const glm::vec3& dir, float initialSpeed)
 {
@@ -49,11 +50,8 @@ void CRocket::draw(const SContext& context) const
       mFlame.draw(context);
       if (mExploded && mExplosion.cycles() == 0)
       {
-         gl(glEnable, GL_BLEND);
-         gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE);
+         SEnableBlendingGuard lock(GL_SRC_ALPHA, GL_ONE);
          mExplosion.draw(context);
-         gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-         gl(glDisable, GL_BLEND);
       }
    }
 }

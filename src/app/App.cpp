@@ -4,6 +4,7 @@
 
 #include "App.hpp"
 #include "Programs.hpp"
+#include "GLState.hpp"
 #include "Texture.hpp"
 
 namespace
@@ -201,10 +202,11 @@ void CApp::draw() const
    mTerrain.draw(mContext);
    mSky.draw(mContext);
 
-   gl(glEnable, GL_BLEND);
-   for (auto&& s : mStars)
-      s.draw(mContext);
-   gl(glDisable, GL_BLEND);
+   {
+      SEnableBlendingGuard lock;
+      for (auto&& s : mStars)
+         s.draw(mContext);
+   }
 
    mAircraft.draw(mContext);
    mSphere.draw(mContext);

@@ -6,6 +6,7 @@
 #include "GL.hpp"
 #include "Log.hpp"
 #include "Programs.hpp"
+#include "GLState.hpp"
 
 CEngine::CEngine(const size_t width, const size_t height)
    : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close, gRenderer.contextSettings())
@@ -16,7 +17,7 @@ CEngine::CEngine(const size_t width, const size_t height)
 
    gl(glEnable, GL_DEPTH_TEST);
    gl(glEnable, GL_CULL_FACE);
-   gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   gl(glBlendFunc, SEnableBlendingGuard::defaultSrcFactor, SEnableBlendingGuard::defaultDstFactor);
 }
 
 void CEngine::run()

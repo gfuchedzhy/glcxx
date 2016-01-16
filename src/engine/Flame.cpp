@@ -3,6 +3,7 @@
  */
 
 #include "Flame.hpp"
+#include "GLState.hpp"
 
 CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
    : tParticleSystem(rate, 0.6*rate)
@@ -28,12 +29,8 @@ void CJetFlame::draw(const SContext& context) const
       p.set<cts("uSize")>(mSize);
       p.set<cts("uAtlasSize")>(mAtlasSize);
       p.set<cts("uTexture")>(mTexture);
-      gl(glEnable, GL_BLEND);
-      gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE);
-      glDepthMask(GL_FALSE);
+      SDisableDepthMaskGuard dtLock;
+      SEnableBlendingGuard bLock(GL_SRC_ALPHA, GL_ONE);
       p.drawArrays(mVAO, aliveParticleNum(), GL_POINTS);
-      gl(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glDepthMask(GL_TRUE);
-      gl(glDisable, GL_BLEND);
    }
 }
