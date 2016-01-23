@@ -273,7 +273,7 @@ namespace glsl
 
          /// @brief ctstring containing glsl declaration of variable
          template<typename TName>
-         using tDeclaration = ct::string_cat<typename std::conditional<isUniform, cts("uniform "), cts("attribute ")>::type,
+         using tDeclaration = ct::string_cat<typename std::conditional<isUniform, cts("uniform "), cts("in ")>::type,
                                              tTypeName<TypeTo, EXTRA, THolder>, cts(" "),
                                              TName,
                                              typename std::conditional<1==size, cts(""),
