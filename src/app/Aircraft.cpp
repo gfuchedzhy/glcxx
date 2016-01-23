@@ -36,7 +36,7 @@ CAircraft::CAircraft()
    {
       const aiMesh* const mesh = scene->mMeshes[m];
       assert(mesh);
-      mMeshes.emplace_back(std::make_unique<CMesh>(*mesh, materials[mesh->mMaterialIndex]));
+      mMeshes.emplace_back(*mesh, materials[mesh->mMaterialIndex]);
    }
 
    auto flameTex = std::make_shared<CTexture>("res/flame-sprite.dds");
@@ -111,7 +111,7 @@ void CAircraft::draw(const SContext& context) const
    {
       SEnableBlendingGuard lock;
       for (const auto& m: mMeshes)
-         m->draw(context);
+         m.draw(context);
    }
 
    for (const auto& f : mFlames)

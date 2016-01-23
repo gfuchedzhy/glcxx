@@ -14,9 +14,8 @@ class CVertexArrayObjectBase
       /// @brief friend declaration
       template<typename> friend class TVertexArrayObjectProgramInput;
 
-      /// @brief disabled stuff
+      /// @brief non copyable
       CVertexArrayObjectBase(const CVertexArrayObjectBase&) = delete;
-      CVertexArrayObjectBase& operator=(const CVertexArrayObjectBase&) = delete;
 
       /// @brief vao id
       GLuint mID = 0;
@@ -31,11 +30,33 @@ class CVertexArrayObjectBase
          gl(glGenVertexArrays, 1, &mID);
       }
 
+      /// @brief move constructor
+      CVertexArrayObjectBase(CVertexArrayObjectBase&& other) noexcept
+         : mID(other.mID)
+         , mProgramID(other.mProgramID)
+      {
+         other.mProgramID = 0;
+         other.mID = 0;
+      }
+
       /// @brief destructor
       ~CVertexArrayObjectBase()
       {
          if (mID)
             gl(glDeleteVertexArrays, 1, &mID);
+      }
+
+      friend void swap(CVertexArrayObjectBase& x, CVertexArrayObjectBase& y)
+      {
+         std::swap(x.mID, y.mID);
+         std::swap(x.mProgramID, y.mProgramID);
+      }
+
+      /// @brief assignment
+      CVertexArrayObjectBase& operator=(CVertexArrayObjectBase other) noexcept
+      {
+         swap(*this, other);
+         return *this;
       }
 
       /// @brief binds vao
@@ -133,9 +154,8 @@ class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : publ
 template<typename...TName, typename... TBufferPtr>
 inline auto make_vao(TBufferPtr&&... buf)
 {
-   auto vao = std::make_unique<
-      TVertexArrayObject<false, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...>>();
-   swallow(vao->template set<TName>(std::forward<TBufferPtr>(buf)));
+   TVertexArrayObject<false, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
+   swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;
 }
 
@@ -143,10 +163,9 @@ inline auto make_vao(TBufferPtr&&... buf)
 template<typename...TName, typename TIndexBufferPtr, typename... TBufferPtr>
 inline auto make_vao(TIndexBufferPtr&& indices, TBufferPtr&&... buf)
 {
-   auto vao = std::make_unique<
-      TVertexArrayObject<true, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...>>();
-   vao->template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
-   swallow(vao->template set<TName>(std::forward<TBufferPtr>(buf)));
+   TVertexArrayObject<true, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
+   vao.template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
+   swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;
 }
 

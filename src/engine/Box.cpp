@@ -39,5 +39,5 @@ void CBox::draw(const SContext& context) const
    auto& p = gRenderer.get<cts("regular-col")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
-   p.drawElements(*vao);
+   p.drawElements(vao);
 }

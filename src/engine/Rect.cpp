@@ -48,7 +48,7 @@ void CTexturedRect::draw(const SContext&) const
    auto& p = gRenderer.get<cts("regular-tex")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements(*vao);
+   p.drawElements(vao);
 }
 
 void CTexturedBillboard::draw(const SContext&) const
@@ -58,7 +58,7 @@ void CTexturedBillboard::draw(const SContext&) const
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements(*vao);
+   p.drawElements(vao);
 }
 
 void CAnimatedBillboard::draw(const SContext& context) const
@@ -70,7 +70,7 @@ void CAnimatedBillboard::draw(const SContext& context) const
    p.set<cts("uAtlasSize")>(mAtlasSize);
    p.set<cts("uAtlasPos")>(mAtlasPos);
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements(*vao);
+   p.drawElements(vao);
 }
 
 void CHealthBar::draw(const SContext&) const
@@ -82,5 +82,5 @@ void CHealthBar::draw(const SContext&) const
    p.set<cts("uValue")>(mValue);
 
    SDisableDepthTestGuard lock;
-   p.drawElements(*vao);
+   p.drawElements(vao);
 }

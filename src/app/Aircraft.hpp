@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef AIRCRAFT_HPP
@@ -15,7 +15,7 @@
 class CAircraft : public IRenderableModel
 {
       /// @brief meshes
-      std::vector<std::unique_ptr<CMesh>> mMeshes;
+      std::vector<CMesh> mMeshes;
 
       /// @brief flames, left and right
       std::array<CJetFlame, 2> mFlames;
