@@ -61,7 +61,7 @@ def configure(cnf):
 def build(bld):
     bld.recurse('res')
 
-    appname = 'avia'
+    appname = 'aersy'
     defines = ['APPNAME="' + appname + '"', 'GL_LOG_' + bld.env.GL_LOG.upper()]
     bld(features = 'cxx cxxstlib',
         source   = bld.path.ant_glob(['src/engine/*.cpp', 'src/engine/*.glsl']),
