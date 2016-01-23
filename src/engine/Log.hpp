@@ -128,7 +128,7 @@ namespace Log
    {
       /// @brief log message to given stream
       template<typename... TArgs>
-      inline void streamLog(std::ostream& s, TArgs&&... args)
+      inline void streamLog(std::ostream& s, const TArgs&... args)
       {
          swallow(s << args);
          s << std::endl;
@@ -137,17 +137,17 @@ namespace Log
 
    /// @brief log error
    template<typename... TArgs>
-   inline void err(TArgs&&... args)
+   inline void err(const TArgs&... args)
    {
       std::cerr << "ERROR: ";
-      detail::streamLog(std::cerr, std::forward<TArgs>(args)...);
+      detail::streamLog(std::cerr, args...);
    }
 
    /// @brief log message
    template<typename... TArgs>
-   inline void msg(TArgs&&... args)
+   inline void msg(const TArgs&... args)
    {
-      detail::streamLog(std::cout, std::forward<TArgs>(args)...);
+      detail::streamLog(std::cout, args...);
    }
 }
 

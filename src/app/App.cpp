@@ -28,7 +28,7 @@ CApp::CApp()
    mCamera.pitch(20);
 
    auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
-   for (auto&& s: mStars)
+   for (auto& s: mStars)
    {
       s.atlasSize({4, 4});
       s.texture(starTexture);
@@ -68,7 +68,7 @@ void CApp::update(float timeDelta)
    const auto& pos = mCamera.eye();
    mSky.pos({pos.x, pos.y, mSky.pos().z});
 
-   for (auto&& s : mStars)
+   for (auto& s : mStars)
    {
       // @todo redo this with bounding boxes
       if (glm::distance(s.pos(), mAircraft.pos()) < 20)
@@ -204,7 +204,7 @@ void CApp::draw() const
 
    {
       SEnableBlendingGuard lock;
-      for (auto&& s : mStars)
+      for (const auto& s : mStars)
          s.draw(mContext);
    }
 

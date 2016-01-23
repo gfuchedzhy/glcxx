@@ -106,19 +106,19 @@ class CCamera
 
 inline glm::vec3 CCamera::up() const
 {
-   auto&& v = view();
+   const auto& v = view();
    return glm::vec3(v[0][1], v[1][1], v[2][1]);
 }
 
 inline glm::vec3 CCamera::right() const
 {
-   auto&& v = view();
+   const auto& v = view();
    return glm::vec3(v[0][0], v[1][0], v[2][0]);
 }
 
 inline glm::vec3 CCamera::back() const
 {
-   auto&& v = view();
+   const auto& v = view();
    return glm::vec3(v[0][2], v[1][2], v[2][2]);
 }
 

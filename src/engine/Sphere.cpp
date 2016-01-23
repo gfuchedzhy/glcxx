@@ -121,7 +121,7 @@ namespace
          }
 
          // scale for normals
-         for (auto&& v : vertices)
+         for (auto& v : vertices)
             v *= 1.5f;
          vertices.emplace_back(0, 0, 0);
          normalBuffer = make_buffer(&vertices[0], vertices.size());

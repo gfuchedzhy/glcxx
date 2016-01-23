@@ -42,10 +42,10 @@ class CRocket : public IRenderable
       bool active() const { return mIsActive; }
 
       /// @brief set flame texture
-      void flameTexture(tTexturePtr tex) { mFlame.texture(tex); }
+      void flameTexture(tTexturePtr tex) { mFlame.texture(std::move(tex)); }
 
       /// @brief set explosion texture
-      void explosionTexture(tTexturePtr tex) { mExplosion.texture(tex); }
+      void explosionTexture(tTexturePtr tex) { mExplosion.texture(std::move(tex)); }
 
       /// @brief launch rocket from pos in dir with initialSpeed
       void launch(const glm::vec3& pos, const glm::vec3& dir, float initialSpeed);

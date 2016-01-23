@@ -11,19 +11,22 @@
 #if defined GL_LOG_ERR || defined GL_LOG_ALL
 namespace detail
 {
+   // gl functions doesn't use move semantics and accept only scalar types,
+   // therefore no need in perfect forwarding, no need in passing by reference,
+   // and this wrappers are inline anyway
    template<typename TFunction, typename... TArgs>
-   inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
+   inline auto substituteVoidWith0(TFunction glFunc, TArgs... args) ->
       typename std::enable_if<std::is_void<decltype(glFunc(args...))>::value, int>::type
    {
-      glFunc(std::forward<TArgs>(args)...);
+      glFunc(args...);
       return 0;
    }
 
    template<typename TFunction, typename... TArgs>
-   inline auto substituteVoidWith0(TFunction glFunc, TArgs&&... args) ->
+   inline auto substituteVoidWith0(TFunction glFunc, TArgs... args) ->
       typename std::enable_if<!std::is_void<decltype(glFunc(args...))>::value, decltype(glFunc(args...))>::type
    {
-      return glFunc(std::forward<TArgs>(args)...);
+      return glFunc(args...);
    }
 
    template<typename TFunction, typename... TArgs>
@@ -31,17 +34,17 @@ namespace detail
                       const char* glFuncName,
                       const char* filename,
                       int         line,
-                      TArgs...  args)
+                      TArgs...    args)
    {
 #ifdef GL_LOG_ALL
-      Log::msg(glFuncName, std::make_tuple(std::forward<TArgs>(args)...));
+      Log::msg(glFuncName, std::make_tuple(args...));
 #endif
-      auto retVal = substituteVoidWith0(glFunc, std::forward<TArgs>(args)...);
+      auto retVal = substituteVoidWith0(glFunc, args...);
       const GLenum err = glGetError();
       if (GL_NO_ERROR != err)
       {
          Log::err("gl error code ", err, " in ",
-                  glFuncName, std::make_tuple(std::forward<TArgs>(args)...),
+                  glFuncName, std::make_tuple(args...),
                   " at ", filename, ':', line);
       }
       return static_cast<decltype(glFunc(args...))>(retVal);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_MODEL_HPP
@@ -92,19 +92,19 @@ class IRenderableModel : public IRenderable, public CModel {};
 
 inline glm::vec3 CModel::forward() const
 {
-   auto&& m = model();
+   const auto& m = model();
    return glm::vec3(m[1][0], m[1][1], m[1][2]);
 }
 
 inline glm::vec3 CModel::right() const
 {
-   auto&& m = model();
+   const auto& m = model();
    return glm::vec3(m[0][0], m[0][1], m[0][2]);
 }
 
 inline glm::vec3 CModel::up() const
 {
-   auto&& m = model();
+   const auto& m = model();
    return glm::vec3(m[2][0], m[2][1], m[2][2]);
 }
 

@@ -36,10 +36,10 @@ class CTexturedSphere : public IRenderableModel
       CTexturedSphere();
 
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief set normal map
-      void normalMap(std::shared_ptr<CTexture> normalMap) { mNormalMap = normalMap; }
+      void normalMap(std::shared_ptr<CTexture> normalMap) { mNormalMap = std::move(normalMap); }
 
       /// @brief draw
       void draw(const SContext& context) const override;

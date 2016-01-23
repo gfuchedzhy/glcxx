@@ -6,8 +6,8 @@
 #include "Programs.hpp"
 #include <assimp/scene.h>
 
-CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
-   : mMaterial(material)
+CMesh::CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material)
+   : mMaterial(std::move(material))
 {
    if (!mesh.HasPositions())
       throw std::runtime_error{"loaded mesh doesn't have positions"};
@@ -29,7 +29,7 @@ CMesh::CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material)
    mVAO.upload<cts("aNorm")>(reinterpret_cast<const glm::vec3*>(mesh.mNormals),
                              mesh.mNumVertices);
 
-   if (material->mNormalMap && !mesh.HasTangentsAndBitangents())
+   if (mMaterial->mNormalMap && !mesh.HasTangentsAndBitangents())
       throw std::runtime_error{"loaded mesh has normal map but doesn't have tangents"};
    mVAO.upload<cts("aTan")>(reinterpret_cast<const glm::vec3*>(mesh.mTangents),
                             mesh.mNumVertices);

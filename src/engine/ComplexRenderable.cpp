@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "ComplexRenderable.hpp"
@@ -8,8 +8,8 @@
 void CComplexRenderable::draw(const SContext& context) const
 {
    const bool isDirty = dirty();
-   auto&& m = model();
-   for(auto&& p : mObjects)
+   const auto& m = model();
+   for(const auto& p : mObjects)
    {
       if (isDirty)
       {

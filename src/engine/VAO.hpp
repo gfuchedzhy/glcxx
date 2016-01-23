@@ -77,9 +77,9 @@ class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : publ
    public:
       /// @brief set vbo or index buffer into vao
       template<typename Name>
-      void set(const typename traits<Name>::tBufferPtr& vbo)
+      void set(typename traits<Name>::tBufferPtr vbo)
       {
-         std::get<traits<Name>::index>(mBuffers) = vbo;
+         std::get<traits<Name>::index>(mBuffers) = std::move(vbo);
       }
 
       /// @brief bind buffer return true if bound
@@ -130,21 +130,23 @@ class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : publ
 };
 
 /// @brief make new vao with given buffers, version for vao without index buffer
-template<typename...TName, typename...TData>
-inline auto make_vao(const tBufferPtr<TData>&... buf)
+template<typename...TName, typename... TBufferPtr>
+inline auto make_vao(TBufferPtr&&... buf)
 {
-   auto vao = std::make_unique<TVertexArrayObject<false, ct::named_type<TName, TData>...>>();
-   swallow(vao->template set<TName>(buf));
+   auto vao = std::make_unique<
+      TVertexArrayObject<false, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...>>();
+   swallow(vao->template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;
 }
 
 /// @brief make new vao with given buffers, version for vao with index buffer
-template<typename...TName, typename...TData>
-inline auto make_vao(const tIndexBufferPtr& indices, const tBufferPtr<TData>&... buf)
+template<typename...TName, typename TIndexBufferPtr, typename... TBufferPtr>
+inline auto make_vao(TIndexBufferPtr&& indices, TBufferPtr&&... buf)
 {
-   auto vao = std::make_unique<TVertexArrayObject<true, ct::named_type<TName, TData>...>>();
-   vao->template set<cts("indices")>(indices);
-   swallow(vao->template set<TName>(buf));
+   auto vao = std::make_unique<
+      TVertexArrayObject<true, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...>>();
+   vao->template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
+   swallow(vao->template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;
 }
 

@@ -27,7 +27,7 @@ class CMesh : public IRenderable
 
    public:
       /// @brief constructor
-      CMesh(const aiMesh& mesh, const std::shared_ptr<SMaterial>& material);
+      CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material);
 
       /// @brief draw
       void draw(const SContext& context) const override;

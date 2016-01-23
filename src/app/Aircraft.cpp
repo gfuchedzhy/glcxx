@@ -50,7 +50,7 @@ CAircraft::CAircraft()
       r.explosionTexture(explosionTex);
    }
 
-   for (auto&& h : mHealthBars)
+   for (auto& h : mHealthBars)
       h.size({3, 0.5});
 }
 
@@ -73,7 +73,7 @@ void CAircraft::update(float timeDelta)
    if (0 != mSpeed && pos().z <= 0)
    {
       mSpeed = 0;
-      for (auto&& h : mHealthBars)
+      for (auto& h : mHealthBars)
          h.value(0);
    }
 
@@ -114,10 +114,10 @@ void CAircraft::draw(const SContext& context) const
          m->draw(context);
    }
 
-   for (auto& f : mFlames)
+   for (const auto& f : mFlames)
       f.draw(context);
 
-   for (auto& r : mRockets)
+   for (const auto& r : mRockets)
       r.draw(context);
 
    if (context.mDrawHealthBars)
@@ -130,7 +130,7 @@ void CAircraft::draw(const SContext& context) const
 void CAircraft::randomDamage()
 {
    std::uniform_real_distribution<float> d(0, 1);
-   for (auto&& h : mHealthBars)
+   for (auto& h : mHealthBars)
       h.value(d(random_gen));
 }
 

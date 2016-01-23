@@ -7,7 +7,7 @@
 
 namespace
 {
-   auto& posBuffer()
+   auto posBuffer()
    {
       static const typename glm::vec3 data[] = {
          {-0.5f,-0.5f, 0.5f},
@@ -23,7 +23,7 @@ namespace
       return buffer;
    }
 
-   auto& indexBuffer()
+   auto indexBuffer()
    {
       static const GLubyte data[] = {0, 1, 3, 2, 7, 6, 4, 5, 0, 1,
                                      1, 5, 2, 6,

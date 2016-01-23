@@ -65,7 +65,7 @@ class CAtlasedAnimationObject : protected CAnimationObject
       }
 
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief reset animation
       void reset()

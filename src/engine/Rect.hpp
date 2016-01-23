@@ -17,7 +17,7 @@ class CTexturedRect : public IRenderableModel
 
    public:
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief draw
       void draw(const SContext& context) const override;
@@ -54,7 +54,7 @@ class CTexturedBillboard : public CBillboard
 
    public:
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = tex; }
+      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief draw
       void draw(const SContext& context) const override;

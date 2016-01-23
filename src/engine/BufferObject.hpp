@@ -27,6 +27,9 @@ class TBufferObject
       GLenum mUsage;
 
    public:
+      /// @brief underlying data type
+      using tData = TData;
+
       /// @brief constructor
       TBufferObject(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
          : mTarget(target)

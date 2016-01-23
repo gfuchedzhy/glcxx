@@ -12,7 +12,7 @@ CSky::CSky()
    const float size = 1e4;
    auto tex = std::make_shared<CTexture>("res/sky.dds");
    std::array<std::shared_ptr<CTexturedRect>, 5> sky;
-   for (auto&& x : sky)
+   for (auto& x : sky)
    {
       x = std::make_shared<CTexturedRect>();
       x->texture(tex);
@@ -38,7 +38,7 @@ CSky::CSky()
    float angle = 0;
    const float bbRadius = 3e3;
    auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
-   for (auto&& c : mClouds)
+   for (auto& c : mClouds)
    {
       c.texture(cloudTexture);
       c.size(glm::vec2(500*distr1(random_gen), 350*distr1(random_gen)));
@@ -63,7 +63,7 @@ void CSky::draw(const SContext& context) const
    // @todo this is a hack, should rethink model of complex objects
    auto& p = gRenderer.get<cts("billboard-tex")>();
    p.set<cts("uExternalPos")>({pos().x, pos().y, 0});
-   for (auto&& c : mClouds)
+   for (const auto& c : mClouds)
    {
       c.draw(context);
    }

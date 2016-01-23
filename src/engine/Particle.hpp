@@ -134,7 +134,7 @@ class TParticleSystem
       /// @brief allocates particle from pool
       TParticle& allocate()
       {
-         auto pred = [](const TParticle& x) { return !x.mIsAlive; };
+         const auto pred = [](const TParticle& x) { return !x.mIsAlive; };
          const auto pos = mPoolPos;
          // find first dead particle starting from mPoolPos
          mPoolPos = std::find_if(mPoolPos, end(mParticlePool), pred);
