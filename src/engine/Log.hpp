@@ -24,46 +24,43 @@ namespace Log
          {}
          bool mValue;
    };
-}
 
-namespace std
-{
    /// @brief stream SOnOff
-   inline ostream& operator<<(ostream& stream, const Log::SOnOff& onOff)
+   inline std::ostream& operator<<(std::ostream& stream, const Log::SOnOff& onOff)
    {
       return stream << (onOff.mValue ? "on" : "off");
    }
 
    /// @brief stream nullptr
-   inline ostream& operator<<(ostream& stream, nullptr_t)
+   inline std::ostream& operator<<(std::ostream& stream, std::nullptr_t)
    {
       return stream << "null";
    }
 
    /// @brief stream vec2
    template<typename T, glm::precision P>
-   inline ostream& operator<<(ostream& stream, const glm::tvec2<T, P>& vec)
+   inline std::ostream& operator<<(std::ostream& stream, const glm::tvec2<T, P>& vec)
    {
       return stream << "vec2(" << vec.x << ',' << vec.y << ')';
    }
 
    /// @brief stream vec3
    template<typename T, glm::precision P>
-   inline ostream& operator<<(ostream& stream, const glm::tvec3<T, P>& vec)
+   inline std::ostream& operator<<(std::ostream& stream, const glm::tvec3<T, P>& vec)
    {
       return stream << "vec3(" << vec.x << ',' << vec.y << ',' << vec.z << ')';
    }
 
    /// @brief stream vec4
    template<typename T, glm::precision P>
-   inline ostream& operator<<(ostream& stream, const glm::tvec4<T, P>& vec)
+   inline std::ostream& operator<<(std::ostream& stream, const glm::tvec4<T, P>& vec)
    {
       return stream << "vec4(" << vec.x << ',' << vec.y << ',' << vec.z << ',' << vec.w << ')';
    }
 
    /// @brief stream mat4x4
    template<typename T, glm::precision P>
-   inline ostream& operator<<(ostream& stream, const glm::tmat4x4<T, P>& mat)
+   inline std::ostream& operator<<(std::ostream& stream, const glm::tmat4x4<T, P>& mat)
    {
       stream << "mat4x4(" << mat[0][0] << ',' << mat[1][0] << ',' << mat[2][0] << ',' << mat[3][0] << std::endl;
       stream << "       " << mat[0][1] << ',' << mat[1][1] << ',' << mat[2][1] << ',' << mat[3][1] << std::endl;
@@ -73,7 +70,7 @@ namespace std
 
    /// @brief stream vector
    template<typename T>
-   inline ostream& operator<<(ostream& stream, const std::vector<T>& v)
+   inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& v)
    {
       stream << '[';
       for (size_t i = 0; i < v.size(); ++i)
@@ -87,7 +84,7 @@ namespace std
 
    /// @brief stream array
    template<typename T, size_t N>
-   inline ostream& operator<<(ostream& stream, const std::array<T, N>& arr)
+   inline std::ostream& operator<<(std::ostream& stream, const std::array<T, N>& arr)
    {
       stream << '[';
       for (size_t i = 0; i < N; ++i)
@@ -96,7 +93,7 @@ namespace std
    }
 
    /// @brief stream empty tuple
-   inline ostream& operator<<(ostream& stream, const std::tuple<>&)
+   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<>&)
    {
       return stream << "()";
    }
@@ -105,7 +102,7 @@ namespace std
    {
       /// @brief helper to stream non empty tuple
       template<typename TArg1, typename... TArgs, size_t... I>
-      inline void ostreamTupleHelper(ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
+      inline void ostreamTupleHelper(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
       {
          stream << '(' << std::get<0>(t);
          swallow(stream << ',' << std::get<I+1>(t));
@@ -114,16 +111,13 @@ namespace std
    }
 
    /// @brief stream non empty tuple
-   template<typename TArg1, typename... TArgs, size_t... I>
-   inline ostream& operator<<(ostream& stream, const std::tuple<TArg1, TArgs...>& t)
+   template<typename TArg1, typename... TArgs>
+   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t)
    {
       detail::ostreamTupleHelper(stream, t, std::make_index_sequence<sizeof...(TArgs)>{});
       return stream;
    }
-}
 
-namespace Log
-{
    namespace detail
    {
       /// @brief log message to given stream
