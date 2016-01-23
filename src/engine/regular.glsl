@@ -10,7 +10,7 @@ DECL_VERT_FRAG(vec2, UV);
 
 void main()
 {
-   gl_Position = uViewProj*uModel*aPos;
+   gl_Position = uViewProj*(uModel*aPos);
 #ifdef TEX
    out(UV) = aUV;
 #endif
