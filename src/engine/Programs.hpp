@@ -89,17 +89,4 @@ auto progInputDef(cts("particlesys-tex-sprite")) -> ct::tuple_append<inp_by_name
 
 auto progInputDef(cts("particlesys-tex-sprite-flame")) -> inp_by_name("particlesys-tex-sprite");
 
-#include "Renderer.hpp"
-
-using tRenderer = TRenderer<cts("regular-col"),
-                            cts("regular-tex"),
-                            cts("shaded-col"),
-                            cts("shaded-tex"),
-                            cts("shaded-tex-nmap"),
-                            cts("billboard-tex"),
-                            cts("billboard-tex-sprite"),
-                            cts("billboard-hb"),
-                            cts("particlesys-tex-sprite-flame")>;
-extern tRenderer gRenderer;
-
 #endif // ENGINE_PROGRAMS_HPP

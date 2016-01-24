@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_RECT_HPP
@@ -20,7 +20,7 @@ class CTexturedRect : public IRenderableModel
       void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 /// @brief base class for billboards, renderable rectangle has size and position
@@ -57,7 +57,7 @@ class CTexturedBillboard : public CBillboard
       void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 /// @brief billboard with atlased animation
@@ -65,7 +65,7 @@ class CAnimatedBillboard : public CBillboard, public CAtlasedAnimationObject
 {
    public:
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 /// @brief billboard with texture
@@ -87,7 +87,7 @@ class CHealthBar : public CBillboard
       float value() const { return mValue; }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif

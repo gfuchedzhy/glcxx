@@ -3,7 +3,7 @@
  */
 
 #include "Box.hpp"
-#include "Programs.hpp"
+#include "Context.hpp"
 
 namespace
 {
@@ -33,10 +33,10 @@ namespace
    }
 }
 
-void CBox::draw(const SContext& context) const
+void CBox::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos")>(indexBuffer(), posBuffer());
-   auto& p = gRenderer.get<cts("regular-col")>();
+   auto& p = context.getProgram<cts("regular-col")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
    p.drawElements(vao);

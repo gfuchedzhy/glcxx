@@ -3,7 +3,6 @@
  */
 
 #include "Rocket.hpp"
-#include "Programs.hpp"
 #include "GLState.hpp"
 
 void CRocket::launch(const glm::vec3& pos, const glm::vec3& dir, float initialSpeed)
@@ -44,7 +43,7 @@ void CRocket::update(float timeDelta)
    }
 }
 
-void CRocket::draw(const SContext& context) const
+void CRocket::draw(const CContext& context) const
 {
    if (mIsActive)
    {

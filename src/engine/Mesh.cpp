@@ -3,7 +3,7 @@
  */
 
 #include "Mesh.hpp"
-#include "Programs.hpp"
+#include "Context.hpp"
 #include <assimp/scene.h>
 
 CMesh::CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material)
@@ -43,13 +43,13 @@ CMesh::CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material)
    mVAO.upload<cts("indices")>(&indices[0], indices.size(), GL_TRIANGLES);
 }
 
-void CMesh::draw(const SContext& context) const
+void CMesh::draw(const CContext& context) const
 {
    assert(mMaterial->mDiffuseMap);
 
    if (mMaterial->mNormalMap)
    {
-      auto& p = gRenderer.get<cts("shaded-tex-nmap")>();
+      auto& p = context.getProgram<cts("shaded-tex-nmap")>();
       p.set<cts("uTexture")>(mMaterial->mDiffuseMap);
       p.set<cts("uAmbient")>(mMaterial->mAmbient);
       p.set<cts("uDiffuse")>(mMaterial->mDiffuse);
@@ -60,7 +60,7 @@ void CMesh::draw(const SContext& context) const
    }
    else
    {
-      auto& p = gRenderer.get<cts("shaded-tex")>();
+      auto& p = context.getProgram<cts("shaded-tex")>();
       p.set<cts("uTexture")>(mMaterial->mDiffuseMap);
       p.set<cts("uAmbient")>(mMaterial->mAmbient);
       p.set<cts("uDiffuse")>(mMaterial->mDiffuse);

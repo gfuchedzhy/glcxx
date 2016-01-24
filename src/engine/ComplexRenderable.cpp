@@ -5,7 +5,7 @@
 #include "ComplexRenderable.hpp"
 
 // update objects' matrices if necessary, draw objects
-void CComplexRenderable::draw(const SContext& context) const
+void CComplexRenderable::draw(const CContext& context) const
 {
    const bool isDirty = dirty();
    const auto& m = model();

@@ -3,8 +3,6 @@
  */
 
 #include "App.hpp"
-#include "Programs.hpp"
-#include "GLState.hpp"
 #include "Texture.hpp"
 
 namespace
@@ -132,35 +130,35 @@ void CApp::update(float timeDelta)
    }
 
    /// @todo make automatic uniforms in renderer to remove this code
-   {  auto& p = gRenderer.get<cts("regular-col")>();
+   {  auto& p = mContext.getProgram<cts("regular-col")>();
       p.set<cts("uViewProj")>(mCamera.viewProj()); }
-   {  auto& p = gRenderer.get<cts("regular-tex")>();
+   {  auto& p = mContext.getProgram<cts("regular-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj()); }
-   {  auto& p = gRenderer.get<cts("shaded-col")>();
+   {  auto& p = mContext.getProgram<cts("shaded-col")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uSunDir")>({0, 0.707, 0.707});
       p.set<cts("uEye")>(mCamera.eye()); }
-   {  auto& p = gRenderer.get<cts("shaded-tex")>();
+   {  auto& p = mContext.getProgram<cts("shaded-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uSunDir")>({0, 0.707, 0.707});
       p.set<cts("uEye")>(mCamera.eye()); }
-   {  auto& p = gRenderer.get<cts("shaded-tex-nmap")>();
+   {  auto& p = mContext.getProgram<cts("shaded-tex-nmap")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uSunDir")>({0, 0.707, 0.707});
       p.set<cts("uEye")>(mCamera.eye()); }
-   {  auto& p = gRenderer.get<cts("billboard-tex")>();
+   {  auto& p = mContext.getProgram<cts("billboard-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uUp")>(mCamera.up());
       p.set<cts("uRight")>(mCamera.right()); }
-   {  auto& p = gRenderer.get<cts("billboard-tex-sprite")>();
+   {  auto& p = mContext.getProgram<cts("billboard-tex-sprite")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uUp")>({0, 0, 1});
       p.set<cts("uRight")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back()))); }
-   {  auto& p = gRenderer.get<cts("billboard-hb")>();
+   {  auto& p = mContext.getProgram<cts("billboard-hb")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uUp")>(mCamera.up());
       p.set<cts("uRight")>(mCamera.right()); }
-   {  auto& p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
+   {  auto& p = mContext.getProgram<cts("particlesys-tex-sprite-flame")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uPerspectiveScale")>(mCamera.perspectiveScale()); }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_COMPLEXRENDERABLE_HPP
@@ -31,7 +31,7 @@ class CComplexRenderable : public IRenderableModel
       }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif // ENGINE_COMPLEXRENDERABLE_HPP

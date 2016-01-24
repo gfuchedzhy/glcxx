@@ -3,21 +3,13 @@
  */
 
 #include "Engine.hpp"
-#include "GL.hpp"
-#include "Log.hpp"
-#include "Programs.hpp"
-#include "GLState.hpp"
 
 CEngine::CEngine(const size_t width, const size_t height)
-   : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close, gRenderer.contextSettings())
+   : mWindow(sf::VideoMode(width, height), APPNAME, sf::Style::Titlebar | sf::Style::Close, mContext.contextSettings())
    , mAspect(width/float(height))
    , mTime(std::chrono::steady_clock::now())
 {
    mWindow.setVerticalSyncEnabled(true);
-
-   gl(glEnable, GL_DEPTH_TEST);
-   gl(glEnable, GL_CULL_FACE);
-   gl(glBlendFunc, SEnableBlendingGuard::defaultSrcFactor, SEnableBlendingGuard::defaultDstFactor);
 }
 
 void CEngine::run()

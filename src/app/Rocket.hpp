@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ROCKET_HPP
@@ -54,7 +54,7 @@ class CRocket : public IRenderable
       void update(float timeDelta);
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif

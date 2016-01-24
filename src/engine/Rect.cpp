@@ -3,8 +3,7 @@
  */
 
 #include "Rect.hpp"
-#include "Programs.hpp"
-#include "GLState.hpp"
+#include "Context.hpp"
 
 namespace
 {
@@ -42,29 +41,29 @@ namespace
    }
 }
 
-void CTexturedRect::draw(const SContext&) const
+void CTexturedRect::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
-   auto& p = gRenderer.get<cts("regular-tex")>();
+   auto& p = context.getProgram<cts("regular-tex")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
    p.drawElements(vao);
 }
 
-void CTexturedBillboard::draw(const SContext&) const
+void CTexturedBillboard::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
-   auto& p = gRenderer.get<cts("billboard-tex")>();
+   auto& p = context.getProgram<cts("billboard-tex")>();
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uTexture")>(mTexture);
    p.drawElements(vao);
 }
 
-void CAnimatedBillboard::draw(const SContext& context) const
+void CAnimatedBillboard::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
-   auto& p = gRenderer.get<cts("billboard-tex-sprite")>();
+   auto& p = context.getProgram<cts("billboard-tex-sprite")>();
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uAtlasSize")>(mAtlasSize);
@@ -73,10 +72,10 @@ void CAnimatedBillboard::draw(const SContext& context) const
    p.drawElements(vao);
 }
 
-void CHealthBar::draw(const SContext&) const
+void CHealthBar::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos")>(indexBuffer(), posBuffer());
-   auto& p = gRenderer.get<cts("billboard-hb")>();
+   auto& p = context.getProgram<cts("billboard-hb")>();
    p.set<cts("uPos")>(mPos);
    p.set<cts("uSize")>(mSize);
    p.set<cts("uValue")>(mValue);

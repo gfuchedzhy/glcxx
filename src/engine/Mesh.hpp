@@ -30,7 +30,7 @@ class CMesh : public IRenderable
       CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material);
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif

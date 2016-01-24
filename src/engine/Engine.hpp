@@ -32,7 +32,10 @@ class CEngine
       virtual void run();
 
    protected:
-      /// @brief window object, also holds gl context
+      /// @brief drawing context
+      CContext mContext;
+
+      /// @brief window object
       sf::Window mWindow;
 
       /// @brief aspect ratio
@@ -47,9 +50,6 @@ class CEngine
             float mTime = 0.f;
             unsigned int mFrameNumber = 0;
       } mFPS;
-
-      /// @brief drawing context
-      SContext mContext;
 };
 
 #endif // ENGINE_ENGINE_HPP

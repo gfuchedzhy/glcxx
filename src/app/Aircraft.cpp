@@ -4,8 +4,6 @@
 
 #include "Aircraft.hpp"
 #include "Context.hpp"
-#include "GLState.hpp"
-#include "Programs.hpp"
 
 #include <algorithm>
 
@@ -101,11 +99,11 @@ void CAircraft::update(float timeDelta)
    }
 }
 
-void CAircraft::draw(const SContext& context) const
+void CAircraft::draw(const CContext& context) const
 {
-   auto& p = gRenderer.get<cts("shaded-tex")>();
+   auto& p = context.getProgram<cts("shaded-tex")>();
    p.set<cts("uModel")>(model());
-   auto& p2 = gRenderer.get<cts("shaded-tex-nmap")>();
+   auto& p2 = context.getProgram<cts("shaded-tex-nmap")>();
    p2.set<cts("uModel")>(model());
 
    {

@@ -52,7 +52,7 @@ class CAircraft : public IRenderableModel
       void update(float timeDelta);
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif // AIRCRAFT_HPP

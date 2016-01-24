@@ -29,14 +29,13 @@ class TRenderer
       /// @brief initializes all programs of this renderer
       TRenderer()
       {
-         Log::msg("openGL ", mContextSettings.majorVersion, '.', mContextSettings.minorVersion,  " version loaded");
          mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(programSrc<base_name<TProgramName>>())...);
       }
 
       /// @brief searches given program by name in compile time, deselects
       /// previous program, selects requested one and returns it
       template<typename TName>
-      auto& get()
+      auto& getProgram()
       {
          constexpr size_t index = ct::tuple_find<std::tuple<TProgramName...>, TName>::value;
          static_assert(sizeof...(TProgramName) != index, "program name not found");
@@ -49,19 +48,7 @@ class TRenderer
          return *p;
       }
 
-      /// @brief return context settings
-      auto& contextSettings() const
-      {
-         return mContextSettings;
-      }
-
    private:
-      /// @brief context settings
-      sf::ContextSettings mContextSettings{24, 0, 0, 3, 3, sf::ContextSettings::Core};
-
-      /// @brief context necessety to allow early program creation
-      sf::Context mContext{mContextSettings, 1, 1};
-
       /// @brief program list, @todo unique_ptr can be removed without providing
       /// movability or copyability to programs, when emplace style tuple
       /// constructor would be available

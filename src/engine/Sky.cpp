@@ -4,8 +4,7 @@
 
 #include "Sky.hpp"
 #include "Texture.hpp"
-#include "Programs.hpp"
-#include "GLState.hpp"
+#include "Context.hpp"
 
 CSky::CSky()
 {
@@ -51,7 +50,7 @@ CSky::CSky()
    pos(glm::vec3(0, 0, size/2));
 }
 
-void CSky::draw(const SContext& context) const
+void CSky::draw(const CContext& context) const
 {
    {
       SDisableDepthTestGuard lock;
@@ -61,7 +60,7 @@ void CSky::draw(const SContext& context) const
    SDisableDepthMaskGuard dmLock;
    SEnableBlendingGuard bLock;
    // @todo this is a hack, should rethink model of complex objects
-   auto& p = gRenderer.get<cts("billboard-tex")>();
+   auto& p = context.getProgram<cts("billboard-tex")>();
    p.set<cts("uExternalPos")>({pos().x, pos().y, 0});
    for (const auto& c : mClouds)
    {

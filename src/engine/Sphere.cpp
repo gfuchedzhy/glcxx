@@ -3,7 +3,6 @@
  */
 
 #include "Sphere.hpp"
-#include "Programs.hpp"
 #include "Context.hpp"
 #include <glm/gtx/transform.hpp>
 #include <vector>
@@ -147,10 +146,10 @@ CTexturedSphere::CTexturedSphere()
    initSphere();
 }
 
-void CSphere::draw(const SContext& context) const
+void CSphere::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aNorm")>(indexBuffer, buffer, buffer);
-   auto& p = gRenderer.get<cts("shaded-col")>();
+   auto& p = context.getProgram<cts("shaded-col")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uColor")>(mColor);
    p.set<cts("uAmbient")>({1, 1, 1});
@@ -161,18 +160,18 @@ void CSphere::draw(const SContext& context) const
 
    if (context.mDrawNormals)
    {
-      auto& p = gRenderer.get<cts("regular-col")>();
+      auto& p = context.getProgram<cts("regular-col")>();
       p.set<cts("uModel")>(model());
       p.set<cts("uColor")>({1.f, 1.f, 1.f});
       p.drawElements(normalVAO());
    }
 }
 
-void CTexturedSphere::draw(const SContext& context) const
+void CTexturedSphere::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aUV"), cts("aNorm"), cts("aTan")>
       (indexBuffer, buffer, texBuffer, buffer, tanBuffer);
-   auto& p = gRenderer.get<cts("shaded-tex-nmap")>();
+   auto& p = context.getProgram<cts("shaded-tex-nmap")>();
    p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
    p.set<cts("uNormalMap")>(mNormalMap);
@@ -184,7 +183,7 @@ void CTexturedSphere::draw(const SContext& context) const
 
    if (context.mDrawNormals)
    {
-      auto& p = gRenderer.get<cts("regular-col")>();
+      auto& p = context.getProgram<cts("regular-col")>();
       p.set<cts("uModel")>(model());
       p.set<cts("uColor")>({1.f, 1.f, 1.f});
       p.drawElements(normalVAO());

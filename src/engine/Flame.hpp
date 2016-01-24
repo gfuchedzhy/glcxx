@@ -68,7 +68,7 @@ class CJetFlame : public CTexturedBillboard, public TParticleSystem<SParticle, C
       }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif

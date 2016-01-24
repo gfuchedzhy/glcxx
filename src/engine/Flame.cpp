@@ -3,8 +3,7 @@
  */
 
 #include "Flame.hpp"
-#include "Programs.hpp"
-#include "GLState.hpp"
+#include "Context.hpp"
 
 CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
    : tParticleSystem(rate, 0.6*rate)
@@ -22,11 +21,11 @@ void CJetFlame::update(float timeDelta)
    mVAO.upload<cts("aTime")>(&mTimes[0], mTimes.size(), GL_STREAM_DRAW);
 }
 
-void CJetFlame::draw(const SContext& context) const
+void CJetFlame::draw(const CContext& context) const
 {
    if (hasAliveParticles())
    {
-      auto& p = gRenderer.get<cts("particlesys-tex-sprite-flame")>();
+      auto& p = context.getProgram<cts("particlesys-tex-sprite-flame")>();
       p.set<cts("uSize")>(mSize);
       p.set<cts("uAtlasSize")>(mAtlasSize);
       p.set<cts("uTexture")>(mTexture);

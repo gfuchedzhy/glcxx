@@ -12,7 +12,7 @@ CTerrain::CTerrain()
    scale(glm::vec3(s, s, s));
 }
 
-void CTerrain::draw(const SContext& context) const
+void CTerrain::draw(const CContext& context) const
 {
    SDisableDepthTestGuard lock;
    CTexturedRect::draw(context);

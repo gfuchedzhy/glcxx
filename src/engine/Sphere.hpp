@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef ENGINE_SPHERE_HPP
@@ -19,7 +19,7 @@ class CSphere : public IRenderableModel
       CSphere(const glm::vec3& color);
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 /// @brief renderable sphere that has texture and model
@@ -42,7 +42,7 @@ class CTexturedSphere : public IRenderableModel
       void normalMap(std::shared_ptr<CTexture> normalMap) { mNormalMap = std::move(normalMap); }
 
       /// @brief draw
-      void draw(const SContext& context) const override;
+      void draw(const CContext& context) const override;
 };
 
 #endif
