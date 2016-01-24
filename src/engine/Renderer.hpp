@@ -33,22 +33,18 @@ class TRenderer
          mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(programSrc<base_name<TProgramName>>())...);
       }
 
-      /// @brief searches given program by name in compile time, creates it if
-      /// it is not created, deselects previous program, selects requested one
-      /// and returns it, @see @notes for TRenderer::get
-      /// @note it is disallowed to cache returned value, as selection of
-      /// another program will invalidate it, to discourage caching this
-      /// function returns raw pointer
+      /// @brief searches given program by name in compile time, deselects
+      /// previous program, selects requested one and returns it
       template<typename TName>
       auto& get()
       {
          constexpr size_t index = ct::tuple_find<std::tuple<TProgramName...>, TName>::value;
          static_assert(sizeof...(TProgramName) != index, "program name not found");
          auto p = std::get<index>(mPrograms).get();
-         if (static_cast<CProgramBase*>(p) != mCurrent)
+         if (index != mCurrentProgramIndex)
          {
+            mCurrentProgramIndex = index;
             p->select();
-            mCurrent = p;
          }
          return *p;
       }
@@ -66,11 +62,13 @@ class TRenderer
       /// @brief context necessety to allow early program creation
       sf::Context mContext{mContextSettings, 1, 1};
 
-      /// @brief program list
+      /// @brief program list, @todo unique_ptr can be removed without providing
+      /// movability or copyability to programs, when emplace style tuple
+      /// constructor would be available
       std::tuple<std::unique_ptr<program_type<TProgramName>>...> mPrograms;
 
-      /// @brief current program ptr
-      CProgramBase* mCurrent;
+      /// @brief current program index, points after last program by default
+      size_t mCurrentProgramIndex = sizeof...(TProgramName);
 };
 
 #endif // ENGINE_RENDERER_HPP
