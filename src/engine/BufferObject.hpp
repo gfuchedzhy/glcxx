@@ -8,13 +8,12 @@
 #include "GLSLInputVariable.hpp"
 #include <memory>
 
-/// @brief buffer object
-template<typename TData>
-class TBufferObject
+/// @brief base class for all types of buffer objects
+class CBufferObjectBase
 {
       /// @brief disabled stuff
-      TBufferObject(const TBufferObject&) = delete;
-      TBufferObject& operator=(const TBufferObject& other) = delete;
+      CBufferObjectBase(const CBufferObjectBase&) = delete;
+      CBufferObjectBase& operator=(const CBufferObjectBase& other) = delete;
 
       /// @brief buffer id
       GLuint mID;
@@ -22,39 +21,23 @@ class TBufferObject
       /// @brief target
       GLenum mTarget;
 
-   protected:
       /// @brief usage
       GLenum mUsage;
 
    public:
-      /// @brief underlying data type
-      using tData = TData;
-
       /// @brief constructor
-      TBufferObject(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
+      CBufferObjectBase(const void* data, size_t size, GLenum usage, GLenum target)
          : mTarget(target)
          , mUsage(usage)
       {
          gl(glGenBuffers, 1, &mID);
-         bind();
-         gl(glBufferData, mTarget, size*sizeof(TData), data, mUsage);
-         unBind();
+         upload(data, size);
       }
 
       /// @brief free buffer
-      ~TBufferObject()
+      ~CBufferObjectBase()
       {
          gl(glDeleteBuffers, 1, &mID);
-      }
-
-      /// @brief uploads new data to buffer
-      void upload(const TData* data, size_t size, GLenum usage = 0)
-      {
-         bind();
-         if (usage)
-            mUsage = usage;
-         gl(glBufferData, mTarget, size*sizeof(TData), data, mUsage);
-         unBind();
       }
 
       /// @brief binds buffer
@@ -67,6 +50,36 @@ class TBufferObject
       void unBind() const
       {
          gl(glBindBuffer, mTarget, 0);
+      }
+
+      /// @brief uploads new data to buffer, usage = 0 means do not change usage
+      void upload(const void* data, size_t size, GLenum usage = 0)
+      {
+         if (usage)
+            mUsage = usage;
+         bind();
+         gl(glBufferData, mTarget, size, data, mUsage);
+         unBind();
+      }
+};
+
+/// @brief typesafe buffer object
+template<typename TData>
+class TBufferObject : public CBufferObjectBase
+{
+   public:
+      /// @brief underlying data type
+      using tData = TData;
+
+      /// @brief constructor
+      TBufferObject(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
+         : CBufferObjectBase(data, size*sizeof(TData), usage, target)
+      {}
+
+      /// @brief uploads new data to buffer, usage = 0 means do not change usage
+      void upload(const TData* data, size_t size, GLenum usage = 0)
+      {
+         CBufferObjectBase::upload(data, size*sizeof(TData), usage);
       }
 };
 
@@ -81,14 +94,10 @@ inline tBufferPtr<TData> make_buffer(const TData* data, size_t size, GLenum usag
    return std::make_shared<TBufferObject<TData>>(data, size, usage);
 }
 
-/// @brief index buffer object, though underlying implementation is buffer of
-/// unsigned chars, this buffer accepts ubyte, ushort and uint indices, also it
-/// saves mode, e.g. GL_TRIANGLE_STRIP
-class CIndexBuffer : public TBufferObject<unsigned char>
+/// @brief index buffer object, this buffer accepts ubyte, ushort and uint
+/// indices, also it saves mode, e.g. GL_TRIANGLE_STRIP
+class CIndexBuffer : public CBufferObjectBase
 {
-      /// @brief base type
-      using tBase = TBufferObject<unsigned char>;
-
       /// @brief size of buffer
       GLsizei mSize;
 
@@ -102,7 +111,7 @@ class CIndexBuffer : public TBufferObject<unsigned char>
       /// @brief constructor
       template<typename T>
       CIndexBuffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
-         : tBase(reinterpret_cast<const unsigned char*>(data), size*sizeof(T), usage,
+         : CBufferObjectBase(data, size*sizeof(T), usage,
                  // before binding index buffer for upload vao should be unbound
                  // to preserve vao's internal state, note that this in not the
                  // case for vertex buffers as their bindings are not part of
@@ -122,13 +131,11 @@ class CIndexBuffer : public TBufferObject<unsigned char>
       {
          constexpr GLenum id = glsl::TTypeID<T>::id;
          static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
-         if (usage)
-            mUsage = usage;
          // before binding index buffer for upload vao should be unbound to
          // preserve vao's internal state, note that this in not the case for
          // vertex buffers as their bindings are not part of vao's state
          gl(glBindVertexArray, 0);
-         tBase::upload(reinterpret_cast<const unsigned char*>(data), size*sizeof(T));
+         CBufferObjectBase::upload(data, size*sizeof(T), usage);
          mSize = size;
          mMode = mode;
          mType = id;
