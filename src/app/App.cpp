@@ -13,15 +13,19 @@ namespace
 
 CApp::CApp()
    : CEngine(1280, 960)
+   , mSky(std::make_shared<CTexture>("res/sky.dds"))
 {
-   mAircraft.pos({0, 0, 1.5e3});
+   const float horizonDistance = 30e3;
+   mSky.scale({horizonDistance, horizonDistance, horizonDistance});
+
+   mAircraft.pos({0, 0, 3e3});
 
    mSphere.scale({5, 5, 5});
    mSphere.pos(mAircraft.pos());
    mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
    mSphere.normalMap(std::make_shared<CTexture>("res/earth-nmap.dds"));
 
-   mCamera.perspective(75, mAspect, 1, 2e4);
+   mCamera.perspective(70, mAspect, 1, 4e4);
    mCamera.eyeDistance(20);
    mCamera.pitch(20);
 

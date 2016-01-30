@@ -3,35 +3,12 @@
  */
 
 #include "Sky.hpp"
-#include "Texture.hpp"
+#include "Sphere.hpp"
 #include "Context.hpp"
 
-CSky::CSky()
+CSky::CSky(tTexturePtr tex)
+   : mTexture(std::move(tex))
 {
-   const float size = 1e4;
-   auto tex = std::make_shared<CTexture>("res/sky.dds");
-   std::array<std::shared_ptr<CTexturedRect>, 5> sky;
-   for (auto& x : sky)
-   {
-      x = std::make_shared<CTexturedRect>();
-      x->texture(tex);
-      x->scale(glm::vec3(size, size, size));
-      append({x});
-   }
-   sky[0]->pitch(90);
-   sky[0]->pos(glm::vec3(0, size/2, 0));
-   sky[1]->pitch(180);
-   sky[1]->pos(glm::vec3(0, 0, size/2));
-   sky[2]->pitch(90);
-   sky[2]->yaw(90);
-   sky[2]->pos(glm::vec3(-size/2, 0, 0));
-   sky[3]->pitch(90);
-   sky[3]->yaw(-90);
-   sky[3]->pos(glm::vec3(size/2, 0, 0));
-   sky[4]->pitch(90);
-   sky[4]->yaw(180);
-   sky[4]->pos(glm::vec3(0, -size/2, 0));
-
    std::uniform_real_distribution<float> distr1(0.8f, 1.5f);
    std::uniform_real_distribution<float> distr2(-0.1f, 0.f);
    float angle = 0;
@@ -42,19 +19,28 @@ CSky::CSky()
       c.texture(cloudTexture);
       c.size(glm::vec2(500*distr1(random_gen), 350*distr1(random_gen)));
       const float jitteredAngle = distr1(random_gen)*angle;
-      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 1e3 + // clouds around 1km height
+      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 15e2 + // clouds around 1km height
                       bbRadius*distr2(random_gen)));
       angle += 2*M_PI/mClouds.size();
    }
 
-   pos(glm::vec3(0, 0, size/2));
+   std::vector<glm::vec3> vertices;
+   std::vector<glm::vec2> texCoords;
+   std::vector<GLushort> indices;
+   generateHalfSphere(7, vertices, texCoords, indices);
+   mVAO.upload<cts("indices")>(indices.data(), indices.size(), GL_TRIANGLES);
+   mVAO.upload<cts("aPos")>(vertices.data(), vertices.size());
+   mVAO.upload<cts("aUV")>(texCoords.data(), texCoords.size());
 }
 
 void CSky::draw(const CContext& context) const
 {
    {
       SDisableDepthTestGuard lock;
-      CComplexRenderable::draw(context);
+      auto& p = context.getProgram<cts("regular-tex")>();
+      p.set<cts("uModel")>(model());
+      p.set<cts("uTexture")>(mTexture);
+      p.drawElements(mVAO);
    }
 
    SDisableDepthMaskGuard dmLock;
