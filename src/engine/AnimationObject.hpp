@@ -52,7 +52,7 @@ class CAtlasedAnimationObject : protected CAnimationObject
       glm::ivec2 mAtlasPos;
 
       /// @brief texture
-      std::shared_ptr<CTexture> mTexture;
+      tTexturePtr mTexture;
 
    public:
       using CAnimationObject::cycles;
@@ -65,7 +65,7 @@ class CAtlasedAnimationObject : protected CAnimationObject
       }
 
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
+      void texture(tTexturePtr tex) { mTexture = std::move(tex); }
 
       /// @brief reset animation
       void reset()

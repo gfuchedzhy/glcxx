@@ -13,7 +13,7 @@ CSky::CSky(tTexturePtr tex)
    std::uniform_real_distribution<float> distr2(-0.1f, 0.f);
    float angle = 0;
    const float bbRadius = 3e3;
-   auto cloudTexture = std::make_shared<CTexture>("res/cloud.dds");
+   auto cloudTexture = make_texture("res/cloud.dds");
    for (auto& c : mClouds)
    {
       c.texture(cloudTexture);

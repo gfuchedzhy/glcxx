@@ -6,7 +6,7 @@
 #include "Context.hpp"
 
 
-CTerrain::CTerrain(std::shared_ptr<CTexture> tex)
+CTerrain::CTerrain(tTexturePtr tex)
    : mTexture(std::move(tex))
 {
    const glm::vec3 pos[] = {

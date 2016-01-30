@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #include "Material.hpp"
@@ -26,10 +26,10 @@ SMaterial::SMaterial(const aiMaterial& material, const std::string& textureDirec
 
    aiString path;
    if (AI_SUCCESS == material.GetTexture(aiTextureType_DIFFUSE, 0, &path))
-      mDiffuseMap = std::make_shared<CTexture>(textureDirectory + path.data);
+      mDiffuseMap = make_texture(textureDirectory + path.data);
 
    /// @todo bug in assimp library: normal map is available as height map for
    /// some reason
    if (AI_SUCCESS == material.GetTexture(aiTextureType_HEIGHT, 0, &path))
-      mNormalMap = std::make_shared<CTexture>(textureDirectory + path.data);
+      mNormalMap = make_texture(textureDirectory + path.data);
 }

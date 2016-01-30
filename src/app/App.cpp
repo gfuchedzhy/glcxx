@@ -13,8 +13,8 @@ namespace
 
 CApp::CApp()
    : CEngine(1280, 960)
-   , mSky(std::make_shared<CTexture>("res/sky.dds"))
-   , mTerrain(std::make_shared<CTexture>("res/ground.dds"))
+   , mSky(make_texture("res/sky.dds"))
+   , mTerrain(make_texture("res/ground.dds"))
 {
    const float horizonDistance = 30e3;
    mSky.scale({horizonDistance, horizonDistance, horizonDistance});
@@ -26,7 +26,7 @@ CApp::CApp()
    mCamera.eyeDistance(20);
    mCamera.pitch(20);
 
-   auto starTexture = std::make_shared<CTexture>("res/star-sprite.dds");
+   auto starTexture = make_texture("res/star-sprite.dds");
    for (auto& s: mStars)
    {
       s.atlasSize({4, 4});

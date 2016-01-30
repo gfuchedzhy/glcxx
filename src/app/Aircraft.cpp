@@ -37,11 +37,11 @@ CAircraft::CAircraft()
       mMeshes.emplace_back(*mesh, materials[mesh->mMaterialIndex]);
    }
 
-   auto flameTex = std::make_shared<CTexture>("res/flame-sprite.dds");
+   auto flameTex = make_texture("res/flame-sprite.dds");
    for(auto& f : mFlames)
       f.texture(flameTex);
 
-   auto explosionTex = std::make_shared<CTexture>("res/explosion-sprite.dds");
+   auto explosionTex = make_texture("res/explosion-sprite.dds");
    for(auto& r : mRockets)
    {
       r.flameTexture(flameTex);

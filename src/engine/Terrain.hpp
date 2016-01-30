@@ -13,7 +13,7 @@
 class CTerrain : public IRenderableModel
 {
       /// @brief texture
-      std::shared_ptr<CTexture> mTexture;
+      tTexturePtr mTexture;
 
       /// @brief vao
       tIndexedVAO<ct::named_type<cts("aPos"), glm::vec3>,
@@ -21,7 +21,7 @@ class CTerrain : public IRenderableModel
 
    public:
       /// @brief constructor
-      CTerrain(std::shared_ptr<CTexture> tex);
+      CTerrain(tTexturePtr tex);
 
       /// @brief draw
       void draw(const CContext& context) const override;

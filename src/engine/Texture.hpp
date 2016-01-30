@@ -48,6 +48,12 @@ class CTexture
 /// @brief texture ptr
 using tTexturePtr = std::shared_ptr<CTexture>;
 
+/// @brief make texture
+inline tTexturePtr make_texture(const std::string& filename)
+{
+   return std::make_shared<CTexture>(filename);
+}
+
 /// @brief base implementation for TTextureProgramInput
 class CTextureProgramInputImpl
 {

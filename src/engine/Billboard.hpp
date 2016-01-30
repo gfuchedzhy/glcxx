@@ -36,11 +36,11 @@ class CTexturedBillboard : public CBillboard
 {
    protected:
       /// @brief texture
-      std::shared_ptr<CTexture> mTexture;
+      tTexturePtr mTexture;
 
    public:
       /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
+      void texture(tTexturePtr tex) { mTexture = std::move(tex); }
 
       /// @brief draw
       void draw(const CContext& context) const override;
