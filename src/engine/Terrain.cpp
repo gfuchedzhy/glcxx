@@ -4,7 +4,8 @@
 
 #include "Terrain.hpp"
 #include "Context.hpp"
-
+#include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 CTerrain::CTerrain(tTexturePtr tex)
    : mTexture(std::move(tex))
@@ -31,7 +32,17 @@ void CTerrain::draw(const CContext& context) const
 {
    SDisableDepthTestGuard lock;
    auto& p = context.getProgram<cts("regular-tex")>();
-   p.set<cts("uModel")>(model());
    p.set<cts("uTexture")>(mTexture);
-   p.drawElements(mVAO);
+
+   const float size = scale().x;
+   const glm::ivec2 min = glm::round((mCenter - mRadius) / size);
+   const glm::ivec2 max = glm::round((mCenter + mRadius) / size);
+
+   const glm::mat4& m = model();
+   for (int shiftx = min.x; shiftx <= max.x; ++shiftx)
+      for (int shifty = min.y; shifty <= max.y; ++shifty)
+      {
+         p.set<cts("uModel")>(glm::translate(glm::mat4{}, glm::vec3{size*shiftx, size*shifty, 0}) * m);
+         p.drawElements(mVAO);
+      }
 }

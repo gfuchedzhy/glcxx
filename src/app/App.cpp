@@ -18,9 +18,10 @@ CApp::CApp()
 {
    const float horizonDistance = 30e3;
    mSky.scale({horizonDistance, horizonDistance, horizonDistance});
-   mTerrain.scale({2.5*horizonDistance, 2.5*horizonDistance, 1.f});
+   mTerrain.scale({0.3*horizonDistance, 0.3*horizonDistance, 1.f});
+   mTerrain.radius(horizonDistance);
 
-   mAircraft.pos({0, 0, 3e3});
+   mAircraft.pos({0, 0, 1.5e3});
 
    mCamera.perspective(70, mAspect, 1, 4e4);
    mCamera.eyeDistance(20);
@@ -66,6 +67,7 @@ void CApp::update(float timeDelta)
 
    const auto& pos = mCamera.eye();
    mSky.pos({pos.x, pos.y, mSky.pos().z});
+   mTerrain.center({pos.x, pos.y});
 
    for (auto& s : mStars)
    {
