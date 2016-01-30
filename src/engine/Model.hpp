@@ -25,9 +25,6 @@ class CModel
       /// @brief yaw
       float mYaw = 0.f;
 
-      /// @brief external model
-      glm::mat4 mExternalModel;
-
       /// @brief automatic cache
       mutable struct SCache
       {
@@ -68,12 +65,6 @@ class CModel
 
       /// @brief returns yaw
       float yaw() const;
-
-      /// @brief sets external model
-      void externalModel(const glm::mat4& externalModel);
-
-      /// @brief returns external model
-      const glm::mat4& externalModel() const;
 
       /// @brief returns resulting model matrix
       const glm::mat4& model() const;
@@ -136,11 +127,6 @@ inline float CModel::roll() const
 inline float CModel::yaw() const
 {
    return mYaw;
-}
-
-inline const glm::mat4& CModel::externalModel() const
-{
-   return mExternalModel;
 }
 
 #endif // ENGINE_MODEL_HPP
