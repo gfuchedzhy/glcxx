@@ -75,6 +75,12 @@ class CVertexArrayObjectBase
 /// @brief vao holding specific attributes
 template<bool hasIndexBuffer, typename...TNamedAttrib> class TVertexArrayObject;
 
+/// @brief shortcut types
+template<typename...TNamedAttrib>
+using tVAO = TVertexArrayObject<false, TNamedAttrib...>;
+template<typename...TNamedAttrib>
+using tIndexedVAO = TVertexArrayObject<true, TNamedAttrib...>;
+
 /// @brief specialization
 template<bool hasIndexBuffer, typename... TName, typename... TData>
 class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : public CVertexArrayObjectBase
@@ -154,7 +160,7 @@ class TVertexArrayObject<hasIndexBuffer, ct::named_type<TName, TData>...> : publ
 template<typename...TName, typename... TBufferPtr>
 inline auto make_vao(TBufferPtr&&... buf)
 {
-   TVertexArrayObject<false, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
+   tVAO<ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
    swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;
 }
@@ -163,7 +169,7 @@ inline auto make_vao(TBufferPtr&&... buf)
 template<typename...TName, typename TIndexBufferPtr, typename... TBufferPtr>
 inline auto make_vao(TIndexBufferPtr&& indices, TBufferPtr&&... buf)
 {
-   TVertexArrayObject<true, ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
+   tIndexedVAO<ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::tData>...> vao;
    vao.template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
    swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
    return vao;

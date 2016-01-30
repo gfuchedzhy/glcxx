@@ -16,9 +16,8 @@ class CTerrain : public IRenderableModel
       std::shared_ptr<CTexture> mTexture;
 
       /// @brief vao
-      TVertexArrayObject<true,
-                         ct::named_type<cts("aPos"), glm::vec3>,
-                         ct::named_type<cts("aUV"),  glm::vec2>> mVAO;
+      tIndexedVAO<ct::named_type<cts("aPos"), glm::vec3>,
+                  ct::named_type<cts("aUV"),  glm::vec2>> mVAO;
 
    public:
       /// @brief constructor

@@ -48,7 +48,7 @@ class TVertexArrayObjectProgramInput<std::tuple<TNamedAttribs...>>
 
       /// @brief draw using index buffer from vao
       template<typename...TName, typename...TData>
-      void drawElements(const TVertexArrayObject<true, ct::named_type<TName, TData>...>& vao) const
+      void drawElements(const tIndexedVAO<ct::named_type<TName, TData>...>& vao) const
       {
          using tVAOTuple = std::tuple<ct::named_type<TName, TData>...>;
          using tRequiredVAOTuple =  std::tuple<ct::named_type<typename TNamedAttribs::tName,
@@ -70,7 +70,7 @@ class TVertexArrayObjectProgramInput<std::tuple<TNamedAttribs...>>
 
       /// @brief draw arrays
       template<typename...TName, typename...TData>
-      void drawArrays(const TVertexArrayObject<false, ct::named_type<TName, TData>...>& vao, GLsizei size, GLenum mode) const
+      void drawArrays(const tVAO<ct::named_type<TName, TData>...>& vao, GLsizei size, GLenum mode) const
       {
          using tVAOTuple = std::tuple<ct::named_type<TName, TData>...>;
          using tRequiredVAOTuple =  std::tuple<ct::named_type<typename TNamedAttribs::tName,
