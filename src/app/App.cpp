@@ -22,11 +22,6 @@ CApp::CApp()
 
    mAircraft.pos({0, 0, 3e3});
 
-   mSphere.scale({5, 5, 5});
-   mSphere.pos(mAircraft.pos());
-   mSphere.texture(std::make_shared<CTexture>("res/earth-daymap.dds"));
-   mSphere.normalMap(std::make_shared<CTexture>("res/earth-nmap.dds"));
-
    mCamera.perspective(70, mAspect, 1, 4e4);
    mCamera.eyeDistance(20);
    mCamera.pitch(20);
@@ -83,11 +78,6 @@ void CApp::update(float timeDelta)
       }
       s.update(timeDelta);
    }
-
-   static const float angularSpeed = 10;
-   float angle = mSphere.yaw() + timeDelta*angularSpeed;
-   angle = angle - (int(angle)/360)*360;
-   mSphere.yaw(angle);
 
    constexpr auto inf = std::numeric_limits<float>::infinity();
    if (mIsCameraControl)
@@ -213,5 +203,4 @@ void CApp::draw() const
    }
 
    mAircraft.draw(mContext);
-   mSphere.draw(mContext);
 }

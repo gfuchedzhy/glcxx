@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
+ * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
 #ifndef APP_HPP
@@ -28,9 +28,6 @@ class CApp : public CEngine
 
       /// @brief ground
       CTerrain mTerrain;
-
-      /// @brief sphere
-      CTexturedSphere mSphere;
 
       /// @brief bonus stars
       std::array<CAnimatedBillboard, 50> mStars;
