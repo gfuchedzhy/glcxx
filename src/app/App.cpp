@@ -14,9 +14,11 @@ namespace
 CApp::CApp()
    : CEngine(1280, 960)
    , mSky(std::make_shared<CTexture>("res/sky.dds"))
+   , mTerrain(std::make_shared<CTexture>("res/ground.dds"))
 {
    const float horizonDistance = 30e3;
    mSky.scale({horizonDistance, horizonDistance, horizonDistance});
+   mTerrain.scale({2.5*horizonDistance, 2.5*horizonDistance, 1.f});
 
    mAircraft.pos({0, 0, 3e3});
 

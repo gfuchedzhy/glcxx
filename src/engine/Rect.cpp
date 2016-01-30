@@ -41,15 +41,6 @@ namespace
    }
 }
 
-void CTexturedRect::draw(const CContext& context) const
-{
-   static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());
-   auto& p = context.getProgram<cts("regular-tex")>();
-   p.set<cts("uModel")>(model());
-   p.set<cts("uTexture")>(mTexture);
-   p.drawElements(vao);
-}
-
 void CTexturedBillboard::draw(const CContext& context) const
 {
    static auto vao = make_vao<cts("aPos"), cts("aUV")>(indexBuffer(), posBuffer(), uvBuffer());

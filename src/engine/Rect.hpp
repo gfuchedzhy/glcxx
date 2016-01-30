@@ -9,20 +9,6 @@
 #include "Texture.hpp"
 #include "AnimationObject.hpp"
 
-/// @brief renderable rectangle that has texture and model
-class CTexturedRect : public IRenderableModel
-{
-      /// @brief texture
-      std::shared_ptr<CTexture> mTexture;
-
-   public:
-      /// @brief set texture
-      void texture(std::shared_ptr<CTexture> tex) { mTexture = std::move(tex); }
-
-      /// @brief draw
-      void draw(const CContext& context) const override;
-};
-
 /// @brief base class for billboards, renderable rectangle has size and position
 /// in space and always directed perpendicular to camera view
 class CBillboard : public IRenderable
