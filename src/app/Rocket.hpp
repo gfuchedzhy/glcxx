@@ -6,7 +6,7 @@
 #define ROCKET_HPP
 
 #include "Flame.hpp"
-#include "Rect.hpp"
+#include "Billboard.hpp"
 #include "Renderable.hpp"
 
 /// @brief rocket

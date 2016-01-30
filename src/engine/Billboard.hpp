@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef ENGINE_RECT_HPP
-#define ENGINE_RECT_HPP
+#ifndef ENGINE_BILLBOARD_HPP
+#define ENGINE_BILLBOARD_HPP
 
 #include "Model.hpp"
 #include "Texture.hpp"

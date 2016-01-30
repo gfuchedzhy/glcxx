@@ -2,7 +2,7 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "Rect.hpp"
+#include "Billboard.hpp"
 #include "Context.hpp"
 
 namespace

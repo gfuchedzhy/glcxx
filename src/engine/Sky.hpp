@@ -6,7 +6,7 @@
 #define ENGINE_SKY_HPP
 
 #include "Model.hpp"
-#include "Rect.hpp"
+#include "Billboard.hpp"
 #include "VAO.hpp"
 
 /// @brief sky consists of 5 textured rects and some clouds todo

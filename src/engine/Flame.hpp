@@ -6,7 +6,7 @@
 #define ENGINE_FLAME_HPP
 
 #include "Renderable.hpp"
-#include "Rect.hpp"
+#include "Billboard.hpp"
 #include "Particle.hpp"
 #include "VAO.hpp"
 

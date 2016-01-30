@@ -7,7 +7,7 @@
 
 #include "Model.hpp"
 #include "Mesh.hpp"
-#include "Rect.hpp"
+#include "Billboard.hpp"
 #include "Flame.hpp"
 #include "Rocket.hpp"
 
