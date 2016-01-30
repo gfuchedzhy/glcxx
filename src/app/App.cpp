@@ -127,6 +127,7 @@ void CApp::update(float timeDelta)
       mAircraft.pitch(damp(mAircraft.pitch() - 360*int(round(mAircraft.pitch()/360)), timeDelta, 0, 1));
    }
 
+   static const glm::vec3 sunDir = {-0.577, -0.577, 0.577};
    /// @todo make automatic uniforms in renderer to remove this code
    {  auto& p = mContext.getProgram<cts("regular-col")>();
       p.set<cts("uViewProj")>(mCamera.viewProj()); }
@@ -134,15 +135,15 @@ void CApp::update(float timeDelta)
       p.set<cts("uViewProj")>(mCamera.viewProj()); }
    {  auto& p = mContext.getProgram<cts("shaded-col")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
-      p.set<cts("uSunDir")>({0, 0.707, 0.707});
+      p.set<cts("uSunDir")>(sunDir);
       p.set<cts("uEye")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("shaded-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
-      p.set<cts("uSunDir")>({0, 0.707, 0.707});
+      p.set<cts("uSunDir")>(sunDir);
       p.set<cts("uEye")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("shaded-tex-nmap")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
-      p.set<cts("uSunDir")>({0, 0.707, 0.707});
+      p.set<cts("uSunDir")>(sunDir);
       p.set<cts("uEye")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("billboard-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
