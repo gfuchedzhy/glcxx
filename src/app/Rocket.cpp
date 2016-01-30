@@ -31,12 +31,15 @@ void CRocket::update(float timeDelta)
          mFlame.pos(mFlame.pos() + mFlame.sourceVelocity()*timeDelta);
          mFlame.update(timeDelta);
          mExploded = mFlame.pos().z < 0 || mTime > 7;
+         if (mExploded)
+         {
+            mFlame.rate(0);
+            mExplosion.pos(mFlame.pos());
+         }
       }
       else
       {
          mFlame.update(timeDelta);
-         mFlame.rate(0);
-         mExplosion.pos(mFlame.pos());
          mExplosion.update(timeDelta);
          mIsActive = mExplosion.cycles() == 0 || mFlame.hasAliveParticles();
       }
@@ -50,7 +53,8 @@ void CRocket::draw(const CContext& context) const
       mFlame.draw(context);
       if (mExploded && mExplosion.cycles() == 0)
       {
-         SEnableBlendingGuard lock(GL_SRC_ALPHA, GL_ONE);
+         SDisableDepthMaskGuard dmLock;
+         SEnableBlendingGuard bLock(GL_SRC_ALPHA, GL_ONE);
          mExplosion.draw(context);
       }
    }
