@@ -91,7 +91,7 @@ class CCamera
 
       /// @brief return perspective scale, multiplier to convert from eye space
       /// into projective space (world coordinates after viewProjection
-      /// traansformation or NDC before perspective division) by x and y axes
+      /// transformation or NDC before perspective division) by x and y axes
       glm::vec2 perspectiveScale() const;
 
       /// @brief returns projection matrix
