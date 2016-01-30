@@ -10,7 +10,7 @@ namespace
    auto& indexBuffer()
    {
       static const GLubyte data[] = {0, 1, 3, 2};
-      static auto buffer = make_indexBuffer(data, sizeof(data)/sizeof(data[0]), GL_TRIANGLE_STRIP);
+      static auto buffer = make_indexBuffer(data, size(data), GL_TRIANGLE_STRIP);
       return buffer;
    }
 
@@ -24,7 +24,7 @@ namespace
          {1.f, 0.f},
          {0.f, 0.f}
       };
-      static auto buffer = make_buffer(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer(data, size(data));
       return buffer;
    }
 
@@ -36,7 +36,7 @@ namespace
          { 0.5f, 0.5f, 0.f},
          {-0.5f, 0.5f, 0.f}
       };
-      static auto buffer = make_buffer(data, sizeof(data)/sizeof(data[0]));
+      static auto buffer = make_buffer(data, size(data));
       return buffer;
    }
 }
