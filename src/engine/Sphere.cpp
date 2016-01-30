@@ -109,10 +109,10 @@ namespace
             // shift index unless it is index of equator vertex
             indices.push_back(indices[j] + (indices[j] < vertNumWithoutEquator ? vertNum : 0));
          }
-         buffer = make_buffer(&vertices[0], vertices.size());
-         texBuffer = make_buffer(&texCoords[0], texCoords.size());
-         tanBuffer = make_buffer(&tangents[0], tangents.size());
-         indexBuffer = make_indexBuffer(&indices[0], indices.size(), GL_TRIANGLES);
+         buffer = make_buffer(vertices.data(), vertices.size());
+         texBuffer = make_buffer(texCoords.data(), texCoords.size());
+         tanBuffer = make_buffer(tangents.data(), tangents.size());
+         indexBuffer = make_indexBuffer(indices.data(), indices.size(), GL_TRIANGLES);
 
          // indices for normals, last vertex would be (0,0,0)
          const size_t lastIndex = vertices.size();
@@ -126,8 +126,8 @@ namespace
          for (auto& v : vertices)
             v *= 1.5f;
          vertices.emplace_back(0, 0, 0);
-         normalBuffer = make_buffer(&vertices[0], vertices.size());
-         normalIndexBuffer = make_indexBuffer(&normalIndices[0], normalIndices.size(), GL_LINE_STRIP);
+         normalBuffer = make_buffer(vertices.data(), vertices.size());
+         normalIndexBuffer = make_indexBuffer(normalIndices.data(), normalIndices.size(), GL_LINE_STRIP);
       }
    }
 

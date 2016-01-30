@@ -22,7 +22,7 @@ CMesh::CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material)
    uv.reserve(mesh.mNumVertices);
    for (size_t t = 0; t < mesh.mNumVertices; ++t)
       uv.push_back({mesh.mTextureCoords[0][t].x, -mesh.mTextureCoords[0][t].y});
-   mVAO.upload<cts("aUV")>(&uv[0], mesh.mNumVertices);
+   mVAO.upload<cts("aUV")>(uv.data(), mesh.mNumVertices);
 
    if (!mesh.HasNormals())
       throw std::runtime_error{"loaded mesh doesn't have normals"};
@@ -40,7 +40,7 @@ CMesh::CMesh(const aiMesh& mesh, std::shared_ptr<SMaterial> material)
       const aiFace& face = mesh.mFaces[f];
       std::copy(face.mIndices, face.mIndices + face.mNumIndices, back_inserter(indices));
    }
-   mVAO.upload<cts("indices")>(&indices[0], indices.size(), GL_TRIANGLES);
+   mVAO.upload<cts("indices")>(indices.data(), indices.size(), GL_TRIANGLES);
 }
 
 void CMesh::draw(const CContext& context) const

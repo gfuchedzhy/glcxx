@@ -16,9 +16,9 @@ CJetFlame::CJetFlame(float radius, float rate, float particleSpeed)
 void CJetFlame::update(float timeDelta)
 {
    tParticleSystem::update(*this, timeDelta);
-   mVAO.upload<cts("aPos")>(&mPositions[0], mPositions.size(), GL_STREAM_DRAW);
-   mVAO.upload<cts("aSpeed")>(&mSpeeds[0], mSpeeds.size(), GL_STREAM_DRAW);
-   mVAO.upload<cts("aTime")>(&mTimes[0], mTimes.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aPos")>(mPositions.data(), mPositions.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aSpeed")>(mSpeeds.data(), mSpeeds.size(), GL_STREAM_DRAW);
+   mVAO.upload<cts("aTime")>(mTimes.data(), mTimes.size(), GL_STREAM_DRAW);
 }
 
 void CJetFlame::draw(const CContext& context) const
