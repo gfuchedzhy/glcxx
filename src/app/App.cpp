@@ -23,7 +23,7 @@ CApp::CApp()
    mAircraft.pos({0, 0, 1.5e3});
 
    mCamera.perspective(60, mAspect, 1, 4e4);
-   mCamera.eyeDistance(35);
+   mCamera.eyeDistance(30);
    mCamera.pitch(15);
 
    auto starTexture = make_texture("res/star-sprite.dds");
@@ -85,26 +85,23 @@ void CApp::update(float timeDelta)
    {
       animate([this]{return mCamera.pitch();},
               [this](float val){mCamera.pitch(val);},
-              timeDelta, 70.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
+              timeDelta, 30.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
       animate([this]{return mCamera.eyeDistance();},
               [this](float val){mCamera.eyeDistance(val);},
-              timeDelta, 70.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
+              timeDelta, 30.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
    }
 
-   if (mIsCameraControl && animate([this]{return mRelativeCameraOrientation;},
-                                   [this](float val){mRelativeCameraOrientation = val;},
-                                   timeDelta, 90.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf))
+   if (mIsCameraControl)
    {
-      mCamera.orientation(mRelativeCameraOrientation + mAircraft.yaw());
+      animate([this]{return mRelativeCameraOrientation;},
+              [this](float val){mRelativeCameraOrientation = val;},
+              timeDelta, 60.f, sf::Keyboard::Left, sf::Keyboard::Right, -inf, inf);
    }
-   else
-   {
-      mCamera.orientation(damp(mCamera.orientation(), timeDelta, mRelativeCameraOrientation + mAircraft.yaw(), 1.f));
-   }
+   mCamera.orientation(damp(mCamera.orientation(), timeDelta, mRelativeCameraOrientation + mAircraft.yaw(), 1.f));
 
    if (mIsCameraControl || !animate([this]{return mAircraft.roll();},
                                     [this](float val){mAircraft.roll(val);},
-                                    timeDelta, 70.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f))
+                                    timeDelta, 30.f, sf::Keyboard::Left, sf::Keyboard::Right, -60.f, 60.f))
    {
       mAircraft.roll(damp(mAircraft.roll(), timeDelta, 0));
    }
@@ -115,7 +112,7 @@ void CApp::update(float timeDelta)
    {
       if (!animate([this]{return mAircraft.speed();},
                    [this](float val){mAircraft.speed(val);},
-                   timeDelta, 40.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
+                   timeDelta, 20.f, sf::Keyboard::Unknown, sf::Keyboard::Space, 80.f, 180.f))
          mAircraft.speed(damp(mAircraft.speed(), timeDelta, 80));
    }
 
