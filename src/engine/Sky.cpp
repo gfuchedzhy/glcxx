@@ -6,22 +6,30 @@
 #include "Sphere.hpp"
 #include "Context.hpp"
 
-CSky::CSky(tTexturePtr tex)
+CSky::CSky(tTexturePtr tex, float horizonDistance)
    : mTexture(std::move(tex))
 {
-   std::uniform_real_distribution<float> distr1(0.8f, 1.5f);
-   std::uniform_real_distribution<float> distr2(-0.1f, 0.f);
-   float angle = 0;
-   const float bbRadius = 3e3;
-   auto cloudTexture = make_texture("res/cloud.dds");
+   scale({horizonDistance, horizonDistance, horizonDistance});
+
+   std::array<tTexturePtr, 5> cloudTextures;
+   for (int i = 0; i < cloudTextures.size(); ++i)
+      cloudTextures[i] = make_texture(std::string("res/cloud") + std::to_string(i+1) + ".dds");
+
+   std::uniform_real_distribution<float> sizeDistr(2000, 7000);
+   std::uniform_real_distribution<float> angleDistr(0, 2*M_PI);
+   std::uniform_real_distribution<float> distanceDistr(0.5*horizonDistance, 0.8*horizonDistance);
+   std::uniform_real_distribution<float> heightDistr(1e3, 2e3);
+   std::uniform_int_distribution<int> textureDistr(0, cloudTextures.size() - 1);
+
+   mClouds.resize(100);
    for (auto& c : mClouds)
    {
-      c.texture(cloudTexture);
-      c.size(glm::vec2(500*distr1(random_gen), 350*distr1(random_gen)));
-      const float jitteredAngle = distr1(random_gen)*angle;
-      c.pos(glm::vec3(bbRadius*sin(jitteredAngle), bbRadius*cos(jitteredAngle), 15e2 + // clouds around 1km height
-                      bbRadius*distr2(random_gen)));
-      angle += 2*M_PI/mClouds.size();
+      c.texture(cloudTextures[textureDistr(random_gen)]);
+      c.size(sizeDistr(random_gen)*glm::vec2(1, 0.5));
+      const float angle = angleDistr(random_gen);
+      const float distance = distanceDistr(random_gen);
+      c.pos(glm::vec3(distance*sin(angle), distance*cos(angle),
+                      heightDistr(random_gen)));
    }
 
    std::vector<glm::vec3> vertices;
@@ -45,12 +53,6 @@ void CSky::draw(const CContext& context) const
 
    SDisableDepthMaskGuard dmLock;
    SEnableBlendingGuard bLock;
-   // @todo this is a hack, should rethink model of complex objects
-   auto& p = context.getProgram<cts("billboard-tex")>();
-   p.set<cts("uExternalPos")>({pos().x, pos().y, 0});
    for (const auto& c : mClouds)
-   {
       c.draw(context);
-   }
-   p.set<cts("uExternalPos")>({0, 0, 0});
 }

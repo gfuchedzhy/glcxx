@@ -9,23 +9,22 @@ namespace
 {
    std::uniform_real_distribution<float> distr(0.8f, 1.05f);
    std::uniform_real_distribution<float> distr2(-1, 1);
+   const float horizonDistance = 30e3;
 }
 
 CApp::CApp()
    : CEngine(1280, 960)
-   , mSky(make_texture("res/sky.dds"))
+   , mSky(make_texture("res/sky.dds"), horizonDistance)
    , mTerrain(make_texture("res/ground.dds"))
 {
-   const float horizonDistance = 30e3;
-   mSky.scale({horizonDistance, horizonDistance, horizonDistance});
    mTerrain.scale({0.3*horizonDistance, 0.3*horizonDistance, 1.f});
    mTerrain.radius(horizonDistance);
 
    mAircraft.pos({0, 0, 1.5e3});
 
-   mCamera.perspective(70, mAspect, 1, 4e4);
-   mCamera.eyeDistance(20);
-   mCamera.pitch(20);
+   mCamera.perspective(60, mAspect, 1, 4e4);
+   mCamera.eyeDistance(35);
+   mCamera.pitch(15);
 
    auto starTexture = make_texture("res/star-sprite.dds");
    for (auto& s: mStars)
@@ -147,16 +146,16 @@ void CApp::update(float timeDelta)
       p.set<cts("uEye")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("billboard-tex")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
-      p.set<cts("uUp")>(mCamera.up());
-      p.set<cts("uRight")>(mCamera.right()); }
+      p.set<cts("uUp")>({0, 0, 1});
+      p.set<cts("uEyePos")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("billboard-tex-sprite")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uUp")>({0, 0, 1});
-      p.set<cts("uRight")>(glm::normalize(glm::cross({0, 0, 1}, mCamera.back()))); }
+      p.set<cts("uEyePos")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("billboard-hb")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uUp")>(mCamera.up());
-      p.set<cts("uRight")>(mCamera.right()); }
+      p.set<cts("uEyePos")>(mCamera.eye()); }
    {  auto& p = mContext.getProgram<cts("particlesys-tex-sprite-flame")>();
       p.set<cts("uViewProj")>(mCamera.viewProj());
       p.set<cts("uPerspectiveScale")>(mCamera.perspectiveScale()); }

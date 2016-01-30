@@ -19,7 +19,8 @@ float xCoef = (yCoef - 1.0)*uSize.y/uSize.x + 1.0;
 
 void main()
 {
-   gl_Position = uViewProj*vec4(uExternalPos + uPos + aPos.x*uSize.x*uRight + aPos.y*uSize.y*uUp, 1.0);
+   vec3 right = normalize(cross(uUp, uEyePos - uPos));
+   gl_Position = uViewProj*vec4(uPos + aPos.x*uSize.x*right + aPos.y*uSize.y*uUp, 1.0);
 
 #if defined SPRITE
    out(UV) = (aUV + uAtlasPos)/uAtlasSize;

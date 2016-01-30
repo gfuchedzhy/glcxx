@@ -54,9 +54,8 @@ auto progInputDef(cts("billboard")) -> std::tuple<
    TNamedAttrib<cts("aPos"), TAttrib<glm::tvec3, float, float, 1>>,
    TUniformProgramInput<cts("uViewProj"), TUniform<glm::tmat4x4>>,
    TUniformProgramInput<cts("uPos"), TUniform<glm::tvec3>>,
-   TUniformProgramInput<cts("uExternalPos"), TUniform<glm::tvec3>>,
    TUniformProgramInput<cts("uSize"), TUniform<glm::tvec2>>,
-   TUniformProgramInput<cts("uRight"), TUniform<glm::tvec3>>,
+   TUniformProgramInput<cts("uEyePos"), TUniform<glm::tvec3>>,
    TUniformProgramInput<cts("uUp"), TUniform<glm::tvec3>>>;
 
 auto progInputDef(cts("billboard-tex")) -> ct::tuple_append<inp_by_name("billboard"),

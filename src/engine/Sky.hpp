@@ -13,7 +13,7 @@
 class CSky : public IRenderableModel
 {
       /// @brief clouds implemented using billboards
-      std::array<CTexturedBillboard, 9> mClouds;
+      std::vector<CTexturedBillboard> mClouds;
 
       /// @brief dome texture
       tTexturePtr mTexture;
@@ -24,7 +24,7 @@ class CSky : public IRenderableModel
 
    public:
       /// @brief constructor
-      CSky(tTexturePtr tex);
+      CSky(tTexturePtr tex, float horizonDistance);
 
       /// @brief draw
       void draw(const CContext& context) const override;
