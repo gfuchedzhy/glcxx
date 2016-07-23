@@ -15,7 +15,7 @@
    class vao_base
    {
          /// @brief friend declaration
-         template<typename> friend class TVertexArrayObjectProgramInput;
+         template<typename> friend class vao_input;
 
          /// @brief non copyable
          vao_base(const vao_base&) = delete;
