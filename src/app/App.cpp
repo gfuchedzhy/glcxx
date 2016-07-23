@@ -23,8 +23,10 @@ CApp::CApp()
    mAircraft.pos({0, 0, 1.5e3});
 
    mCamera.perspective(60, mAspect, 1, 4e4);
-   mCamera.eyeDistance(30);
-   mCamera.pitch(15);
+   mTargetCameraEyeDistance = 35;
+   mCamera.eyeDistance(mTargetCameraEyeDistance);
+   mTargetCameraPitch = 15;
+   mCamera.pitch(mTargetCameraPitch);
 
    auto starTexture = make_texture("res/star-sprite.dds");
    for (auto& s: mStars)
@@ -83,13 +85,15 @@ void CApp::update(float timeDelta)
    constexpr auto inf = std::numeric_limits<float>::infinity();
    if (mIsCameraControl)
    {
-      animate([this]{return mCamera.pitch();},
-              [this](float val){mCamera.pitch(val);},
+      animate([this]{return mTargetCameraPitch;},
+              [this](float val){mTargetCameraPitch = val;},
               timeDelta, 30.f, sf::Keyboard::Down, sf::Keyboard::Up, -inf, inf);
-      animate([this]{return mCamera.eyeDistance();},
-              [this](float val){mCamera.eyeDistance(val);},
+      animate([this]{return mTargetCameraEyeDistance;},
+              [this](float val){mTargetCameraEyeDistance = val;},
               timeDelta, 30.f, sf::Keyboard::Add, sf::Keyboard::Subtract, 10.f, 500.f);
    }
+   mCamera.pitch(damp(mCamera.pitch(), timeDelta, mTargetCameraPitch, 1.f));
+   mCamera.eyeDistance(damp(mCamera.eyeDistance(), timeDelta, mTargetCameraEyeDistance, 1.f));
 
    if (mIsCameraControl)
    {

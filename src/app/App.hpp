@@ -41,6 +41,12 @@ class CApp : public CEngine
       /// @brief camera orientation in degrees relative to aircraft's yaw
       float mRelativeCameraOrientation = 0.f;
 
+      /// @brief target camera pitch
+      float mTargetCameraPitch = 0.f;
+
+      /// @brief target camera eye distance
+      float mTargetCameraEyeDistance = 30.f;
+
    public:
       /// @brief constructor
       CApp();
