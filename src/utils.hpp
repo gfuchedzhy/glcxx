@@ -51,8 +51,6 @@ namespace glcxx
    template<typename T1, typename T2>
    struct tpair
    {
-         using first   = T1;
-         using second  = T2;
          using t1 = T1;
          using t2 = T2;
    };
@@ -62,11 +60,11 @@ namespace glcxx
    {
       /// @brief return true if T is instantiation of Template
       template<typename T, template<typename...> class Template>
-      struct instantiation_of : public std::false_type {};
+      struct instantiation_of : std::false_type {};
 
       /// @brief specialization
       template<template<typename...> class Template, typename... Params>
-      struct instantiation_of<Template<Params...>, Template> : public std::true_type {};
+      struct instantiation_of<Template<Params...>, Template> : std::true_type {};
 
       /// @brief function traits
       template<typename Func> struct function_traits;
@@ -206,13 +204,13 @@ namespace glcxx
       /// @brief specialization for tuple
       template<typename First, typename... Rest, template<typename...> class Pred, typename... PredParams>
       struct tuple_any_of<std::tuple<First, Rest...>, Pred,  PredParams...>
-         : public std::integral_constant<bool, Pred<First, PredParams...>::value || tuple_any_of<std::tuple<Rest...>, Pred, PredParams...>::value>
+         : std::integral_constant<bool, Pred<First, PredParams...>::value || tuple_any_of<std::tuple<Rest...>, Pred, PredParams...>::value>
       {};
 
       /// @brief terminator specialization
       template<template<typename...> class Pred, typename... PredParams>
       struct tuple_any_of<std::tuple<>, Pred, PredParams...>
-         : public std::false_type {};
+         : std::false_type {};
 
       /// @brief compile time string
       template<char... s>
