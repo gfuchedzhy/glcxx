@@ -59,7 +59,6 @@
             // if was attached to different program or wasn't attached at all
             if (mProgramID != vao.mProgramID)
             {
-               Log::msg("attaching vao to a program id ", mProgramID);
                vao.mProgramID = mProgramID;
                vao.template bind_buffer<cts("indices")>();
                swallow(vao.template bind_buffer<TAttribName>() &&
@@ -80,7 +79,6 @@
             // if was attached to different program or wasn't attached at all
             if (mProgramID != vao.mProgramID)
             {
-               Log::msg("attaching vao to a program id ", mProgramID);
                vao.mProgramID = mProgramID;
                swallow(vao.template bind_buffer<TAttribName>() &&
                     (TAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<TAttribName...>, TAttribName>::value]), true));

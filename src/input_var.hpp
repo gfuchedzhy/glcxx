@@ -7,7 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "GL.hpp"
+#include "gl.hpp"
 #include "utils.hpp"
 
 // todo namespace
@@ -64,7 +64,8 @@
       inline auto get_uniform_loc(GLuint program, const char* name)
       {
          const auto location = gl(glGetUniformLocation, program, name);
-         Log::msg("uniform location ", name, "=", location);
+         //todo exception?
+         //Log::msg("uniform location ", name, "=", location);
          return location;
       }
 
@@ -72,7 +73,8 @@
       inline auto get_attrib_loc(GLuint program, const char* name)
       {
          const auto location = gl(glGetAttribLocation, program, name);
-         Log::msg("attribute location ", name, "=", location);
+         //todo exception?
+         //Log::msg("attribute location ", name, "=", location);
          return location;
       }
 

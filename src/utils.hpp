@@ -8,6 +8,7 @@
 #include <utility>
 #include <tuple>
 #include <cmath>
+#include <ostream>
 
 /// @brief evaluate expression for every element of expansion pack in order
 #define swallow(expression) (void)(int[]){0, ((expression), 0)...}
@@ -16,6 +17,39 @@
 //todo add namespace
 // namespace glcxx
 // {
+
+   /// @brief stream nullptr
+   inline std::ostream& operator<<(std::ostream& stream, std::nullptr_t)
+   {
+      return stream << "nullptr";
+   }
+
+   /// @brief stream empty tuple
+   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<>&)
+   {
+      return stream << "()";
+   }
+
+   namespace detail
+   {
+      /// @brief helper to stream non empty tuple
+      template<typename TArg1, typename... TArgs, size_t... I>
+      inline void ostream_tuple(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
+      {
+         stream << '(' << std::get<0>(t);
+         swallow(stream << ',' << std::get<I+1>(t));
+         stream << ')';
+      }
+   }
+
+   /// @brief stream non empty tuple
+   template<typename TArg1, typename... TArgs>
+   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t)
+   {
+      detail::ostream_tuple(stream, t, std::make_index_sequence<sizeof...(TArgs)>{});
+      return stream;
+   }
+
    namespace ct
    {
       /// @brief return true if T is instantiation of Template
