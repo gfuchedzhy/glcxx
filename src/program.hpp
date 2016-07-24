@@ -7,11 +7,9 @@
 
 #include "shader.hpp"
 #include "vao_input.hpp"
-//#include <tuple>
 
-//todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief resource holder for opengl program object
    class program_base
    {
@@ -99,9 +97,6 @@
             using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
 
          public:
-            /// @brief program name
-            using name = TName; //todo do we need this?
-
             /// @brief program defines
             using defines = ct::string_all_rep<
                ct::string_toupper<ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>>,
@@ -192,6 +187,6 @@
    using program = detail::program<TName,
                                    detail::program_input_traits<TInputTuple>::has_geom_shader,
                                    typename detail::program_input_traits<TInputTuple>::resulting_inputs>;
-// }
+}
 
 #endif

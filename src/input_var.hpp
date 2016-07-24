@@ -10,9 +10,8 @@
 #include "gl.hpp"
 #include "utils.hpp"
 
-// todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief tags to place declarations to proper shaders
    namespace tag
    {
@@ -341,6 +340,6 @@
 
    template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
    using uniform_arr = glsl::input_var_traits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
-// }
+}
 
 #endif

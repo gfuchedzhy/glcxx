@@ -8,9 +8,8 @@
 #include <bitset>
 #include "buffer.hpp"
 
-// todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief base vao class, resource holder
    class vao_base
    {
@@ -82,7 +81,7 @@
 
       /// @brief specialization
       template<bool HasIndexBuffer, typename... TName, typename... TData>
-      class vao<HasIndexBuffer, ct::named_type<TName, TData>...> : public vao_base
+      class vao<HasIndexBuffer, tpair<TName, TData>...> : public vao_base
       {
             /// @brief buffer tuple
             using buffers = ct::tuple_cat<std::tuple<buffer_ptr<TData>...>, // VBOs
@@ -166,7 +165,7 @@
    template<typename...TName, typename... TBufferPtr>
    inline auto make_vao(TBufferPtr&&... buf)
    {
-      vao<ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
+      vao<tpair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
       swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
       return vao;
    }
@@ -175,12 +174,11 @@
    template<typename...TName, typename TIndexBufferPtr, typename... TBufferPtr>
    inline auto make_vao(TIndexBufferPtr&& indices, TBufferPtr&&... buf)
    {
-      indexed_vao<ct::named_type<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
+      indexed_vao<tpair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
       vao.template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
       swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
       return vao;
    }
-
-// }
+}
 
 #endif

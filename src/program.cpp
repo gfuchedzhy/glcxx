@@ -56,11 +56,11 @@ namespace
 
 // log program creation, concat declarations, helper code and sources, then pass
 // them to delegate constructor
-program_base::program_base(const char* name, const char* declarations, const char* src, bool has_geom_shader)
+glcxx::program_base::program_base(const char* name, const char* declarations, const char* src, bool has_geom_shader)
    : program_base(std::string(declarations) + glslHelperMacros + src, has_geom_shader)
 {}
 
-program_base::program_base(const std::string& src, bool has_geom_shader)
+glcxx::program_base::program_base(const std::string& src, bool has_geom_shader)
    : mObject(gl(glCreateProgram))
    , mVertexShader(src, GL_VERTEX_SHADER)
    , mFragmentShader(src, GL_FRAGMENT_SHADER)
@@ -89,7 +89,7 @@ program_base::program_base(const std::string& src, bool has_geom_shader)
    }
 }
 
-program_base::~program_base()
+glcxx::program_base::~program_base()
 {
    gl(glDetachShader, mObject, mVertexShader.mObject);
    gl(glDetachShader, mObject, mFragmentShader.mObject);

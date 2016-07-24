@@ -5,7 +5,7 @@
 #ifndef GLCXX_SRC_CAPABILITIES_HPP
 #define GLCXX_SRC_CAPABILITIES_HPP
 
-//todo includes?
+#include "gl.hpp"
 
 namespace glcxx
 {

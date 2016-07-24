@@ -13,11 +13,8 @@
 /// @brief evaluate expression for every element of expansion pack in order
 #define swallow(expression) (void)(int[]){0, ((expression), 0)...}
 
-/// @brief ct stands for compile time
-//todo add namespace
-// namespace glcxx
-// {
-
+namespace glcxx
+{
    /// @brief stream nullptr
    inline std::ostream& operator<<(std::ostream& stream, std::nullptr_t)
    {
@@ -50,6 +47,17 @@
       return stream;
    }
 
+   /// @brief type holding pair of types
+   template<typename T1, typename T2>
+   struct tpair
+   {
+         using first   = T1;
+         using second  = T2;
+         using t1 = T1;
+         using t2 = T2;
+   };
+
+   /// @brief ct stands for compile time
    namespace ct
    {
       /// @brief return true if T is instantiation of Template
@@ -59,14 +67,6 @@
       /// @brief specialization
       template<template<typename...> class Template, typename... Params>
       struct instantiation_of<Template<Params...>, Template> : public std::true_type {};
-
-      /// @brief wrapper for naming arbitrary type
-      template<typename TName, typename T>
-      struct named_type
-      {
-            using tName = TName;
-            using type  = T;
-      };
 
       /// @brief function traits
       template<typename Func> struct function_traits;
@@ -374,7 +374,7 @@
       template<typename TString>
       using string_toupper = typename string_toupper_impl<TString>::type;
    }
-// }
+}
 
 /// @brief macros to generate compile time string type, maximum length supported
 /// is 64 chars
@@ -385,6 +385,6 @@
 #define glcxx_make_ctstring_helper16(str, offset) glcxx_make_ctstring_helper8(str, offset), glcxx_make_ctstring_helper8(str, offset+8)
 #define glcxx_make_ctstring_helper32(str, offset) glcxx_make_ctstring_helper16(str, offset), glcxx_make_ctstring_helper16(str, offset+16)
 #define glcxx_make_ctstring_helper64(str, offset) glcxx_make_ctstring_helper32(str, offset), glcxx_make_ctstring_helper32(str, offset+32)
-#define cts(str) ct::string_strip_char<'\0', ct::string<glcxx_make_ctstring_helper64(str, 0)>>
+#define cts(str) glcxx::ct::string_strip_char<'\0', glcxx::ct::string<glcxx_make_ctstring_helper64(str, 0)>>
 
 #endif

@@ -7,9 +7,8 @@
 
 #include "program.hpp"
 
-//todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief renderer, implements program creation and program selection
    /// @tparam list of program names
    template<typename... TProgramName>
@@ -59,5 +58,5 @@
          /// @brief current program index, points after last program by default
          size_t mCurrentProgramIndex = sizeof...(TProgramName);
    };
-// }
+}
 #endif

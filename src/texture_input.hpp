@@ -7,9 +7,8 @@
 
 #include "texture.hpp"
 
-// todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief base implementation for texture_input
    class texture_input_base
    {
@@ -87,6 +86,6 @@
             texture_input_base::set(value);
          }
    };
-// }
+}
 
 #endif

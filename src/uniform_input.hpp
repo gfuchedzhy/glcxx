@@ -7,9 +7,8 @@
 
 #include "input_var.hpp"
 
-//todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief base implementation for uniform program input
    template<typename TUniformTraits>
    class uniform_input_base
@@ -69,6 +68,6 @@
             base::set(value);
          }
    };
-// }
+}
 
 #endif

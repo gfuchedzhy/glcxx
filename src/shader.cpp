@@ -7,7 +7,7 @@
 
 //todo review this file
 
-shader::shader(const std::string& src, const GLenum shaderType)
+glcxx::shader::shader(const std::string& src, const GLenum shaderType)
 {
    const char* strType
       = (GL_VERTEX_SHADER == shaderType) ? "VERTEX"
@@ -44,7 +44,7 @@ shader::shader(const std::string& src, const GLenum shaderType)
    }
 }
 
-shader::~shader()
+glcxx::shader::~shader()
 {
    gl(glDeleteShader, mObject);
 }

@@ -8,9 +8,8 @@
 #include <string>
 #include "gl.hpp"
 
-//todo
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief shader holder
    class shader
    {
@@ -30,6 +29,6 @@
          /// @brief destructor
          ~shader();
    };
-// }
+}
 
 #endif

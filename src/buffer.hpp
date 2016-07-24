@@ -8,9 +8,8 @@
 #include "input_var.hpp"
 #include <memory>
 
-//todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief base class for all types of buffers
    class buffer_base
    {
@@ -166,6 +165,6 @@
    {
       return std::make_shared<index_buffer>(std::forward<TArgs>(args)...);
    }
-// }
+}
 
 #endif

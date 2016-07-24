@@ -12,9 +12,8 @@
 
 //todo review this file
 
-//todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
 //#if defined GL_LOG_ERR || defined GL_LOG_ALL
    /// @brief error callback: function name, scope, error type
    using glerror_cb_t = std::function<void(const std::stringstream&, const char*, GLenum)>;
@@ -61,11 +60,11 @@
    }
 
    void set_glerror_cb(glerror_cb_t cb);
-// }
+}
 
 #define GLCXX_STRINGIFY(x) #x
 #define GLCXX_TOSTRING(x) GLCXX_STRINGIFY(x)
-#define gl(glFunc, ...) ::detail::callGL(glFunc, #glFunc, __FILE__ ":" GLCXX_TOSTRING(__LINE__), ##__VA_ARGS__)
+#define gl(glFunc, ...) glcxx::detail::callGL(glFunc, #glFunc, __FILE__ ":" GLCXX_TOSTRING(__LINE__), ##__VA_ARGS__)
 // #else // no logging
 // #define gl(glFunc, ...) glFunc(__VA_ARGS__)
 // #endif

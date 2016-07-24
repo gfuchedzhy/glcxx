@@ -8,9 +8,8 @@
 #include <memory>
 #include "input_var.hpp"
 
-// todo namespace
-// namespace glcxx
-// {
+namespace glcxx
+{
    /// @brief texture resource holder
    class texture
    {
@@ -54,6 +53,6 @@
 
    /// @brief texture ptr
    using texture_ptr = std::shared_ptr<texture>;
-// }
+}
 
 #endif
