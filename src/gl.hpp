@@ -49,7 +49,7 @@
          if (glerror_cb)
          {
             const GLenum err = glGetError();
-            // if (GL_NO_ERROR != err)
+            if (GL_NO_ERROR != err)
             {
                std::stringstream str;
                str << glFuncName << std::tie(args...);
