@@ -21,7 +21,7 @@
          /// @brief shader object id
          GLuint mObject = 0;
 
-         friend class CProgramBase;
+         friend class program_base;
 
       public:
          /// @brief constructor

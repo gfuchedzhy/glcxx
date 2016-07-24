@@ -2,7 +2,7 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "Program.hpp"
+#include "program.hpp"
 
 namespace
 {
@@ -52,17 +52,19 @@ namespace
 )";
 }
 
+//todo review this file
+
 // log program creation, concat declarations, helper code and sources, then pass
 // them to delegate constructor
-CProgramBase::CProgramBase(const char* name, const char* declarations, const char* src, bool hasGeometryShader)
-   : CProgramBase((Log::msg("creating program ", name), std::string(declarations) + glslHelperMacros + src), hasGeometryShader)
+program_base::program_base(const char* name, const char* declarations, const char* src, bool has_geom_shader)
+   : program_base(std::string(declarations) + glslHelperMacros + src, has_geom_shader)
 {}
 
-CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
+program_base::program_base(const std::string& src, bool has_geom_shader)
    : mObject(gl(glCreateProgram))
-   , mVertexShader((Log::msg("program id ", mObject), src), GL_VERTEX_SHADER)
+   , mVertexShader(src, GL_VERTEX_SHADER)
    , mFragmentShader(src, GL_FRAGMENT_SHADER)
-   , mGeometryShader(hasGeometryShader ? std::make_unique<CShader>(src, GL_GEOMETRY_SHADER) : nullptr)
+   , mGeometryShader(has_geom_shader ? std::make_unique<shader>(src, GL_GEOMETRY_SHADER) : nullptr)
 {
    gl(glAttachShader, mObject, mVertexShader.mObject);
    gl(glAttachShader, mObject, mFragmentShader.mObject);
@@ -80,14 +82,14 @@ CProgramBase::CProgramBase(const std::string& src, bool hasGeometryShader)
          auto str = std::make_unique<GLchar[]>(logLength);
          GLsizei len = 0;
          gl(glGetProgramInfoLog, mObject, logLength, &len, str.get());
-         Log::err("program link failed: ", str.get());
+         // Log::err("program link failed: ", str.get());
       }
-      this->~CProgramBase();
+      this->~program_base();
       throw std::runtime_error{"program linking failed"};
    }
 }
 
-CProgramBase::~CProgramBase()
+program_base::~program_base()
 {
    gl(glDetachShader, mObject, mVertexShader.mObject);
    gl(glDetachShader, mObject, mFragmentShader.mObject);

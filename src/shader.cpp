@@ -5,7 +5,7 @@
 #include <memory>
 #include "shader.hpp"
 
-//review this file
+//todo review this file
 
 shader::shader(const std::string& src, const GLenum shaderType)
 {
