@@ -11,37 +11,42 @@
 namespace glcxx
 {
    /// @brief resource holder for opengl program object
-   class program_base
+   class program_res_holder
    {
          /// @brief disabled stuff
-         program_base(const program_base&) = delete;
-         program_base& operator=(const program_base& other) = delete;
-
-         /// @brief delegate constructor
-         program_base(const std::string& src, bool has_geom_shader);
+         program_res_holder(const program_res_holder&) = delete;
+         program_res_holder& operator=(const program_res_holder&) = delete;
 
       public:
-         /// @brief constuctor
-         program_base(const char* name, const char* declarations, const char* src, bool has_geom_shader);
+         /// @brief constructor
+         program_res_holder();
 
          /// @brief destructor
-         ~program_base();
+         ~program_res_holder();
 
          /// @brief selects program
-         void select() const
-         {
-            gl(glUseProgram, mObject);
-         }
+         void select() const;
 
       protected:
          /// @brief program object id
          GLuint mObject;
+   };
 
-      private:
+   class program_base : public program_res_holder
+   {
          /// @brief shaders, geometry shader is optional
          shader mVertexShader;
          shader mFragmentShader;
          std::unique_ptr<shader> mGeometryShader;
+
+      public:
+         /// @brief constuctor
+         program_base(const char* name, const std::string& glsl_version, const std::string& src, bool has_geom_shader);
+   };
+
+   struct program_creation_error : std::runtime_error
+   {
+         explicit program_creation_error(const char* name, const std::string& msg);
    };
 
    namespace detail
@@ -121,8 +126,8 @@ namespace glcxx
                                                 typename std::conditional<HasGeomShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type>;
 
             /// @brief constructor
-            program(const char* src)
-               : program_base(TName::chars, declarations::chars, src, HasGeomShader)
+            program(const std::string& glsl_version, const std::string& src)
+               : program_base(TName::chars, glsl_version, std::string(declarations::chars) + src, HasGeomShader)
                , TProgramInput(mObject)...
             {}
 
