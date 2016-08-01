@@ -12,6 +12,85 @@
 
 namespace glcxx
 {
+   /// @brief functions to attach uniforms, replace huge amount of different c
+   /// functions with properly overloaded fucntions, as their ammount is huge,
+   /// use macro to reduce repitition
+   #define DECLARE_ATTACH_UNIFORM_FUNCTIONS(type, functionSuffix)       \
+   inline void attach_uniform(GLint location, type val)                 \
+   {                                                                    \
+      glcxx_gl(glUniform1##functionSuffix, location, val);              \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attach_uniform(GLint location, const glm::tvec2<type, P>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform2##functionSuffix, location, val.x, val.y);     \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attach_uniform(GLint location, const glm::tvec3<type, P>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform3##functionSuffix, location, val.x, val.y, val.z); \
+   }                                                                    \
+   template<glm::precision P>                                           \
+   inline void attach_uniform(GLint location, const glm::tvec4<type, P>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform4##functionSuffix, location, val.x, val.y, val.z, val.w); \
+   }                                                                    \
+   template<size_t N>                                                   \
+   inline void attach_uniform(GLint location, const std::array<type, N>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform1##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attach_uniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform2##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attach_uniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform3##functionSuffix##v, location, glm::value_ptr(val[0])); \
+   }                                                                    \
+   template<size_t N, glm::precision P>                                 \
+   inline void attach_uniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
+   {                                                                    \
+      glcxx_gl(glUniform4##functionSuffix##v, location, glm::value_ptr(val[0])); \
+   }
+
+   /// @brief actual function definitions
+   DECLARE_ATTACH_UNIFORM_FUNCTIONS(float, f);
+   DECLARE_ATTACH_UNIFORM_FUNCTIONS(int, i);
+   DECLARE_ATTACH_UNIFORM_FUNCTIONS(unsigned int, ui);
+
+   /// @brief overloads for matrices
+   template<glm::precision P>
+   inline void attach_uniform(GLint location, const glm::tmat4x4<float, P>& val)
+   {
+      glcxx_gl(glUniformMatrix4fv, location, 1, GL_FALSE, glm::value_ptr(val));
+   }
+   template<size_t N, glm::precision P>
+   inline void attach_uniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
+   {
+      glcxx_gl(glUniformMatrix4fv, location, N, GL_FALSE, glm::value_ptr(val[0]));
+   }
+
+   /// @brief get uniform location
+   inline auto get_uniform_loc(GLuint program, const char* name)
+   {
+      const auto location = glcxx_gl(glGetUniformLocation, program, name);
+      //todo exception?
+      //Log::msg("uniform location ", name, "=", location);
+      return location;
+   }
+
+   /// @brief get attribute location
+   inline auto get_attrib_loc(GLuint program, const char* name)
+   {
+      const auto location = glcxx_gl(glGetAttribLocation, program, name);
+      //todo exception?
+      //Log::msg("attribute location ", name, "=", location);
+      return location;
+   }
+
    /// @brief tags to place declarations to proper shaders
    namespace tag
    {
@@ -24,30 +103,30 @@ namespace glcxx
       struct all;
    }
 
+   /// @brief return true if shader of type ShaderTag has declaration with
+   /// DeclTag declaration tag
+   template<typename ShaderTag, typename DeclTag> struct shader_has_decl;
+   template<typename DeclTag>
+   struct shader_has_decl<tag::vertex, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::vertex, tag::vertgeom, tag::vertfrag, tag::all>,
+                                                          DeclTag>::value;
+   };
+   template<typename DeclTag>
+   struct shader_has_decl<tag::geometry, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::geometry, tag::vertgeom, tag::geomfrag, tag::all>,
+                                                          DeclTag>::value;
+   };
+   template<typename DeclTag>
+   struct shader_has_decl<tag::fragment, DeclTag>
+   {
+         static constexpr bool value = ct::tuple_contains<std::tuple<tag::fragment, tag::vertfrag, tag::geomfrag, tag::all>,
+                                                          DeclTag>::value;
+   };
+
    namespace glsl
    {
-      /// @brief return true if shader of type ShaderTag has declaration with
-      /// DeclTag declaration tag
-      template<typename ShaderTag, typename DeclTag> struct shader_has_decl;
-      template<typename DeclTag>
-      struct shader_has_decl<tag::vertex, DeclTag>
-      {
-            static constexpr bool value = ct::tuple_contains<std::tuple<tag::vertex, tag::vertgeom, tag::vertfrag, tag::all>,
-                                                             DeclTag>::value;
-      };
-      template<typename DeclTag>
-      struct shader_has_decl<tag::geometry, DeclTag>
-      {
-            static constexpr bool value = ct::tuple_contains<std::tuple<tag::geometry, tag::vertgeom, tag::geomfrag, tag::all>,
-                                                             DeclTag>::value;
-      };
-      template<typename DeclTag>
-      struct shader_has_decl<tag::fragment, DeclTag>
-      {
-            static constexpr bool value = ct::tuple_contains<std::tuple<tag::fragment, tag::vertfrag, tag::geomfrag, tag::all>,
-                                                             DeclTag>::value;
-      };
-
       /// @brief compile time conversion from c++ types to glsl types
       template<typename T> struct type_id {};
       template<> struct type_id<float>          { static constexpr GLenum value = GL_FLOAT; };
@@ -58,24 +137,6 @@ namespace glcxx
       template<> struct type_id<unsigned short> { static constexpr GLenum value = GL_UNSIGNED_SHORT; };
       template<> struct type_id<signed int>     { static constexpr GLenum value = GL_INT; };
       template<> struct type_id<unsigned int>   { static constexpr GLenum value = GL_UNSIGNED_INT; };
-
-      /// @brief get uniform location
-      inline auto get_uniform_loc(GLuint program, const char* name)
-      {
-         const auto location = glcxx_gl(glGetUniformLocation, program, name);
-         //todo exception?
-         //Log::msg("uniform location ", name, "=", location);
-         return location;
-      }
-
-      /// @brief get attribute location
-      inline auto get_attrib_loc(GLuint program, const char* name)
-      {
-         const auto location = glcxx_gl(glGetAttribLocation, program, name);
-         //todo exception?
-         //Log::msg("attribute location ", name, "=", location);
-         return location;
-      }
 
       /// @brief compile time glsl prefixes for glsl
       namespace detail {
@@ -153,67 +214,6 @@ namespace glcxx
       /// @brief shortcut
       template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class THolder>
       using type_name = typename type_traits<TypeTo, EXTRA, THolder>::type_name;
-
-      /// @brief functions to attach uniforms, replace huge amount of different c
-      /// functions with properly overloaded fucntions, as their ammount is huge,
-      /// use macro to reduce repitition
-      #define DECLARE_ATTACH_UNIFORM_FUNCTIONS(type, functionSuffix)    \
-      inline void attach_uniform(GLint location, type val)               \
-      {                                                                 \
-         glcxx_gl(glUniform1##functionSuffix, location, val);                 \
-      }                                                                 \
-      template<glm::precision P>                                        \
-      inline void attach_uniform(GLint location, const glm::tvec2<type, P>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform2##functionSuffix, location, val.x, val.y);        \
-      }                                                                 \
-      template<glm::precision P>                                        \
-      inline void attach_uniform(GLint location, const glm::tvec3<type, P>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform3##functionSuffix, location, val.x, val.y, val.z); \
-      }                                                                 \
-      template<glm::precision P>                                        \
-      inline void attach_uniform(GLint location, const glm::tvec4<type, P>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform4##functionSuffix, location, val.x, val.y, val.z, val.w); \
-      }                                                                 \
-      template<size_t N>                                                \
-      inline void attach_uniform(GLint location, const std::array<type, N>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform1##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
-      }                                                                 \
-      template<size_t N, glm::precision P>                              \
-      inline void attach_uniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform2##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
-      }                                                                 \
-      template<size_t N, glm::precision P>                              \
-      inline void attach_uniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform3##functionSuffix##v, location, glm::value_ptr(val[0])); \
-      }                                                                 \
-      template<size_t N, glm::precision P>                              \
-      inline void attach_uniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
-      {                                                                 \
-         glcxx_gl(glUniform4##functionSuffix##v, location, glm::value_ptr(val[0])); \
-      }
-
-      /// @brief actual function definitions
-      DECLARE_ATTACH_UNIFORM_FUNCTIONS(float, f);
-      DECLARE_ATTACH_UNIFORM_FUNCTIONS(int, i);
-      DECLARE_ATTACH_UNIFORM_FUNCTIONS(unsigned int, ui);
-
-      /// @brief overloads for matrices
-      template<glm::precision P>
-      inline void attach_uniform(GLint location, const glm::tmat4x4<float, P>& val)
-      {
-         glcxx_gl(glUniformMatrix4fv, location, 1, GL_FALSE, glm::value_ptr(val));
-      }
-      template<size_t N, glm::precision P>
-      inline void attach_uniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
-      {
-         glcxx_gl(glUniformMatrix4fv, location, N, GL_FALSE, glm::value_ptr(val[0]));
-      }
 
       /// @brief converter which does nothing if cpu type and glsl type exactly
       /// match and converts data if they differ

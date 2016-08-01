@@ -37,7 +37,7 @@ namespace glcxx
 
          /// @brief constructor
          vao_input(const GLuint program)
-            : mLocations{{glsl::get_attrib_loc(program, TAttribName::chars)...}}
+            : mLocations{{get_attrib_loc(program, TAttribName::chars)...}}
             , mProgramID(program)
          {}
 

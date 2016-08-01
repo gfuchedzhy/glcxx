@@ -57,7 +57,7 @@ namespace glcxx
             {
                glcxx_gl(glActiveTexture, GL_TEXTURE0 + mSamplerID);
                mTexture->bind();
-               glsl::attach_uniform(mLocation, mSamplerID);
+               attach_uniform(mLocation, mSamplerID);
             }
          }
    };
@@ -75,7 +75,7 @@ namespace glcxx
 
          /// @brief constructor
          texture_input(const GLuint program)
-            : texture_input_base(glsl::get_uniform_loc(program, TName::chars), samplerID)
+            : texture_input_base(get_uniform_loc(program, TName::chars), samplerID)
          {}
 
          /// @brief named set method

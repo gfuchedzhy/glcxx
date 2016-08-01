@@ -114,15 +114,15 @@ namespace glcxx
             /// @brief ctstring containing glsl declarations of all program inputs
             using declarations = ct::string_cat<defines,
                                                 cts("\n#ifdef VERTEX\n"),
-                                                typename std::conditional<glsl::shader_has_decl<tag::vertex, typename TProgramInput::decl_tag>::value,
+                                                typename std::conditional<shader_has_decl<tag::vertex, typename TProgramInput::decl_tag>::value,
                                                                           typename TProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#elif defined GEOMETRY\n"),
-                                                typename std::conditional<glsl::shader_has_decl<tag::geometry, typename TProgramInput::decl_tag>::value,
+                                                typename std::conditional<shader_has_decl<tag::geometry, typename TProgramInput::decl_tag>::value,
                                                                           typename TProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#else\n"),
-                                                typename std::conditional<glsl::shader_has_decl<tag::fragment, typename TProgramInput::decl_tag>::value,
+                                                typename std::conditional<shader_has_decl<tag::fragment, typename TProgramInput::decl_tag>::value,
                                                                           typename TProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#endif\n"),
@@ -157,7 +157,7 @@ namespace glcxx
       /// has uniform for geometry shader, or marked explicitly with tag::geometry
       template<typename T> struct is_geom
       {
-            static constexpr bool value = glsl::shader_has_decl<tag::geometry, typename T::decl_tag>::value;
+            static constexpr bool value = shader_has_decl<tag::geometry, typename T::decl_tag>::value;
       };
       template<> struct is_geom<tag::geometry> { static constexpr bool value = true; };
 

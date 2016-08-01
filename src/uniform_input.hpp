@@ -31,7 +31,7 @@ namespace glcxx
             if (mUniformData != value)
             {
                mUniformData = value;
-               glsl::attach_uniform(mLocation, glsl::converter<typename TUniformTraits::glsl_data>::convert(mUniformData));
+               attach_uniform(mLocation, glsl::converter<typename TUniformTraits::glsl_data>::convert(mUniformData));
             }
          }
 
@@ -57,7 +57,7 @@ namespace glcxx
 
          /// @brief constructor
          uniform_input(const GLuint program)
-            : base(glsl::get_uniform_loc(program, TName::chars))
+            : base(get_uniform_loc(program, TName::chars))
          {}
 
          /// @brief named set method
