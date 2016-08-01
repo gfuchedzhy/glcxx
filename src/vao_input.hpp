@@ -60,8 +60,8 @@ namespace glcxx
             {
                vao.mProgramID = mProgramID;
                vao.template bind_buffer<cts("indices")>();
-               swallow(vao.template bind_buffer<TAttribName>() &&
-                       (TAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<TAttribName...>, TAttribName>::value]), true));
+               glcxx_swallow(vao.template bind_buffer<TAttribName>() &&
+                             (TAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<TAttribName...>, TAttribName>::value]), true));
             }
             vao.draw_elements();
          }
@@ -79,10 +79,10 @@ namespace glcxx
             if (mProgramID != vao.mProgramID)
             {
                vao.mProgramID = mProgramID;
-               swallow(vao.template bind_buffer<TAttribName>() &&
-                    (TAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<TAttribName...>, TAttribName>::value]), true));
+               glcxx_swallow(vao.template bind_buffer<TAttribName>() &&
+                             (TAttribTraits::attach(mLocations[ct::tuple_find<std::tuple<TAttribName...>, TAttribName>::value]), true));
             }
-            gl(glDrawArrays, mode, 0, size);
+            glcxx_gl(glDrawArrays, mode, 0, size);
          }
 
       private:

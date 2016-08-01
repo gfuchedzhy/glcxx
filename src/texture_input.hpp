@@ -29,7 +29,19 @@ namespace glcxx
          {}
 
          /// @brief set new texture object as program input
-         void set(const texture_ptr& value);
+         void set(const texture_ptr& value)
+         {
+            if (mTexture != value)
+            {
+               if (mTexture)
+               {
+                  glcxx_gl(glActiveTexture, GL_TEXTURE0 + mSamplerID);
+                  mTexture->unbind();
+               }
+               mTexture = value;
+               attach();
+            }
+         }
 
          /// @brief called after program was selected
          void select() const
@@ -39,7 +51,15 @@ namespace glcxx
 
       private: // impl
          /// @brief attach texture
-         void attach() const;
+         void attach() const
+         {
+            if (mTexture)
+            {
+               glcxx_gl(glActiveTexture, GL_TEXTURE0 + mSamplerID);
+               mTexture->bind();
+               glsl::attach_uniform(mLocation, mSamplerID);
+            }
+         }
    };
 
    /// @brief holds state of program's texture object

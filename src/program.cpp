@@ -5,17 +5,12 @@
 #include "program.hpp"
 
 glcxx::program_res_holder::program_res_holder()
-   : mObject(gl(glCreateProgram))
+   : mObject(glcxx_gl(glCreateProgram))
 {}
 
 glcxx::program_res_holder::~program_res_holder()
 {
-   gl(glDeleteProgram, mObject);
-}
-
-void glcxx::program_res_holder::select() const
-{
-   gl(glUseProgram, mObject);
+   glcxx_gl(glDeleteProgram, mObject);
 }
 
 glcxx::program_base::program_base(const char* name, const std::string& glsl_version, const std::string& src, bool has_geom_shader)
@@ -24,18 +19,18 @@ glcxx::program_base::program_base(const char* name, const std::string& glsl_vers
        , mFragmentShader(glsl_version + "\n#define FRAGMENT\n" + src, mObject, GL_FRAGMENT_SHADER)
        , mGeometryShader(has_geom_shader ? std::make_unique<shader>(glsl_version + "\n#define GEOMETRY\n" + src, mObject, GL_GEOMETRY_SHADER) : nullptr)
 {
-   gl(glLinkProgram, mObject);
+   glcxx_gl(glLinkProgram, mObject);
    GLint linked;
-   gl(glGetProgramiv, mObject, GL_LINK_STATUS, &linked);
+   glcxx_gl(glGetProgramiv, mObject, GL_LINK_STATUS, &linked);
    if (!linked)
    {
       GLint log_length = 0;
-      gl(glGetProgramiv, mObject, GL_INFO_LOG_LENGTH, &log_length);
+      glcxx_gl(glGetProgramiv, mObject, GL_INFO_LOG_LENGTH, &log_length);
       auto error_msg = std::make_unique<GLchar[]>(log_length);
       if (log_length > 0)
       {
          GLsizei len = 0;
-         gl(glGetProgramInfoLog, mObject, log_length, &len, error_msg.get());
+         glcxx_gl(glGetProgramInfoLog, mObject, log_length, &len, error_msg.get());
       }
       throw program_creation_error(name, std::string("program linking failed:\n") + error_msg.get());
    }

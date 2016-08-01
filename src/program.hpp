@@ -25,7 +25,10 @@ namespace glcxx
          ~program_res_holder();
 
          /// @brief selects program
-         void select() const;
+         void select() const
+         {
+            glcxx_gl(glUseProgram, mObject);
+         }
 
       protected:
          /// @brief program object id
@@ -135,7 +138,7 @@ namespace glcxx
             void select() const
             {
                program_base::select();
-               swallow(TProgramInput::select());
+               glcxx_swallow(TProgramInput::select());
             }
 
             /// @brief forward named set method to base class which has valid
@@ -144,7 +147,7 @@ namespace glcxx
             /// using TProgramInput::set...; to bring all base setter into current
             /// class' scope, so we need this forwarding function
             template<typename TSetName>
-               void set(set_arg_type<TSetName> value)
+            void set(set_arg_type<TSetName> value)
             {
                input_type<TSetName>::template set<TSetName>(value);
             }

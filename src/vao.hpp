@@ -29,7 +29,7 @@ namespace glcxx
          /// @brief constructor
          vao_base()
          {
-            gl(glGenVertexArrays, 1, &mID);
+            glcxx_gl(glGenVertexArrays, 1, &mID);
          }
 
          /// @brief move constructor
@@ -45,7 +45,7 @@ namespace glcxx
          ~vao_base()
          {
             if (mID)
-               gl(glDeleteVertexArrays, 1, &mID);
+               glcxx_gl(glDeleteVertexArrays, 1, &mID);
          }
 
          friend void swap(vao_base& x, vao_base& y)
@@ -64,13 +64,13 @@ namespace glcxx
          /// @brief binds vao
          void bind() const
          {
-            gl(glBindVertexArray, mID);
+            glcxx_gl(glBindVertexArray, mID);
          }
 
          /// @brief unbinds vao
          static void unbind()
          {
-            gl(glBindVertexArray, 0);
+            glcxx_gl(glBindVertexArray, 0);
          }
    };
 
@@ -166,7 +166,7 @@ namespace glcxx
    inline auto make_vao(TBufferPtr&&... buf)
    {
       vao<tpair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
-      swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
+      glcxx_swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
       return vao;
    }
 
@@ -176,7 +176,7 @@ namespace glcxx
    {
       indexed_vao<tpair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
       vao.template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
-      swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
+      glcxx_swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
       return vao;
    }
 }

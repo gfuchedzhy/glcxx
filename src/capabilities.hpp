@@ -19,21 +19,21 @@ namespace glcxx
          /// @brief set default blending factors
          static void set_default_factors()
          {
-            gl(glBlendFunc, default_src_factor, default_dst_factor);
+            glcxx_gl(glBlendFunc, default_src_factor, default_dst_factor);
          }
 
          /// @brief constructor
          enable_blending_guard(GLenum sfactor = default_src_factor, GLenum dfactor = default_dst_factor)
          {
-            gl(glEnable, GL_BLEND);
+            glcxx_gl(glEnable, GL_BLEND);
             if (sfactor != default_src_factor || dfactor != default_dst_factor)
-               gl(glBlendFunc, sfactor, dfactor);
+               glcxx_gl(glBlendFunc, sfactor, dfactor);
          }
 
          /// @brief destructor
          ~enable_blending_guard()
          {
-            gl(glDisable, GL_BLEND);
+            glcxx_gl(glDisable, GL_BLEND);
             set_default_factors();
          }
    };
@@ -44,13 +44,13 @@ namespace glcxx
          /// @brief constructor
          disable_depth_test_guard()
          {
-            gl(glDisable, GL_DEPTH_TEST);
+            glcxx_gl(glDisable, GL_DEPTH_TEST);
          }
 
          /// @brief destructor
          ~disable_depth_test_guard()
          {
-            gl(glEnable, GL_DEPTH_TEST);
+            glcxx_gl(glEnable, GL_DEPTH_TEST);
          }
    };
 
@@ -60,13 +60,13 @@ namespace glcxx
          /// @brief constructor
          disable_depth_mask_guard()
          {
-            gl(glDepthMask, GL_FALSE);
+            glcxx_gl(glDepthMask, GL_FALSE);
          }
 
          /// @brief destructor
          ~disable_depth_mask_guard()
          {
-            gl(glDepthMask, GL_TRUE);
+            glcxx_gl(glDepthMask, GL_TRUE);
          }
    };
 }

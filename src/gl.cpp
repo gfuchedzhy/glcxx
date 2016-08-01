@@ -4,9 +4,15 @@
 
 #include "gl.hpp"
 
-glcxx::glerror_cb_t glcxx::detail::glerror_cb;
-
-void glcxx::set_glerror_cb(glerror_cb_t cb)
+namespace glcxx
 {
-   detail::glerror_cb = std::move(cb);
+   namespace detail
+   {
+      glerror_cb_t glerror_cb;
+   }
+
+   void set_glerror_cb(glerror_cb_t cb)
+   {
+      detail::glerror_cb = std::move(cb);
+   }
 }

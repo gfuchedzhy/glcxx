@@ -11,7 +11,7 @@
 #include <ostream>
 
 /// @brief evaluate expression for every element of expansion pack in order
-#define swallow(expression) (void)(int[]){0, ((expression), 0)...}
+#define glcxx_swallow(expression) (void)(int[]){0, ((expression), 0)...}
 
 namespace glcxx
 {
@@ -34,7 +34,7 @@ namespace glcxx
       inline void ostream_tuple(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
       {
          stream << '(' << std::get<0>(t);
-         swallow(stream << ',' << std::get<I+1>(t));
+         glcxx_swallow(stream << ',' << std::get<I+1>(t));
          stream << ')';
       }
    }

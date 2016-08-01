@@ -29,25 +29,25 @@ namespace glcxx
          texture(GLenum target)
             : mTarget(target)
          {
-            gl(glGenTextures, 1, &mID);
+            glcxx_gl(glGenTextures, 1, &mID);
          }
 
          /// @brief frees texture
          ~texture()
          {
-            gl(glDeleteTextures, 1, &mID);
+            glcxx_gl(glDeleteTextures, 1, &mID);
          }
 
          /// @brief binds texture
          void bind() const
          {
-            gl(glBindTexture, mTarget, mID);
+            glcxx_gl(glBindTexture, mTarget, mID);
          }
 
          /// @brief unbinds texture
          void unbind()
          {
-            gl(glBindTexture, mTarget, 0);
+            glcxx_gl(glBindTexture, mTarget, 0);
          }
    };
 

@@ -32,26 +32,26 @@ namespace glcxx
             : mTarget(target)
             , mUsage(usage)
          {
-            gl(glGenBuffers, 1, &mID);
+            glcxx_gl(glGenBuffers, 1, &mID);
             upload(data, size);
          }
 
          /// @brief free buffer
          ~buffer_base()
          {
-            gl(glDeleteBuffers, 1, &mID);
+            glcxx_gl(glDeleteBuffers, 1, &mID);
          }
 
          /// @brief binds buffer
          void bind() const
          {
-            gl(glBindBuffer, mTarget, mID);
+            glcxx_gl(glBindBuffer, mTarget, mID);
          }
 
          /// @brief unbinds buffer
          void unbind() const
          {
-            gl(glBindBuffer, mTarget, 0);
+            glcxx_gl(glBindBuffer, mTarget, 0);
          }
 
          /// @brief uploads new data to buffer, usage = 0 means do not change usage
@@ -60,7 +60,7 @@ namespace glcxx
             if (usage)
                mUsage = usage;
             bind();
-            gl(glBufferData, mTarget, size, data, mUsage);
+            glcxx_gl(glBufferData, mTarget, size, data, mUsage);
             unbind();
          }
    };
@@ -118,7 +118,7 @@ namespace glcxx
                           // to preserve vao's internal state, note that this in not the
                           // case for vertex buffers as their bindings are not part of
                           // vao's state
-                          (gl(glBindVertexArray, 0), GL_ELEMENT_ARRAY_BUFFER))
+                          (glcxx_gl(glBindVertexArray, 0), GL_ELEMENT_ARRAY_BUFFER))
             , mSize(size)
             , mMode(mode)
             , mType(glsl::type_id<T>::value)
@@ -136,7 +136,7 @@ namespace glcxx
             // before binding index buffer for upload vao should be unbound to
             // preserve vao's internal state, note that this in not the case for
             // vertex buffers as their bindings are not part of vao's state
-            gl(glBindVertexArray, 0);
+            glcxx_gl(glBindVertexArray, 0);
             buffer_base::upload(data, size*sizeof(T), usage);
             mSize = size;
             mMode = mode;
@@ -146,13 +146,13 @@ namespace glcxx
          /// @brief draw with this index buffer
          void draw() const
          {
-            gl(glDrawElements, mMode, mSize, mType, nullptr);
+            glcxx_gl(glDrawElements, mMode, mSize, mType, nullptr);
          }
 
          /// @brief unbind index buffer
          static void unbind()
          {
-            gl(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
+            glcxx_gl(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
          }
    };
 

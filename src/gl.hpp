@@ -10,13 +10,16 @@
 #include <sstream>
 #include "utils.hpp"
 
-//todo review this file
-
 namespace glcxx
 {
-//#if defined GL_LOG_ERR || defined GL_LOG_ALL
    /// @brief error callback: function name, scope, error type
+   /// @note this typedef should be visible regardless of error check presense,
+   /// because library with checks can be built for client without checks
    using glerror_cb_t = std::function<void(const std::stringstream&, const char*, GLenum)>;
+
+#ifndef GLCXX_SUPPRESS_GL_ERROR_CHECKS
+   /// @brief set error callback
+   void set_glerror_cb(glerror_cb_t cb);
 
    namespace detail
    {
@@ -24,10 +27,10 @@ namespace glcxx
       extern glerror_cb_t glerror_cb;
 
       // gl functions doesn't use move semantics and accept only scalar types,
-      // therefore no need in perfect forwarding, no need in passing by reference,
-      // and this wrappers are inline anyway
+      // therefore no need in perfect forwarding, no need in passing by
+      // reference, and this wrappers are inline anyway
       template<typename TFunction, typename... TArgs>
-      inline auto substituteVoidWith0(TFunction glFunc, TArgs... args) ->
+      inline auto call_gl_no_void_return(TFunction glFunc, TArgs... args) ->
          typename std::enable_if<std::is_void<decltype(glFunc(args...))>::value, int>::type
       {
          glFunc(args...);
@@ -35,16 +38,16 @@ namespace glcxx
       }
 
       template<typename TFunction, typename... TArgs>
-      inline auto substituteVoidWith0(TFunction glFunc, TArgs... args) ->
+      inline auto call_gl_no_void_return(TFunction glFunc, TArgs... args) ->
          typename std::enable_if<!std::is_void<decltype(glFunc(args...))>::value, decltype(glFunc(args...))>::type
       {
          return glFunc(args...);
       }
 
       template<typename TFunction, typename... TArgs>
-      auto callGL(TFunction   glFunc, const char* glFuncName, const char* scope, TArgs... args)
+      auto call_gl(TFunction glFunc, const char* glFuncName, const char* scope, TArgs... args)
       {
-         auto retVal = substituteVoidWith0(glFunc, args...);
+         auto retVal = call_gl_no_void_return(glFunc, args...);
          if (glerror_cb)
          {
             const GLenum err = glGetError();
@@ -59,14 +62,14 @@ namespace glcxx
       }
    }
 
-   void set_glerror_cb(glerror_cb_t cb);
-}
-
 #define GLCXX_STRINGIFY(x) #x
 #define GLCXX_TOSTRING(x) GLCXX_STRINGIFY(x)
-#define gl(glFunc, ...) glcxx::detail::callGL(glFunc, #glFunc, __FILE__ ":" GLCXX_TOSTRING(__LINE__), ##__VA_ARGS__)
-// #else // no logging
-// #define gl(glFunc, ...) glFunc(__VA_ARGS__)
-// #endif
+#define glcxx_gl(glFunc, ...) glcxx::detail::call_gl(glFunc, #glFunc, __FILE__ ":" GLCXX_TOSTRING(__LINE__), ##__VA_ARGS__)
 
+#else // no logging
+#define glcxx_gl(glFunc, ...) glFunc(__VA_ARGS__)
 #endif
+
+} // namespace
+
+#endif // include guard
