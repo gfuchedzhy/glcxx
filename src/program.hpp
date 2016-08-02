@@ -44,12 +44,7 @@ namespace glcxx
 
       public:
          /// @brief constuctor
-         program_base(const char* name, const std::string& glsl_version, const std::string& src, bool has_geom_shader);
-   };
-
-   struct program_creation_error : std::runtime_error
-   {
-         explicit program_creation_error(const char* name, const std::string& msg);
+         program_base(const std::string& glsl_version, const std::string& src, bool has_geom_shader);
    };
 
    namespace detail
@@ -130,9 +125,19 @@ namespace glcxx
 
             /// @brief constructor
             program(const std::string& glsl_version, const std::string& src)
-               : program_base(TName::chars, glsl_version, std::string(declarations::chars) + src, HasGeomShader)
-               , TProgramInput(mObject)...
+               try : program_base(glsl_version, std::string(declarations::chars) + src, HasGeomShader)
+                   , TProgramInput(mObject)...
             {}
+            catch(glprogram_error& e) // add usefull info to exception and rethrow
+            {
+               e.prepend(" program failed:\n");
+               e.prepend(TName::chars);
+               e.append("\n");
+               e.append(glsl_version.c_str());
+               e.append(declarations::chars);
+               e.append(src.c_str());
+               throw;
+            }
 
             /// @brief @see program_base::select
             void select() const

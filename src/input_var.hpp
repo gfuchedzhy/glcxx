@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "gl.hpp"
 #include "utils.hpp"
+#include "except.hpp"
 
 namespace glcxx
 {
@@ -77,8 +78,8 @@ namespace glcxx
    inline auto get_uniform_loc(GLuint program, const char* name)
    {
       const auto location = glcxx_gl(glGetUniformLocation, program, name);
-      //todo exception?
-      //Log::msg("uniform location ", name, "=", location);
+      if (-1 == location)
+         throw input_location_error(std::string("uniform ") + name + " location wasn't found");
       return location;
    }
 
@@ -86,8 +87,8 @@ namespace glcxx
    inline auto get_attrib_loc(GLuint program, const char* name)
    {
       const auto location = glcxx_gl(glGetAttribLocation, program, name);
-      //todo exception?
-      //Log::msg("attribute location ", name, "=", location);
+      if (-1 == location)
+         throw input_location_error(std::string("attribute ") + name + " location wasn't found");
       return location;
    }
 

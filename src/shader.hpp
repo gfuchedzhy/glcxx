@@ -5,7 +5,6 @@
 #ifndef GLCXX_SRC_SHADER_HPP
 #define GLCXX_SRC_SHADER_HPP
 
-#include <stdexcept>
 #include <string>
 #include "gl.hpp"
 
@@ -41,11 +40,6 @@ namespace glcxx
 
          /// @brief destructor
          ~shader();
-   };
-
-   struct shader_compile_error : std::runtime_error
-   {
-         explicit shader_compile_error(const std::string& msg);
    };
 }
 

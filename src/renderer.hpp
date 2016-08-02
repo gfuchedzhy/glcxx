@@ -30,7 +30,9 @@ namespace glcxx
          /// @brief initializes all programs of this renderer
          renderer(const std::string& glsl_version, const std::string& common_decl)
          {
-            mPrograms = std::make_tuple(std::make_unique<program_type<TProgramName>>(glsl_version, common_decl + programSrc<base_name<TProgramName>>())...);
+            mPrograms = std::make_tuple(
+               std::make_unique<program_type<TProgramName>>(
+                  glsl_version, common_decl + programSrc<base_name<TProgramName>>())...);
          }
 
          /// @brief searches given program by name in compile time, deselects
