@@ -36,7 +36,7 @@ namespace glcxx
 
       public:
          /// @brief constructor
-         shader(const std::string& src, GLuint program, GLenum shader_type);
+         shader(const std::string& glsl_version, std::string src, GLuint program, GLenum shader_type);
 
          /// @brief destructor
          ~shader();

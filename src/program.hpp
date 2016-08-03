@@ -43,8 +43,11 @@ namespace glcxx
          std::unique_ptr<shader> mGeometryShader;
 
       public:
-         /// @brief constuctor
+         /// @brief constructor
          program_base(const std::string& glsl_version, const std::string& src, bool has_geom_shader);
+
+         /// @brief prepends program name based #defines and declarations to src
+         static std::string prepend_header_to_program(std::string name, const char* declarations, const std::string& src);
    };
 
    namespace detail
@@ -81,34 +84,25 @@ namespace glcxx
       };
 
       /// @brief program impl
-      template<typename TName, bool HasGeomShader, typename TProgramInputTuple>
-      class program;
+      template<bool HasGeomShader, typename TProgramInputTuple>
+      class program_impl;
 
       /// @brief only tuple of program inputs is a valid parameter for program
-      template<typename TName, bool HasGeomShader, typename... TProgramInput>
-      class program<TName, HasGeomShader, std::tuple<TProgramInput...>> : public program_base, public TProgramInput...
+      template<bool HasGeomShader, typename... TProgramInput>
+      class program_impl<HasGeomShader, std::tuple<TProgramInput...>> : public program_base, public TProgramInput...
       {
-            /// @brief inputs tuple
-            using input_tuple = std::tuple<TProgramInput...>;
-
             /// @brief returns input type which has valid set<TSetName> method
             template<typename TSetName>
-            using input_type = typename std::tuple_element<has_named_set_method<TSetName, input_tuple>::index, input_tuple>::type;
+            using input_type = typename std::tuple_element<has_named_set_method<TSetName, std::tuple<TProgramInput...>>::index,
+                                                           std::tuple<TProgramInput...>>::type;
 
             /// @brief returns argument type of set<TSetName> method found in input tuple
             template<typename TSetName>
             using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
 
          public:
-            /// @brief program defines
-            using defines = ct::string_all_rep<
-               ct::string_toupper<ct::string_sub<TName, ct::string_find<TName, cts("-")>::value>>,
-               cts("_"),
-               cts("\n#define ")>;
-
             /// @brief ctstring containing glsl declarations of all program inputs
-            using declarations = ct::string_cat<defines,
-                                                cts("\n#ifdef VERTEX\n"),
+            using declarations = ct::string_cat<cts("\n#ifdef VERTEX\n"),
                                                 typename std::conditional<shader_has_decl<tag::vertex, typename TProgramInput::decl_tag>::value,
                                                                           typename TProgramInput::declaration,
                                                                           cts("")>::type...,
@@ -124,18 +118,14 @@ namespace glcxx
                                                 typename std::conditional<HasGeomShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type>;
 
             /// @brief constructor
-            program(const std::string& glsl_version, const std::string& src)
-               try : program_base(glsl_version, std::string(declarations::chars) + src, HasGeomShader)
+            program_impl(const std::string& name, const std::string& glsl_version, const std::string& src)
+               try : program_base(glsl_version, prepend_header_to_program(name, declarations::chars, src), HasGeomShader)
                    , TProgramInput(mObject)...
             {}
             catch(glprogram_error& e) // add usefull info to exception and rethrow
             {
-               e.prepend(" program failed:\n");
-               e.prepend(TName::chars);
-               e.append("\n");
-               e.append(glsl_version.c_str());
-               e.append(declarations::chars);
-               e.append(src.c_str());
+               e.prepend(name + " program failed:\n");
+               e.append(prepend_header_to_program(name, declarations::chars, src));
                throw;
             }
 
@@ -193,13 +183,22 @@ namespace glcxx
                                                               rest_of_inputs_no_tags,
                                                               ct::tuple_append<rest_of_inputs_no_tags, vao_input<vao_inputs>>>::type;
       };
+
+      /// @brief program with processed inputs
+      template<typename TInputTuple>
+      using program = program_impl<program_input_traits<TInputTuple>::has_geom_shader,
+                                   typename program_input_traits<TInputTuple>::resulting_inputs>;
    }
 
    /// @brief program
-   template<typename TName, typename TInputTuple>
-   using program = detail::program<TName,
-                                   detail::program_input_traits<TInputTuple>::has_geom_shader,
-                                   typename detail::program_input_traits<TInputTuple>::resulting_inputs>;
+   template<typename TInputTuple>
+   class program : public detail::program<TInputTuple>
+   {
+         /// @brief original inputs
+         using input_tuple = TInputTuple;
+         /// @brief inherited constructor
+         using detail::program<TInputTuple>::program;
+   };
 }
 
 #endif

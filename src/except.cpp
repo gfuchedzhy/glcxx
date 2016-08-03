@@ -8,12 +8,12 @@ glcxx::glprogram_error::glprogram_error(const std::string& msg)
    : mMsg(msg)
 {}
 
-void glcxx::glprogram_error::prepend(const char* msg)
+void glcxx::glprogram_error::prepend(const std::string& msg)
 {
-   mMsg = std::string(msg) + mMsg;
+   mMsg = msg + mMsg;
 }
 
-void glcxx::glprogram_error::append(const char* msg)
+void glcxx::glprogram_error::append(const std::string& msg)
 {
    mMsg += msg;
 }

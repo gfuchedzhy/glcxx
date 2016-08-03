@@ -3,6 +3,8 @@
  */
 
 #include "program.hpp"
+
+#include <algorithm>
 #include "except.hpp"
 
 glcxx::program_res_holder::program_res_holder()
@@ -14,11 +16,23 @@ glcxx::program_res_holder::~program_res_holder()
    glcxx_gl(glDeleteProgram, mObject);
 }
 
+std::string glcxx::program_base::prepend_header_to_program(std::string name, const char* declarations, const std::string& src)
+{
+   std::string& result = name;
+   std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+   result.erase(0, result.find('-'));
+   size_t start_pos = 0;
+   while((start_pos = result.find('-', start_pos)) != std::string::npos)
+      result.replace(start_pos, 1, "\n#define ");
+   result += declarations + src;
+   return result;
+}
+
 glcxx::program_base::program_base(const std::string& glsl_version, const std::string& src, bool has_geom_shader)
    : program_res_holder()
-   , mVertexShader(glsl_version + "\n#define VERTEX\n" + src, mObject, GL_VERTEX_SHADER)
-   , mFragmentShader(glsl_version + "\n#define FRAGMENT\n" + src, mObject, GL_FRAGMENT_SHADER)
-   , mGeometryShader(has_geom_shader ? std::make_unique<shader>(glsl_version + "\n#define GEOMETRY\n" + src, mObject, GL_GEOMETRY_SHADER) : nullptr)
+   , mVertexShader(glsl_version, src, mObject, GL_VERTEX_SHADER)
+   , mFragmentShader(glsl_version, src, mObject, GL_FRAGMENT_SHADER)
+   , mGeometryShader(has_geom_shader ? std::make_unique<shader>(glsl_version, src, mObject, GL_GEOMETRY_SHADER) : nullptr)
 {
    glcxx_gl(glLinkProgram, mObject);
    GLint linked;

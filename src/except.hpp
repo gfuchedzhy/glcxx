@@ -18,8 +18,8 @@ namespace glcxx
          explicit glprogram_error(const std::string& msg);
 
          /// @brief modify message
-         void prepend(const char* msg);
-         void append(const char* msg);
+         void prepend(const std::string& msg);
+         void append(const std::string& msg);
 
          const char* what() const noexcept override;
    };

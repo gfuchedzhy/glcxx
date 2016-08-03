@@ -24,7 +24,7 @@ namespace glcxx
 
          /// @brief program type by its name
          template<typename TName>
-         using program_type = program<TName, decltype(progInputDef(TName{}))>;
+         using program_type = program<decltype(progInputDef(TName{}))>;
 
       public:
          /// @brief initializes all programs of this renderer
@@ -32,7 +32,7 @@ namespace glcxx
          {
             mPrograms = std::make_tuple(
                std::make_unique<program_type<TProgramName>>(
-                  glsl_version, common_decl + programSrc<base_name<TProgramName>>())...);
+                  TProgramName::chars, glsl_version, common_decl + programSrc<base_name<TProgramName>>())...);
          }
 
          /// @brief searches given program by name in compile time, deselects

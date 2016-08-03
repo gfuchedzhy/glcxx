@@ -17,17 +17,18 @@ glcxx::shader_base::~shader_base()
 
 namespace
 {
-   std::string shader_type_to_str(const GLenum shader_type)
+   const char* shader_type_to_str(const GLenum shader_type)
    {
-      return GL_VERTEX_SHADER == shader_type ? "vertex" :
-         GL_GEOMETRY_SHADER == shader_type ? "geometry" : "fragment";
+      return GL_VERTEX_SHADER == shader_type ? "VERTEX" :
+         GL_GEOMETRY_SHADER == shader_type ? "GEOMETRY" : "FRAGMENT";
    }
 }
 
-glcxx::shader::shader(const std::string& src, GLuint program, const GLenum shader_type)
+glcxx::shader::shader(const std::string& glsl_version, std::string src, GLuint program, const GLenum shader_type)
    : shader_base(shader_type)
    , mProgramObject(program)
 {
+   src = glsl_version + "\n#define " + shader_type_to_str(shader_type) + "\n" + src;
    const GLint length = src.length();
    const GLchar* source = src.c_str();
    glcxx_gl(glShaderSource, mObject, 1, &source, &length);
@@ -44,7 +45,7 @@ glcxx::shader::shader(const std::string& src, GLuint program, const GLenum shade
          GLsizei len = 0;
          glcxx_gl(glGetShaderInfoLog, mObject, log_length, &len, error_msg.get());
       }
-      throw shader_compilation_error(shader_type_to_str(shader_type) + " shader complilation failed: " + error_msg.get());
+      throw shader_compilation_error(std::string(shader_type_to_str(shader_type)) + " shader complilation failed: " + error_msg.get());
    }
    glcxx_gl(glAttachShader, mProgramObject, mObject);
 }
