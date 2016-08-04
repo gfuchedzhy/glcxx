@@ -47,14 +47,6 @@ namespace glcxx
       return stream;
    }
 
-   /// @brief type holding pair of types
-   template<typename T1, typename T2>
-   struct tpair
-   {
-         using t1 = T1;
-         using t2 = T2;
-   };
-
    /// @brief ct stands for compile time
    namespace ct
    {

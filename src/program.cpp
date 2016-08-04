@@ -20,9 +20,9 @@ std::string glcxx::program_base::prepend_header_to_program(std::string name, con
 {
    std::string& result = name;
    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
-   result.erase(0, result.find('-'));
+   result.erase(0, result.find('_'));
    size_t start_pos = 0;
-   while((start_pos = result.find('-', start_pos)) != std::string::npos)
+   while((start_pos = result.find('_', start_pos)) != std::string::npos)
       result.replace(start_pos, 1, "\n#define ");
    result += declarations + src;
    return result;

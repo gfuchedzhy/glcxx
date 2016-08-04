@@ -48,10 +48,10 @@ namespace glcxx
 
          /// @brief draw using index buffer from vao
          template<typename... TName, typename...TData>
-         void draw_elements(const indexed_vao<tpair<TName, TData>...>& vao) const
+         void draw_elements(const indexed_vao<std::pair<TName, TData>...>& vao) const
          {
-            using vao_tuple = std::tuple<tpair<TName, TData>...>;
-            using required_vao_tuple = std::tuple<tpair<TAttribName, typename TAttribTraits::data>...>;
+            using vao_tuple = std::tuple<std::pair<TName, TData>...>;
+            using required_vao_tuple = std::tuple<std::pair<TAttribName, typename TAttribTraits::data>...>;
             static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain, vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
 
             vao.bind();
@@ -68,10 +68,10 @@ namespace glcxx
 
          /// @brief draw arrays
          template<typename...TName, typename...TData>
-         void draw_arrays(const vao<tpair<TName, TData>...>& vao, GLsizei size, GLenum mode) const
+         void draw_arrays(const vao<std::pair<TName, TData>...>& vao, GLsizei size, GLenum mode) const
          {
-            using vao_tuple = std::tuple<tpair<TName, TData>...>;
-            using required_vao_tuple =  std::tuple<tpair<TAttribName, typename TAttribTraits::data>...>;
+            using vao_tuple = std::tuple<std::pair<TName, TData>...>;
+            using required_vao_tuple =  std::tuple<std::pair<TAttribName, typename TAttribTraits::data>...>;
             static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain,vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
 
             vao.bind();

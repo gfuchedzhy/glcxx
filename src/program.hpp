@@ -191,14 +191,26 @@ namespace glcxx
    }
 
    /// @brief program
-   template<typename TInputTuple>
-   class program : public detail::program<TInputTuple>
+   template<typename... TInputs>
+   class program : public detail::program<std::tuple<TInputs...>>
    {
          /// @brief original inputs
-         using input_tuple = TInputTuple;
+         using input_tuple = std::tuple<TInputs...>;
+
          /// @brief inherited constructor
-         using detail::program<TInputTuple>::program;
+         using detail::program<input_tuple>::program;
    };
+
+   namespace detail {
+      template<typename TBaseProgram, typename... TAdditionalInputs> struct derive_program;
+      template<typename... TInputs, typename... TAdditionalInputs>
+      struct derive_program<glcxx::program<TInputs...>, TAdditionalInputs...>
+      {
+            using type = glcxx::program<TInputs..., TAdditionalInputs...>;
+      };
+   }
+   template<typename TBaseProgram, typename... TAdditionalInputs>
+   using derive_program = typename detail::derive_program<TBaseProgram, TAdditionalInputs...>::type;
 }
 
 #endif
