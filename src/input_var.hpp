@@ -126,6 +126,25 @@ namespace glcxx
                                                           DeclTag>::value;
    };
 
+   /// cast cpu type to glsl type if they differ, if not - do nothing
+   /// @brief cast simple types, e.g. int->float or ivec2->vec2
+   template<typename TGLSLData, typename TData>
+   inline typename std::conditional<std::is_same<TGLSLData, TData>::value, const TGLSLData&, TGLSLData>::type
+   glsl_cast(const TData& data)
+   {
+      return data;
+   }
+
+   /// @brief cast arrays, e.g. ivec2[3]->vec2[3]
+   template<typename TGLSLData, typename TData, size_t N>
+   inline typename std::conditional<std::is_same<typename TGLSLData::value_type, TData>::value, const TGLSLData&, TGLSLData>::type
+   glsl_cast(const std::array<TData, N>& data)
+   {
+      TGLSLData glslData;
+      std::copy(data.begin(), data.end(), glslData.begin());
+      return glslData;
+   }
+
    namespace glsl
    {
       /// @brief compile time conversion from c++ types to glsl types
@@ -215,36 +234,6 @@ namespace glcxx
       /// @brief shortcut
       template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class THolder>
       using type_name = typename type_traits<TypeTo, EXTRA, THolder>::type_name;
-
-      /// @brief converter which does nothing if cpu type and glsl type exactly
-      /// match and converts data if they differ
-      template<typename TGLSLData>
-      struct converter
-      {
-            /// @brief converter for simple type, e.g. int->float or ivec2->vec2
-            template<typename TData>
-            static inline TGLSLData convert(const TData& data)
-            {
-               return data;
-            }
-
-            /// @brief converter for arrays types, e.g. int[2]->float[2]
-            template<typename TData, size_t N>
-            static inline TGLSLData convert(const std::array<TData, N>& data)
-            {
-               TGLSLData glslData;
-               for (size_t i = 0; i < N; ++i)
-                  glslData[i] = data[i];
-               return glslData;
-            }
-
-            /// @brief does nothing return same reference, this method should be
-            /// optimized out
-            static inline const TGLSLData& convert(const TGLSLData& data)
-            {
-               return data;
-            }
-      };
 
       /// @brief traits class for input variable to shader attribute/uniform
       /// @tparam THolder glm template holding values, like glm::tvec3 or glm::tmat4

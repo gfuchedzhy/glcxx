@@ -31,7 +31,7 @@ namespace glcxx
             if (mUniformData != value)
             {
                mUniformData = value;
-               attach_uniform(mLocation, glsl::converter<typename TUniformTraits::glsl_data>::convert(mUniformData));
+               attach_uniform(mLocation, glsl_cast<typename TUniformTraits::glsl_data>(mUniformData));
             }
          }
 
