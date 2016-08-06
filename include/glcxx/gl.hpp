@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_GL_HPP
-#define GLCXX_SRC_GL_HPP
+#ifndef GLCXX_GL_HPP
+#define GLCXX_GL_HPP
 
 #include <SFML/OpenGL.hpp>
 #include <functional>

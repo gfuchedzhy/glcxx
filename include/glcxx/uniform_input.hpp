@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_UNIFORM_INPUT_HPP
-#define GLCXX_SRC_UNIFORM_INPUT_HPP
+#ifndef GLCXX_UNIFORM_INPUT_HPP
+#define GLCXX_UNIFORM_INPUT_HPP
 
 #include "input_var.hpp"
 

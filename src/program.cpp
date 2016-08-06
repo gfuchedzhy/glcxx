@@ -2,10 +2,10 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "program.hpp"
+#include "glcxx/program.hpp"
 
 #include <algorithm>
-#include "except.hpp"
+#include "glcxx/except.hpp"
 
 glcxx::program_res_holder::program_res_holder()
    : mObject(glcxx_gl(glCreateProgram))

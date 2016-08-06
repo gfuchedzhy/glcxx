@@ -2,8 +2,8 @@
  * Copyright 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_CAPABILITIES_HPP
-#define GLCXX_SRC_CAPABILITIES_HPP
+#ifndef GLCXX_CAPABILITIES_HPP
+#define GLCXX_CAPABILITIES_HPP
 
 #include "gl.hpp"
 

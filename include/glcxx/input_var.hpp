@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_INPUT_VAR_HPP
-#define GLCXX_SRC_INPUT_VAR_HPP
+#ifndef GLCXX_INPUT_VAR_HPP
+#define GLCXX_INPUT_VAR_HPP
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

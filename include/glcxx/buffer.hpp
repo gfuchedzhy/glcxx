@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_BUFFER_HPP
-#define GLCXX_SRC_BUFFER_HPP
+#ifndef GLCXX_BUFFER_HPP
+#define GLCXX_BUFFER_HPP
 
 #include "input_var.hpp"
 #include <memory>

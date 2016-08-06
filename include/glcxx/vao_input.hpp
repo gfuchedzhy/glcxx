@@ -2,8 +2,8 @@
  * Copyright 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_VAO_INPUT_HPP
-#define GLCXX_SRC_VAO_INPUT_HPP
+#ifndef GLCXX_VAO_INPUT_HPP
+#define GLCXX_VAO_INPUT_HPP
 
 #include "vao.hpp"
 

@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_PROGRAM_HPP
-#define GLCXX_SRC_PROGRAM_HPP
+#ifndef GLCXX_PROGRAM_HPP
+#define GLCXX_PROGRAM_HPP
 
 #include "shader.hpp"
 #include "vao_input.hpp"

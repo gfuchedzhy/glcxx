@@ -2,9 +2,9 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "shader.hpp"
+#include "glcxx/shader.hpp"
 #include <memory>
-#include "except.hpp"
+#include "glcxx/except.hpp"
 
 glcxx::shader_base::shader_base(GLenum shader_type)
    : mObject(glcxx_gl(glCreateShader, shader_type))

@@ -2,8 +2,8 @@
  * Copyright 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_EXCEPT_HPP
-#define GLCXX_SRC_EXCEPT_HPP
+#ifndef GLCXX_EXCEPT_HPP
+#define GLCXX_EXCEPT_HPP
 
 #include <stdexcept>
 #include <string>

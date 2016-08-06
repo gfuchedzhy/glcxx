@@ -2,7 +2,7 @@
  * Copyright 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "gl.hpp"
+#include "glcxx/gl.hpp"
 
 namespace glcxx
 {

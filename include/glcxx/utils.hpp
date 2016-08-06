@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_UTILS_HPP
-#define GLCXX_SRC_UTILS_HPP
+#ifndef GLCXX_UTILS_HPP
+#define GLCXX_UTILS_HPP
 
 #include <utility>
 #include <tuple>

@@ -11,4 +11,5 @@ def build(bld):
     bld(features = 'cxx cxxstlib',
         source   = bld.path.ant_glob(['src/*.cpp']),
         target   = 'glcxx',
+        includes = 'include',
         use      = ['cxxflags', 'opengl'])

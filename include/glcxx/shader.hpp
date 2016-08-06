@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_SHADER_HPP
-#define GLCXX_SRC_SHADER_HPP
+#ifndef GLCXX_SHADER_HPP
+#define GLCXX_SHADER_HPP
 
 #include <string>
 #include "gl.hpp"

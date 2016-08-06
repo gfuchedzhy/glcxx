@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_RENDERER_HPP
-#define GLCXX_SRC_RENDERER_HPP
+#ifndef GLCXX_RENDERER_HPP
+#define GLCXX_RENDERER_HPP
 
 #include "program.hpp"
 

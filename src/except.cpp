@@ -2,7 +2,7 @@
  * Copyright 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#include "except.hpp"
+#include "glcxx/except.hpp"
 
 glcxx::glprogram_error::glprogram_error(const std::string& msg)
    : mMsg(msg)

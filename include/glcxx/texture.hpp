@@ -2,8 +2,8 @@
  * Copyright 2015, 2016 Grygoriy Fuchedzhy <grygoriy.fuchedzhy@gmail.com>
  */
 
-#ifndef GLCXX_SRC_TEXTURE_HPP
-#define GLCXX_SRC_TEXTURE_HPP
+#ifndef GLCXX_TEXTURE_HPP
+#define GLCXX_TEXTURE_HPP
 
 #include <memory>
 #include "input_var.hpp"
