@@ -50,13 +50,13 @@ namespace glcxx
    /// @brief ct stands for compile time
    namespace ct
    {
-      /// @brief return true if T is instantiation of Template
+      /// @brief return true if T is specialization of Template
       template<typename T, template<typename...> class Template>
-      struct instantiation_of : std::false_type {};
+      struct specialization_of : std::false_type {};
 
       /// @brief specialization
       template<template<typename...> class Template, typename... Params>
-      struct instantiation_of<Template<Params...>, Template> : std::true_type {};
+      struct specialization_of<Template<Params...>, Template> : std::true_type {};
 
       /// @brief function traits
       template<typename Func> struct function_traits;

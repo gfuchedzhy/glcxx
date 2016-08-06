@@ -161,15 +161,15 @@ namespace glcxx
       template<typename TInputTuple>
       class program_input_traits
       {
-            /// @brief check if type is instantiation of TNamedAttrib template
-            template<typename T> struct instantiation_of_named_attrib
-               : ct::instantiation_of<T, attrib_input> {};
+            /// @brief check if type is specialization of TNamedAttrib template
+            template<typename T> struct specialization_of_named_attrib
+               : ct::specialization_of<T, attrib_input> {};
 
             /// @brief all TNamedAttribs
-            using vao_inputs = ct::tuple_filter<TInputTuple, instantiation_of_named_attrib>;
+            using vao_inputs = ct::tuple_filter<TInputTuple, specialization_of_named_attrib>;
 
             /// @brief rest inputs
-            using rest_of_inputs = ct::tuple_filter<TInputTuple, instantiation_of_named_attrib, true>;
+            using rest_of_inputs = ct::tuple_filter<TInputTuple, specialization_of_named_attrib, true>;
 
             /// @brief rest inputs with tag stripped
             using rest_of_inputs_no_tags = ct::tuple_strip<tag::geometry, rest_of_inputs>;
