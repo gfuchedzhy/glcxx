@@ -28,14 +28,14 @@ namespace glcxx
    /// vao_input, which combines all attribs in single vao, attrib_input is used
    /// for program declarations
    template<typename Name, typename AttribTraits>
-   struct attrib_input {};
+   struct vao_attrib_input {};
 
    /// @brief holds state of program's vao
    template<typename AttribInputTuple> class vao_input;
 
    /// @brief specialization for tuple
    template<typename... AttribName, typename... AttribTraits>
-   class vao_input<std::tuple<attrib_input<AttribName, AttribTraits>...>>
+   class vao_input<std::tuple<vao_attrib_input<AttribName, AttribTraits>...>>
    {
          /// @brief return true if Tuple doesn't contain T
          template<typename T, typename Tuple> struct doesnt_contain
@@ -102,8 +102,7 @@ namespace glcxx
 
       private:
          /// @brief locations for all VBOs inside vao
-         using tLocations = std::array<GLint, sizeof...(AttribName)>;
-         tLocations _locations;
+         std::array<GLint, sizeof...(AttribName)> _locations;
 
          /// @brief program id to check in runtime if input vao is ready to be
          /// bound for this program or it should be reattached for this program

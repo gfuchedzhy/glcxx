@@ -178,7 +178,7 @@ namespace glcxx
       {
             /// @brief check if type is specialization of NamedAttrib template
             template<typename T> struct specialization_of_named_attrib
-               : ct::specialization_of<T, attrib_input> {};
+               : ct::specialization_of<T, vao_attrib_input> {};
 
             /// @brief all NamedAttribs
             using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_named_attrib>;
