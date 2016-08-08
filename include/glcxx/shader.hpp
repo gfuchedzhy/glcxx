@@ -21,7 +21,7 @@
 #define GLCXX_SHADER_HPP
 
 #include <string>
-#include "gl.hpp"
+#include "glcxx/gl.hpp"
 
 namespace glcxx
 {

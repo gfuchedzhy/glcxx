@@ -20,8 +20,8 @@
 #ifndef GLCXX_PROGRAM_HPP
 #define GLCXX_PROGRAM_HPP
 
-#include "shader.hpp"
-#include "vao_input.hpp"
+#include "glcxx/shader.hpp"
+#include "glcxx/vao_input.hpp"
 
 namespace glcxx
 {
@@ -42,7 +42,7 @@ namespace glcxx
          /// @brief selects program
          void select() const
          {
-            glcxx_gl(glUseProgram, _object);
+            glUseProgram(_object);
          }
 
       protected:

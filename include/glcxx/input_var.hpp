@@ -22,9 +22,9 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "gl.hpp"
-#include "utils.hpp"
-#include "except.hpp"
+#include "glcxx/gl.hpp"
+#include "glcxx/utils.hpp"
+#include "glcxx/except.hpp"
 
 namespace glcxx
 {
@@ -34,42 +34,42 @@ namespace glcxx
    #define DECLARE_ATTACH_UNIFORM_FUNCTIONS(type, functionSuffix)       \
    inline void attach_uniform(GLint location, type val)                 \
    {                                                                    \
-      glcxx_gl(glUniform1##functionSuffix, location, val);              \
+      glUniform1##functionSuffix(location, val);                        \
    }                                                                    \
    template<glm::precision P>                                           \
    inline void attach_uniform(GLint location, const glm::tvec2<type, P>& val) \
    {                                                                    \
-      glcxx_gl(glUniform2##functionSuffix, location, val.x, val.y);     \
+      glUniform2##functionSuffix(location, val.x, val.y);               \
    }                                                                    \
    template<glm::precision P>                                           \
    inline void attach_uniform(GLint location, const glm::tvec3<type, P>& val) \
    {                                                                    \
-      glcxx_gl(glUniform3##functionSuffix, location, val.x, val.y, val.z); \
+      glUniform3##functionSuffix(location, val.x, val.y, val.z);        \
    }                                                                    \
    template<glm::precision P>                                           \
    inline void attach_uniform(GLint location, const glm::tvec4<type, P>& val) \
    {                                                                    \
-      glcxx_gl(glUniform4##functionSuffix, location, val.x, val.y, val.z, val.w); \
+      glUniform4##functionSuffix(location, val.x, val.y, val.z, val.w); \
    }                                                                    \
    template<size_t N>                                                   \
    inline void attach_uniform(GLint location, const std::array<type, N>& val) \
    {                                                                    \
-      glcxx_gl(glUniform1##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
+      glUniform1##functionSuffix##v(location, N, glm::value_ptr(val[0])); \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attach_uniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
    {                                                                    \
-      glcxx_gl(glUniform2##functionSuffix##v, location, N, glm::value_ptr(val[0])); \
+      glUniform2##functionSuffix##v(location, N, glm::value_ptr(val[0])); \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attach_uniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
    {                                                                    \
-      glcxx_gl(glUniform3##functionSuffix##v, location, glm::value_ptr(val[0])); \
+      glUniform3##functionSuffix##v(location, glm::value_ptr(val[0]));  \
    }                                                                    \
    template<size_t N, glm::precision P>                                 \
    inline void attach_uniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
    {                                                                    \
-      glcxx_gl(glUniform4##functionSuffix##v, location, glm::value_ptr(val[0])); \
+      glUniform4##functionSuffix##v(location, glm::value_ptr(val[0]));  \
    }
 
    /// @brief actual function definitions
@@ -81,18 +81,18 @@ namespace glcxx
    template<glm::precision P>
    inline void attach_uniform(GLint location, const glm::tmat4x4<float, P>& val)
    {
-      glcxx_gl(glUniformMatrix4fv, location, 1, GL_FALSE, glm::value_ptr(val));
+      glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(val));
    }
    template<size_t N, glm::precision P>
    inline void attach_uniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
    {
-      glcxx_gl(glUniformMatrix4fv, location, N, GL_FALSE, glm::value_ptr(val[0]));
+      glUniformMatrix4fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
    }
 
    /// @brief get uniform location
    inline auto get_uniform_loc(GLuint program, const char* name)
    {
-      const auto location = glcxx_gl(glGetUniformLocation, program, name);
+      const auto location = glGetUniformLocation(program, name);
       if (-1 == location)
          throw input_location_error(std::string("uniform ") + name + " location wasn't found");
       return location;
@@ -101,7 +101,7 @@ namespace glcxx
    /// @brief get attribute location
    inline auto get_attrib_loc(GLuint program, const char* name)
    {
-      const auto location = glcxx_gl(glGetAttribLocation, program, name);
+      const auto location = glGetAttribLocation(program, name);
       if (-1 == location)
          throw input_location_error(std::string("attribute ") + name + " location wasn't found");
       return location;
@@ -304,14 +304,13 @@ namespace glcxx
                   for (size_t i = 0; i < locations_num; ++i)
                   {
                      const size_t locationOffset = i + n*locations_num;
-                     glcxx_gl(glEnableVertexAttribArray, location + locationOffset);
-                     glcxx_gl(glVertexAttribPointer,
-                              location + locationOffset,
-                              components_num,
-                              type_id<TypeFrom>::value,
-                              GL_FALSE, // not normalized
-                              sizeof(data),
-                              (void*)((const char*)ptr + locationOffset*components_num*sizeof(TypeFrom)));
+                     glEnableVertexAttribArray(location + locationOffset);
+                     glVertexAttribPointer(location + locationOffset,
+                                           components_num,
+                                           type_id<TypeFrom>::value,
+                                           GL_FALSE, // not normalized
+                                           sizeof(data),
+                                           (void*)((const char*)ptr + locationOffset*components_num*sizeof(TypeFrom)));
                   }
                }
             }
@@ -326,7 +325,7 @@ namespace glcxx
                   for (size_t i = 0; i < locations_num; ++i)
                   {
                      const size_t locationOffset = i + n*locations_num;
-                     glcxx_gl(glDisableVertexAttribArray, location + locationOffset);
+                     glDisableVertexAttribArray(location + locationOffset);
                   }
                }
             }

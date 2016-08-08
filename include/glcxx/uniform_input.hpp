@@ -20,7 +20,7 @@
 #ifndef GLCXX_UNIFORM_INPUT_HPP
 #define GLCXX_UNIFORM_INPUT_HPP
 
-#include "input_var.hpp"
+#include "glcxx/input_var.hpp"
 
 namespace glcxx
 {

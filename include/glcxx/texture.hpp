@@ -21,7 +21,7 @@
 #define GLCXX_TEXTURE_HPP
 
 #include <memory>
-#include "input_var.hpp"
+#include "glcxx/input_var.hpp"
 
 namespace glcxx
 {
@@ -44,25 +44,25 @@ namespace glcxx
          texture(GLenum target)
             : _target(target)
          {
-            glcxx_gl(glGenTextures, 1, &_id);
+            glGenTextures(1, &_id);
          }
 
          /// @brief frees texture
          ~texture()
          {
-            glcxx_gl(glDeleteTextures, 1, &_id);
+            glDeleteTextures(1, &_id);
          }
 
          /// @brief binds texture
          void bind() const
          {
-            glcxx_gl(glBindTexture, _target, _id);
+            glBindTexture(_target, _id);
          }
 
          /// @brief unbinds texture
          void unbind()
          {
-            glcxx_gl(glBindTexture, _target, 0);
+            glBindTexture(_target, 0);
          }
    };
 

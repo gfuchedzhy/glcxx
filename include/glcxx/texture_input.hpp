@@ -20,7 +20,7 @@
 #ifndef GLCXX_TEXTURE_INPUT_HPP
 #define GLCXX_TEXTURE_INPUT_HPP
 
-#include "texture.hpp"
+#include "glcxx/texture.hpp"
 
 namespace glcxx
 {
@@ -50,7 +50,7 @@ namespace glcxx
             {
                if (_texture)
                {
-                  glcxx_gl(glActiveTexture, GL_TEXTURE0 + _sampler_id);
+                  glActiveTexture(GL_TEXTURE0 + _sampler_id);
                   _texture->unbind();
                }
                _texture = value;
@@ -70,7 +70,7 @@ namespace glcxx
          {
             if (_texture)
             {
-               glcxx_gl(glActiveTexture, GL_TEXTURE0 + _sampler_id);
+               glActiveTexture(GL_TEXTURE0 + _sampler_id);
                _texture->bind();
                attach_uniform(_location, _sampler_id);
             }

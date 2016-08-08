@@ -21,7 +21,7 @@
 #define GLCXX_VAO_HPP
 
 #include <bitset>
-#include "buffer.hpp"
+#include "glcxx/buffer.hpp"
 
 namespace glcxx
 {
@@ -44,7 +44,7 @@ namespace glcxx
          /// @brief constructor
          vao_base()
          {
-            glcxx_gl(glGenVertexArrays, 1, &_id);
+            glGenVertexArrays(1, &_id);
          }
 
          /// @brief move constructor
@@ -60,7 +60,7 @@ namespace glcxx
          ~vao_base()
          {
             if (_id)
-               glcxx_gl(glDeleteVertexArrays, 1, &_id);
+               glDeleteVertexArrays(1, &_id);
          }
 
          friend void swap(vao_base& x, vao_base& y)
@@ -79,13 +79,13 @@ namespace glcxx
          /// @brief binds vao
          void bind() const
          {
-            glcxx_gl(glBindVertexArray, _id);
+            glBindVertexArray(_id);
          }
 
          /// @brief unbinds vao
          static void unbind()
          {
-            glcxx_gl(glBindVertexArray, 0);
+            glBindVertexArray(0);
          }
    };
 

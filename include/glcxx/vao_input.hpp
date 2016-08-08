@@ -20,7 +20,7 @@
 #ifndef GLCXX_VAO_INPUT_HPP
 #define GLCXX_VAO_INPUT_HPP
 
-#include "vao.hpp"
+#include "glcxx/vao.hpp"
 
 namespace glcxx
 {
@@ -97,7 +97,7 @@ namespace glcxx
                glcxx_swallow(vao.template bind_buffer<AttribName>() &&
                              (AttribTraits::attach(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]), true));
             }
-            glcxx_gl(glDrawArrays, mode, 0, size);
+            glDrawArrays(mode, 0, size);
          }
 
       private:

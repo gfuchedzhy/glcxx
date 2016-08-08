@@ -20,7 +20,7 @@
 #ifndef GLCXX_BUFFER_HPP
 #define GLCXX_BUFFER_HPP
 
-#include "input_var.hpp"
+#include "glcxx/input_var.hpp"
 #include <memory>
 
 namespace glcxx
@@ -47,26 +47,26 @@ namespace glcxx
             : _target(target)
             , _usage(usage)
          {
-            glcxx_gl(glGenBuffers, 1, &_id);
+            glGenBuffers(1, &_id);
             upload(data, size);
          }
 
          /// @brief free buffer
          ~buffer_base()
          {
-            glcxx_gl(glDeleteBuffers, 1, &_id);
+            glDeleteBuffers(1, &_id);
          }
 
          /// @brief binds buffer
          void bind() const
          {
-            glcxx_gl(glBindBuffer, _target, _id);
+            glBindBuffer(_target, _id);
          }
 
          /// @brief unbinds buffer
          void unbind() const
          {
-            glcxx_gl(glBindBuffer, _target, 0);
+            glBindBuffer(_target, 0);
          }
 
          /// @brief uploads new data to buffer, usage = 0 means do not change usage
@@ -75,7 +75,7 @@ namespace glcxx
             if (usage)
                _usage = usage;
             bind();
-            glcxx_gl(glBufferData, _target, size, data, _usage);
+            glBufferData(_target, size, data, _usage);
             unbind();
          }
    };
@@ -151,7 +151,7 @@ namespace glcxx
             // before binding index buffer for upload vao should be unbound to
             // preserve vao's internal state, note that this in not the case for
             // vertex buffers as their bindings are not part of vao's state
-            glcxx_gl(glBindVertexArray, 0);
+            glBindVertexArray(0);
             buffer_base::upload(data, size*sizeof(T), usage);
             _size = size;
             _mode = mode;
@@ -161,13 +161,13 @@ namespace glcxx
          /// @brief draw with this index buffer
          void draw() const
          {
-            glcxx_gl(glDrawElements, _mode, _size, _type, nullptr);
+            glDrawElements(_mode, _size, _type, nullptr);
          }
 
          /// @brief unbind index buffer
          static void unbind()
          {
-            glcxx_gl(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
          }
    };
 

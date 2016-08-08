@@ -20,7 +20,7 @@
 #ifndef GLCXX_RENDERER_HPP
 #define GLCXX_RENDERER_HPP
 
-#include "program.hpp"
+#include "glcxx/program.hpp"
 
 namespace glcxx
 {
