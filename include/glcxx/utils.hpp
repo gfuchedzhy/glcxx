@@ -20,16 +20,25 @@
 #ifndef GLCXX_UTILS_HPP
 #define GLCXX_UTILS_HPP
 
+// disable warning about too long symbol names because of template programming,
+// according to msdn it is safe to disable this warning
+#ifdef _MSC_VER
+#pragma warning(disable : 4503)
+#endif
+
 #include <utility>
 #include <tuple>
 #include <cmath>
 #include <ostream>
 
-/// @brief evaluate expression for every element of expansion pack in order
-#define glcxx_swallow(expression) (void)(int[]){0, ((expression), 0)...}
-
 namespace glcxx
 {
+   /// @brief evaluate expression for every element of expansion pack in order
+   namespace detail {
+      using swallow_type = int[];
+   }
+#define glcxx_swallow(expression) (void)::glcxx::detail::swallow_type{0, ((expression), 0)...}
+
    /// @brief stream nullptr
    inline std::ostream& operator<<(std::ostream& stream, std::nullptr_t)
    {

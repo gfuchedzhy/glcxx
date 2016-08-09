@@ -148,7 +148,7 @@ namespace glcxx
             void select() const
             {
                program_base::select();
-               glcxx_swallow(ProgramInput::select());
+               glcxx_swallow(static_cast<const ProgramInput*>(this)->select());
             }
 
             /// @brief forward named set method to base class which has valid
@@ -212,8 +212,11 @@ namespace glcxx
          /// @brief original inputs
          using input_tuple = std::tuple<Inputs...>;
 
+         // @brief base class
+         using base = detail::program<input_tuple>;
+
          /// @brief inherited constructor
-         using detail::program<input_tuple>::program;
+         using base::base;
    };
 
    namespace detail {

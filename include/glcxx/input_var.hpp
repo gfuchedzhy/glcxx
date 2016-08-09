@@ -20,11 +20,12 @@
 #ifndef GLCXX_INPUT_VAR_HPP
 #define GLCXX_INPUT_VAR_HPP
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "glcxx/gl.hpp"
 #include "glcxx/utils.hpp"
 #include "glcxx/except.hpp"
+#include <array>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace glcxx
 {

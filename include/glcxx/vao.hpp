@@ -112,7 +112,6 @@ namespace glcxx
             {
                   static constexpr size_t index = ct::tuple_find<std::tuple<Name..., cts("indices")>, BufferName>::value;
                   using buffer_ptr = typename std::tuple_element<index, buffers>::type;
-                  // using data = typename buffer_ptr::element_type::data;
             };
 
          public:

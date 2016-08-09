@@ -49,27 +49,13 @@ namespace glcxx
       public:
          /// @brief initializes all programs of this renderer
          renderer(const std::string& glsl_version, const std::string& common_decl)
-         {
-            _programs = std::make_tuple(
-               std::make_unique<Program>(
-                  Name::chars, glsl_version, common_decl + get_program_src<base_name<Name>>())...);
-         }
+            : _programs(std::make_unique<Program>(Name::chars, glsl_version, common_decl + get_program_src<base_name<Name>>())...)
+         {}
 
          /// @brief searches given program by name in compile time, selects
          /// requested one and returns it
          template<typename ProgramName>
-         auto& get_program()
-         {
-            constexpr size_t index = ct::tuple_find<std::tuple<Name...>, ProgramName>::value;
-            static_assert(sizeof...(Program) != index, "program name not found");
-            auto p = std::get<index>(_programs).get();
-            if (index != _current_program_index)
-            {
-               _current_program_index = index;
-               p->select();
-            }
-            return *p;
-         }
+         auto& get_program();
 
       private:
          /// @brief program list, @todo unique_ptr can be removed without providing
@@ -81,4 +67,20 @@ namespace glcxx
          size_t _current_program_index = sizeof...(Program);
    };
 }
+
+template<typename... Name, typename... Program>
+template<typename ProgramName>
+auto& glcxx::renderer<std::pair<Name, Program>...>::get_program()
+{
+   constexpr size_t index = ct::tuple_find<std::tuple<Name...>, ProgramName>::value;
+   static_assert(sizeof...(Program) != index, "program name not found");
+   auto p = std::get<index>(_programs).get();
+   if (index != _current_program_index)
+   {
+      _current_program_index = index;
+      p->select();
+   }
+   return *p;
+}
+
 #endif
