@@ -43,13 +43,7 @@ namespace glcxx
 
       public:
          /// @brief constructor
-         buffer_base(const void* data, size_t size, GLenum usage, GLenum target)
-            : _target(target)
-            , _usage(usage)
-         {
-            glGenBuffers(1, &_id);
-            upload(data, size);
-         }
+         buffer_base(const void* data, size_t size, GLenum usage, GLenum target);
 
          /// @brief free buffer
          ~buffer_base()
@@ -70,14 +64,7 @@ namespace glcxx
          }
 
          /// @brief uploads new data to buffer, usage = 0 means do not change usage
-         void upload(const void* data, size_t size, GLenum usage = 0)
-         {
-            if (usage)
-               _usage = usage;
-            bind();
-            glBufferData(_target, size, data, _usage);
-            unbind();
-         }
+         void upload(const void* data, size_t size, GLenum usage = 0);
    };
 
    /// @brief typesafe buffer object
@@ -133,7 +120,7 @@ namespace glcxx
                           // to preserve vao's internal state, note that this in not the
                           // case for vertex buffers as their bindings are not part of
                           // vao's state
-                          (glcxx_gl(glBindVertexArray, 0), GL_ELEMENT_ARRAY_BUFFER))
+                          (glBindVertexArray(0), GL_ELEMENT_ARRAY_BUFFER))
             , _size(size)
             , _mode(mode)
             , _type(glsl::type_id<T>::value)

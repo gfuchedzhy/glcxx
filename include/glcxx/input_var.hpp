@@ -91,22 +91,10 @@ namespace glcxx
    }
 
    /// @brief get uniform location
-   inline auto get_uniform_loc(GLuint program, const char* name)
-   {
-      const auto location = glGetUniformLocation(program, name);
-      if (-1 == location)
-         throw input_location_error(std::string("uniform ") + name + " location wasn't found");
-      return location;
-   }
+   GLint get_uniform_loc(GLuint program, const char* name);
 
    /// @brief get attribute location
-   inline auto get_attrib_loc(GLuint program, const char* name)
-   {
-      const auto location = glGetAttribLocation(program, name);
-      if (-1 == location)
-         throw input_location_error(std::string("attribute ") + name + " location wasn't found");
-      return location;
-   }
+   GLint get_attrib_loc(GLuint program, const char* name);
 
    /// @brief tags to place declarations to proper shaders
    namespace tag
