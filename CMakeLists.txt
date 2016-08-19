@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.3.0)
+cmake_minimum_required(VERSION 3.3)
 project(glcxx CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
@@ -30,4 +30,7 @@ add_library(glcxx ${SRC})
 install(TARGETS glcxx DESTINATION lib)
 install(DIRECTORY ${GLCXX_INCLUDE_DIRS} DESTINATION . FILES_MATCHING PATTERN "*.hpp")
 
+# export variables and functions
 set(GLCXX_INCLUDE_DIRS ${GLCXX_INCLUDE_DIRS} PARENT_SCOPE)
+set(GLCXX_LIBRARIES glcxx PARENT_SCOPE)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/glcxx/cmake PARENT_SCOPE)
