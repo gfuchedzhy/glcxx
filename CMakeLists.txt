@@ -5,10 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_CXX_EXTENSIONS off)
 
 # search for glm
-if(NOT GLM_ROOT_DIR AND DEFINED ENV{GLM_ROOT_DIR})
-  set(GLM_ROOT_DIR $ENV{GLM_ROOT_DIR})
-endif()
-find_path(GLM_INCLUDE_DIR "glm/glm.hpp" PATHS ${GLM_ROOT_DIR} NO_DEFAULT_PATH)
+find_path(GLM_INCLUDE_DIR "glm/glm.hpp" PATHS ${GLM_ROOT} $ENV{GLM_ROOT} NO_DEFAULT_PATH)
 find_path(GLM_INCLUDE_DIR "glm/glm.hpp")
 include(FindPackageHandleStandardArgs)
 set(GLM_FIND_REQUIRED on)
