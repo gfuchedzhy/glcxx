@@ -22,8 +22,15 @@ configure_file(
 
 set(GLCXX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
 include_directories(${GLCXX_INCLUDE_DIRS})
-file(GLOB SRC src/*.cpp)
-add_library(glcxx ${SRC})
+
+add_library(glcxx
+  src/buffer.cpp
+  src/except.cpp
+  src/input_var.cpp
+  src/program.cpp
+  src/shader.cpp
+  src/texture_input.cpp)
+
 install(TARGETS glcxx DESTINATION lib)
 install(DIRECTORY ${GLCXX_INCLUDE_DIRS} DESTINATION . FILES_MATCHING PATTERN "*.hpp")
 
