@@ -194,9 +194,7 @@ namespace glcxx
             static constexpr bool has_geom_shader = ct::tuple_any_of<rest_of_inputs, is_geom>::value;
 
             /// @brief resulting program inputs
-            using resulting_inputs = typename std::conditional<0 == std::tuple_size<vao_inputs>::value, //empty?
-                                                               rest_of_inputs_no_tags,
-                                                               ct::tuple_append<rest_of_inputs_no_tags, vao_input_impl<vao_inputs>>>::type;
+            using resulting_inputs = ct::tuple_cat<std::tuple<vao_input_impl<vao_inputs>>, rest_of_inputs_no_tags>;
       };
 
       /// @brief program with processed inputs

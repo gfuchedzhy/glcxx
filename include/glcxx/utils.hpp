@@ -134,10 +134,6 @@ namespace glcxx
       template<typename... Tuples>
       using tuple_cat = typename tuple_cat_impl<Tuples...>::type;
 
-      /// @brief append more types to given tuple
-      template<typename Tuple, typename... T>
-      using tuple_append = tuple_cat<Tuple, std::tuple<T...>>;
-
       /// @brief build tuple that contains only types T for which
       /// Pred<T,PredParams>::value != inverse
       template<typename Tuple, template<typename...> class Pred, bool inverse = false, typename... PredParams>

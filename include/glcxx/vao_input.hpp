@@ -37,6 +37,9 @@ namespace glcxx
    template<typename... AttribName, typename... AttribTraits>
    class vao_input_impl<std::tuple<vao_input<AttribName, AttribTraits>...>>
    {
+         /// @brief true if no inputs for vao
+         static constexpr bool is_empty = 0 == sizeof...(AttribTraits);
+
          /// @brief return true if Tuple doesn't contain T
          template<typename T, typename Tuple> struct doesnt_contain
          {
@@ -62,8 +65,46 @@ namespace glcxx
          {}
 
          /// @brief draw using index buffer from vao
+         template<typename... T>
+         void draw_elements(const indexed_vao<T...>& vao) const
+         {
+            bind(vao);
+            vao.draw_elements();
+         }
+
+         /// @brief draw arrays
+         template<typename... T>
+         void draw_arrays(const vao<T...>& vao, GLsizei size, GLenum mode) const
+         {
+            bind(vao);
+            glDrawArrays(mode, 0, size);
+         }
+
+         /// @brief if vao_input is empty, allow drawing without vao, with just
+         /// index buffer
+         template<typename Dummy = int> // to enable sfinae
+         void draw_elements(const index_buffer& ib,
+                            typename std::enable_if<is_empty, Dummy>::type dummy = 0) const
+         {
+            // before binding index buffer for draw, unbind currently bound vao
+            // to preserve its internal state
+            vao_base::unbind();
+            ib.bind();
+            ib.draw();
+         }
+
+         /// @brief if vao_input is empty, allow drawing without vao at all
+         template<typename Dummy = int> // to enable sfinae
+         void draw_arrays(GLsizei size, GLenum mode,
+                          typename std::enable_if<is_empty, Dummy>::type dummy = 0) const
+         {
+            glDrawArrays(mode, 0, size);
+         }
+
+      private:
+         /// @brief bind indexed vao to current program
          template<typename... Name, typename... Data>
-         void draw_elements(const indexed_vao<std::pair<Name, Data>...>& vao) const
+         void bind(const indexed_vao<std::pair<Name, Data>...>& vao) const
          {
             using vao_tuple = std::tuple<std::pair<Name, Data>...>;
             using required_vao_tuple = std::tuple<std::pair<AttribName, typename AttribTraits::data>...>;
@@ -78,16 +119,15 @@ namespace glcxx
                glcxx_swallow(vao.template bind_buffer<AttribName>() &&
                              (AttribTraits::attach(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]), true));
             }
-            vao.draw_elements();
          }
 
-         /// @brief draw arrays
+         /// @brief bind non indexed vao to current program
          template<typename... Name, typename... Data>
-         void draw_arrays(const vao<std::pair<Name, Data>...>& vao, GLsizei size, GLenum mode) const
+         void bind(const vao<std::pair<Name, Data>...>& vao) const
          {
             using vao_tuple = std::tuple<std::pair<Name, Data>...>;
-            using required_vao_tuple =  std::tuple<std::pair<AttribName, typename AttribTraits::data>...>;
-            static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain,vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
+            using required_vao_tuple = std::tuple<std::pair<AttribName, typename AttribTraits::data>...>;
+            static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain, vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
@@ -97,7 +137,6 @@ namespace glcxx
                glcxx_swallow(vao.template bind_buffer<AttribName>() &&
                              (AttribTraits::attach(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]), true));
             }
-            glDrawArrays(mode, 0, size);
          }
 
       private:
