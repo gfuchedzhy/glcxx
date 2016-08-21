@@ -21,6 +21,7 @@
 #define GLCXX_BUFFER_HPP
 
 #include "glcxx/input_var.hpp"
+#include "glcxx/vao_base.hpp"
 #include <memory>
 
 namespace glcxx
@@ -120,7 +121,7 @@ namespace glcxx
                           // to preserve vao's internal state, note that this in not the
                           // case for vertex buffers as their bindings are not part of
                           // vao's state
-                          (glBindVertexArray(0), GL_ELEMENT_ARRAY_BUFFER))
+                          (vao_base::unbind(), GL_ELEMENT_ARRAY_BUFFER))
             , _size(size)
             , _mode(mode)
             , _type(glsl::type_id<T>::value)
@@ -138,7 +139,7 @@ namespace glcxx
             // before binding index buffer for upload vao should be unbound to
             // preserve vao's internal state, note that this in not the case for
             // vertex buffers as their bindings are not part of vao's state
-            glBindVertexArray(0);
+            vao_base::unbind();
             buffer_base::upload(data, size*sizeof(T), usage);
             _size = size;
             _mode = mode;
