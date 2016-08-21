@@ -29,7 +29,6 @@
 #include <utility>
 #include <tuple>
 #include <cmath>
-#include <ostream>
 
 namespace glcxx
 {
@@ -38,38 +37,6 @@ namespace glcxx
       using swallow_type = int[];
    }
 #define glcxx_swallow(expression) (void)::glcxx::detail::swallow_type{0, ((expression), 0)...}
-
-   /// @brief stream nullptr
-   inline std::ostream& operator<<(std::ostream& stream, std::nullptr_t)
-   {
-      return stream << "nullptr";
-   }
-
-   /// @brief stream empty tuple
-   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<>&)
-   {
-      return stream << "()";
-   }
-
-   namespace detail
-   {
-      /// @brief helper to stream non empty tuple
-      template<typename Arg1, typename... Args, size_t... I>
-      inline void ostream_tuple(std::ostream& stream, const std::tuple<Arg1, Args...>& t, std::index_sequence<I...>)
-      {
-         stream << '(' << std::get<0>(t);
-         glcxx_swallow(stream << ',' << std::get<I+1>(t));
-         stream << ')';
-      }
-   }
-
-   /// @brief stream non empty tuple
-   template<typename Arg1, typename... Args>
-   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<Arg1, Args...>& t)
-   {
-      detail::ostream_tuple(stream, t, std::make_index_sequence<sizeof...(Args)>{});
-      return stream;
-   }
 
    /// @brief ct stands for compile time
    namespace ct
