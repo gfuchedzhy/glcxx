@@ -29,7 +29,7 @@ namespace glcxx
    class vao_base
    {
          /// @brief friend declaration
-         template<typename> friend class vao_input;
+         template<typename> friend class vao_input_impl;
 
          /// @brief non copyable
          vao_base(const vao_base&) = delete;

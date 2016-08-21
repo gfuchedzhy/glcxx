@@ -24,18 +24,18 @@
 
 namespace glcxx
 {
-   /// @brief attrib_input contains traits only, actual input class is
-   /// vao_input, which combines all attribs in single vao, attrib_input is used
-   /// for program declarations
+   /// @brief vao_input contains traits only, actual input class is
+   /// vao_input_impl, which combines all attributes in single vao, vao_input is
+   /// used for program declarations only
    template<typename Name, typename AttribTraits>
-   struct vao_attrib_input {};
+   struct vao_input {};
 
    /// @brief holds state of program's vao
-   template<typename AttribInputTuple> class vao_input;
+   template<typename AttribInputTuple> class vao_input_impl;
 
    /// @brief specialization for tuple
    template<typename... AttribName, typename... AttribTraits>
-   class vao_input<std::tuple<vao_attrib_input<AttribName, AttribTraits>...>>
+   class vao_input_impl<std::tuple<vao_input<AttribName, AttribTraits>...>>
    {
          /// @brief return true if Tuple doesn't contain T
          template<typename T, typename Tuple> struct doesnt_contain
@@ -51,7 +51,7 @@ namespace glcxx
          using declaration = ct::string_cat<typename AttribTraits::template declaration<AttribName>...>;
 
          /// @brief constructor
-         vao_input(const GLuint program)
+         vao_input_impl(const GLuint program)
             : _locations{{get_attrib_loc(program, AttribName::chars)...}}
             , _program_id(program)
          {}

@@ -177,14 +177,14 @@ namespace glcxx
       class program_input_traits
       {
             /// @brief check if type is specialization of NamedAttrib template
-            template<typename T> struct specialization_of_named_attrib
-               : ct::specialization_of<T, vao_attrib_input> {};
+            template<typename T> struct specialization_of_vao_input
+               : ct::specialization_of<T, vao_input> {};
 
             /// @brief all NamedAttribs
-            using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_named_attrib>;
+            using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_vao_input>;
 
             /// @brief rest inputs
-            using rest_of_inputs = ct::tuple_filter<InputTuple, specialization_of_named_attrib, true>;
+            using rest_of_inputs = ct::tuple_filter<InputTuple, specialization_of_vao_input, true>;
 
             /// @brief rest inputs with tag stripped
             using rest_of_inputs_no_tags = ct::tuple_strip<tag::geometry, rest_of_inputs>;
@@ -195,8 +195,8 @@ namespace glcxx
 
             /// @brief resulting program inputs
             using resulting_inputs = typename std::conditional<0 == std::tuple_size<vao_inputs>::value, //empty?
-                                                              rest_of_inputs_no_tags,
-                                                              ct::tuple_append<rest_of_inputs_no_tags, vao_input<vao_inputs>>>::type;
+                                                               rest_of_inputs_no_tags,
+                                                               ct::tuple_append<rest_of_inputs_no_tags, vao_input_impl<vao_inputs>>>::type;
       };
 
       /// @brief program with processed inputs
