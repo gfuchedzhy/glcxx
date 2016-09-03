@@ -38,11 +38,14 @@ namespace glcxx
          }
 
          /// @brief constructor
-         enable_blending_guard(GLenum sfactor = default_src_factor, GLenum dfactor = default_dst_factor)
+         enable_blending_guard(GLenum sfactor = default_src_factor, GLenum dfactor = default_dst_factor, bool enable = true)
          {
-            glEnable(GL_BLEND);
-            if (sfactor != default_src_factor || dfactor != default_dst_factor)
-               glBlendFunc(sfactor, dfactor);
+            if (enable)
+            {
+               glEnable(GL_BLEND);
+               if (sfactor != default_src_factor || dfactor != default_dst_factor)
+                  glBlendFunc(sfactor, dfactor);
+            }
          }
 
          /// @brief destructor
