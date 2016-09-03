@@ -12,9 +12,15 @@ set(GLM_FIND_REQUIRED on)
 find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_DIR)
 
 # add opengl include definition, client should provide own definition depending
-# on platform gl loader, if not this fallback will work on linux
+# on platform gl loader (like glad), if not this fallback will work on linux
 if(NOT GLCXX_GL_INLCUDE_DEF)
-  set(GLCXX_GL_INLCUDE_DEF "#define GL_GLEXT_PROTOTYPES\n#include <GL/gl.h>")
+  set(GLCXX_GL_INLCUDE_DEF "\
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+// empty macro returning true, as there is nothing to
+// load when GL_GLEXT_PROTOTYPES is defined on linux
+#define glcxx_load_gl(loader) true
+")
 endif()
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/glcxx/gl.hpp.in
