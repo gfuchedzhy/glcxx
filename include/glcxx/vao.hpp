@@ -20,38 +20,38 @@ namespace glcxx
          vao_base(const vao_base&) = delete;
 
          /// @brief vao id
-         GLuint mID = 0;
+         GLuint _id = 0;
 
          /// @brief program id this vao is enabled for
-         mutable GLuint mProgramID = 0;
+         mutable GLuint _program_id = 0;
 
       public:
          /// @brief constructor
          vao_base()
          {
-            glcxx_gl(glGenVertexArrays, 1, &mID);
+            glcxx_gl(glGenVertexArrays, 1, &_id);
          }
 
          /// @brief move constructor
          vao_base(vao_base&& other) noexcept
-            : mID(other.mID)
-            , mProgramID(other.mProgramID)
+            : _id(other._id)
+            , _program_id(other._program_id)
          {
-            other.mProgramID = 0;
-            other.mID = 0;
+            other._program_id = 0;
+            other._id = 0;
          }
 
          /// @brief destructor
          ~vao_base()
          {
-            if (mID)
-               glcxx_gl(glDeleteVertexArrays, 1, &mID);
+            if (_id)
+               glcxx_gl(glDeleteVertexArrays, 1, &_id);
          }
 
          friend void swap(vao_base& x, vao_base& y)
          {
-            std::swap(x.mID, y.mID);
-            std::swap(x.mProgramID, y.mProgramID);
+            std::swap(x._id, y._id);
+            std::swap(x._program_id, y._program_id);
          }
 
          /// @brief assignment
@@ -64,7 +64,7 @@ namespace glcxx
          /// @brief binds vao
          void bind() const
          {
-            glcxx_gl(glBindVertexArray, mID);
+            glcxx_gl(glBindVertexArray, _id);
          }
 
          /// @brief unbinds vao
@@ -77,42 +77,42 @@ namespace glcxx
    namespace detail
    {
       /// @brief vao holding specific attributes
-      template<bool HasIndexBuffer, typename...TNamedAttrib> class vao;
+      template<bool HasIndexBuffer, typename...NamedAttrib> class vao;
 
       /// @brief specialization
-      template<bool HasIndexBuffer, typename... TName, typename... TData>
-      class vao<HasIndexBuffer, std::pair<TName, TData>...> : public vao_base
+      template<bool HasIndexBuffer, typename... Name, typename... Data>
+      class vao<HasIndexBuffer, std::pair<Name, Data>...> : public vao_base
       {
             /// @brief buffer tuple
-            using buffers = ct::tuple_cat<std::tuple<buffer_ptr<TData>...>, // VBOs
+            using buffers = ct::tuple_cat<std::tuple<buffer_ptr<Data>...>, // VBOs
                                           // optional index buffer
                                           typename std::conditional<HasIndexBuffer, std::tuple<index_buffer_ptr>, std::tuple<>>::type>;
 
             /// @brief buffer tuple
-            buffers mBuffers;
+            buffers _buffers;
 
             /// @brief traits for searching buffers in buffer tuple
-            template<typename Name>
+            template<typename BufferName>
             struct traits
             {
-                  static constexpr size_t index = ct::tuple_find<std::tuple<TName..., cts("indices")>, Name>::value;
+                  static constexpr size_t index = ct::tuple_find<std::tuple<Name..., cts("indices")>, BufferName>::value;
                   using buffer_ptr = typename std::tuple_element<index, buffers>::type;
                   // using data = typename buffer_ptr::element_type::data;
             };
 
          public:
             /// @brief set vbo or index buffer into vao
-            template<typename Name>
-            void set(typename traits<Name>::buffer_ptr vbo)
+            template<typename BufferName>
+            void set(typename traits<BufferName>::buffer_ptr vbo)
             {
-               std::get<traits<Name>::index>(mBuffers) = std::move(vbo);
+               std::get<traits<BufferName>::index>(_buffers) = std::move(vbo);
             }
 
             /// @brief bind buffer return true if bound
-            template<typename Name>
+            template<typename BufferName>
             bool bind_buffer() const
             {
-               const auto& p = std::get<traits<Name>::index>(mBuffers);
+               const auto& p = std::get<traits<BufferName>::index>(_buffers);
                if (p)
                {
                   p->bind();
@@ -125,16 +125,16 @@ namespace glcxx
             template<bool HasIndexBuffer_ = HasIndexBuffer> // for SFINAE
             typename std::enable_if<HasIndexBuffer_>::type draw_elements() const
             {
-               const index_buffer_ptr& p = std::get<traits<cts("indices")>::index>(mBuffers);
+               const index_buffer_ptr& p = std::get<traits<cts("indices")>::index>(_buffers);
                assert(p);
                p->draw();
             }
 
             /// @brief upload data to vbo, if doesn't exist, create it
-            template<typename Name>
-            void upload(const typename traits<Name>::buffer_ptr::element_type::data* data, size_t size, GLenum usage = 0)
+            template<typename BufferName>
+            void upload(const typename traits<BufferName>::buffer_ptr::element_type::data* data, size_t size, GLenum usage = 0)
             {
-               auto& ptr = std::get<traits<Name>::index>(mBuffers);
+               auto& ptr = std::get<traits<BufferName>::index>(_buffers);
                if (ptr)
                   ptr->upload(data, size, usage);
                else
@@ -142,11 +142,11 @@ namespace glcxx
             }
 
             /// @brief upload data to index buffer, if doesn't exist, create it
-            template<typename Name, typename T>
-            typename std::enable_if<HasIndexBuffer && std::is_same<Name, cts("indices")>::value>::type
+            template<typename BufferName, typename T>
+            typename std::enable_if<HasIndexBuffer && std::is_same<BufferName, cts("indices")>::value>::type
             upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
             {
-               index_buffer_ptr& ptr = std::get<traits<cts("indices")>::index>(mBuffers);
+               index_buffer_ptr& ptr = std::get<traits<cts("indices")>::index>(_buffers);
                if (ptr)
                   ptr->upload(data, size, mode, usage);
                else
@@ -156,27 +156,27 @@ namespace glcxx
    }
 
    /// @brief shortcut types
-   template<typename...TNamedAttrib>
-   using vao = detail::vao<false, TNamedAttrib...>;
-   template<typename...TNamedAttrib>
-   using indexed_vao = detail::vao<true, TNamedAttrib...>;
+   template<typename... NamedAttrib>
+   using vao = detail::vao<false, NamedAttrib...>;
+   template<typename... NamedAttrib>
+   using indexed_vao = detail::vao<true, NamedAttrib...>;
 
    /// @brief make new vao with given buffers, version for vao without index buffer
-   template<typename...TName, typename... TBufferPtr>
-   inline auto make_vao(TBufferPtr&&... buf)
+   template<typename...Name, typename... BufferPtr>
+   inline auto make_vao(BufferPtr&&... buf)
    {
-      vao<std::pair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
-      glcxx_swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
+      vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
+      glcxx_swallow(vao.template set<Name>(std::forward<BufferPtr>(buf)));
       return vao;
    }
 
    /// @brief make new vao with given buffers, version for vao with index buffer
-   template<typename...TName, typename TIndexBufferPtr, typename... TBufferPtr>
-   inline auto make_vao(TIndexBufferPtr&& indices, TBufferPtr&&... buf)
+   template<typename...Name, typename IndexBufferPtr, typename... BufferPtr>
+   inline auto make_vao(IndexBufferPtr&& indices, BufferPtr&&... buf)
    {
-      indexed_vao<std::pair<TName, typename std::remove_reference<TBufferPtr>::type::element_type::data>...> vao;
-      vao.template set<cts("indices")>(std::forward<TIndexBufferPtr>(indices));
-      glcxx_swallow(vao.template set<TName>(std::forward<TBufferPtr>(buf)));
+      indexed_vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
+      vao.template set<cts("indices")>(std::forward<IndexBufferPtr>(indices));
+      glcxx_swallow(vao.template set<Name>(std::forward<BufferPtr>(buf)));
       return vao;
    }
 }

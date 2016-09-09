@@ -12,7 +12,7 @@ namespace glcxx
 {
    class glprogram_error : public std::exception
    {
-         std::string mMsg;
+         std::string _msg;
 
       public:
          explicit glprogram_error(const std::string& msg);

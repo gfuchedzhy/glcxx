@@ -30,8 +30,8 @@ namespace glcxx
    namespace detail
    {
       /// @brief helper to stream non empty tuple
-      template<typename TArg1, typename... TArgs, size_t... I>
-      inline void ostream_tuple(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t, std::index_sequence<I...>)
+      template<typename Arg1, typename... Args, size_t... I>
+      inline void ostream_tuple(std::ostream& stream, const std::tuple<Arg1, Args...>& t, std::index_sequence<I...>)
       {
          stream << '(' << std::get<0>(t);
          glcxx_swallow(stream << ',' << std::get<I+1>(t));
@@ -40,10 +40,10 @@ namespace glcxx
    }
 
    /// @brief stream non empty tuple
-   template<typename TArg1, typename... TArgs>
-   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<TArg1, TArgs...>& t)
+   template<typename Arg1, typename... Args>
+   inline std::ostream& operator<<(std::ostream& stream, const std::tuple<Arg1, Args...>& t)
    {
-      detail::ostream_tuple(stream, t, std::make_index_sequence<sizeof...(TArgs)>{});
+      detail::ostream_tuple(stream, t, std::make_index_sequence<sizeof...(Args)>{});
       return stream;
    }
 
@@ -86,11 +86,11 @@ namespace glcxx
       template<typename Tuple, template<typename...> class Pred, typename... PredParams> struct tuple_find_if;
 
       /// @brief specialization for tuple
-      template<template<typename...> class Pred, typename... PredParams, typename T1, typename... TRest>
-      struct tuple_find_if<std::tuple<T1, TRest...>, Pred, PredParams...>
+      template<template<typename...> class Pred, typename... PredParams, typename T1, typename... Rest>
+      struct tuple_find_if<std::tuple<T1, Rest...>, Pred, PredParams...>
       {
             static constexpr size_t value = Pred<T1, PredParams...>::value
-               ? 0 : 1 + tuple_find_if<std::tuple<TRest...>, Pred, PredParams...>::value;
+               ? 0 : 1 + tuple_find_if<std::tuple<Rest...>, Pred, PredParams...>::value;
       };
 
       /// @brief terminator specialization for tuple
@@ -119,10 +119,10 @@ namespace glcxx
 
       /// @brief tuple concatanation impl
       template<typename... Tuples> struct tuple_cat_impl;
-      template<typename... T1, typename... T2, typename... TRestTuples>
-      struct tuple_cat_impl<std::tuple<T1...>, std::tuple<T2...>, TRestTuples...>
+      template<typename... T1, typename... T2, typename... RestTuples>
+      struct tuple_cat_impl<std::tuple<T1...>, std::tuple<T2...>, RestTuples...>
       {
-            using type = typename tuple_cat_impl<std::tuple<T1..., T2...>, TRestTuples...>::type;
+            using type = typename tuple_cat_impl<std::tuple<T1..., T2...>, RestTuples...>::type;
       };
 
       /// @brief tuple concatanation impl terminator
@@ -153,13 +153,13 @@ namespace glcxx
       struct tuple_filter_impl;
 
       /// @brief specialization for tuple
-      template<template<typename...> class Pred, typename... PredParams, typename T1, typename... TRest, bool inverse>
-      struct tuple_filter_impl<std::tuple<T1, TRest...>, Pred, inverse, PredParams...>
+      template<template<typename...> class Pred, typename... PredParams, typename T1, typename... Rest, bool inverse>
+      struct tuple_filter_impl<std::tuple<T1, Rest...>, Pred, inverse, PredParams...>
       {
             using type = tuple_cat<typename std::conditional<inverse != Pred<T1, PredParams...>::value,
                                                              std::tuple<T1>,
                                                              std::tuple<>>::type,
-                                   typename tuple_filter_impl<std::tuple<TRest...>, Pred, inverse, PredParams...>::type>;
+                                   typename tuple_filter_impl<std::tuple<Rest...>, Pred, inverse, PredParams...>::type>;
       };
 
       /// @brief terminator specialization
@@ -173,22 +173,22 @@ namespace glcxx
       template<typename Tuple, template<typename...> class Pred, bool inverse = false, typename... PredParams>
       using tuple_filter = typename tuple_filter_impl<Tuple, Pred, inverse, PredParams...>::type;
 
-      /// @brief strip TStrip types from tuple
-      template<typename TStrip, typename Tuple> struct tuple_strip_impl;
+      /// @brief strip Strip types from tuple
+      template<typename Strip, typename Tuple> struct tuple_strip_impl;
 
       /// @brief specialization for tuple
-      template<typename TStrip, typename... T>
-      struct tuple_strip_impl<TStrip, std::tuple<T...>>
+      template<typename Strip, typename... T>
+      struct tuple_strip_impl<Strip, std::tuple<T...>>
       {
             using type = tuple_cat<
-               typename std::conditional<std::is_same<TStrip, T>::value,
+               typename std::conditional<std::is_same<Strip, T>::value,
                                          std::tuple<>,
                                          std::tuple<T> >::type...>;
       };
 
       /// @brief shortcut
-      template<typename TStrip, typename Tuple>
-      using tuple_strip = typename tuple_strip_impl<TStrip, Tuple>::type;
+      template<typename Strip, typename Tuple>
+      using tuple_strip = typename tuple_strip_impl<Strip, Tuple>::type;
 
       /// @brief true if predicate Pred is true for any of tuple members
       template<typename Tuple, template<typename...> class Pred, typename... PredParams> struct tuple_any_of;
@@ -217,11 +217,11 @@ namespace glcxx
       constexpr char string<s...>::chars[];
 
       /// @brief string concatanation impl
-      template<typename... TStrings> struct string_cat_impl;
-      template<char... str1, char... str2, typename... TRestStrings>
-      struct string_cat_impl<string<str1...>, string<str2...>, TRestStrings...>
+      template<typename... Strings> struct string_cat_impl;
+      template<char... str1, char... str2, typename... RestStrings>
+      struct string_cat_impl<string<str1...>, string<str2...>, RestStrings...>
       {
-            using type = typename string_cat_impl<string<str1..., str2...>, TRestStrings...>::type;
+            using type = typename string_cat_impl<string<str1..., str2...>, RestStrings...>::type;
       };
 
       /// @brief string concatanation impl terminator
@@ -239,19 +239,19 @@ namespace glcxx
       };
 
       /// @brief string concatanation shortcut
-      template<typename... TStrings>
-      using string_cat = typename string_cat_impl<TStrings...>::type;
+      template<typename... Strings>
+      using string_cat = typename string_cat_impl<Strings...>::type;
 
       /// @brief strip all occurances of given char from given ct string
-      template<char c, typename TString> struct string_strip_char_impl;
+      template<char c, typename String> struct string_strip_char_impl;
       template<char c, char... str>
       struct string_strip_char_impl<c, string<str...>>
       {
          using type = string_cat<typename std::conditional<c == str, string<>, string<str>>::type...>;
       };
       /// @brief shortcut
-      template<char c, typename TString>
-      using string_strip_char = typename string_strip_char_impl<c, TString>::type;
+      template<char c, typename String>
+      using string_strip_char = typename string_strip_char_impl<c, String>::type;
 
       /// @brief returns substring [start,end)
       template<size_t start, size_t end, size_t...I, char...str>
@@ -259,11 +259,11 @@ namespace glcxx
          -> string_cat<typename std::conditional< (I<start) || (I>=end), string<>, string<str>>::type...>;
 
       /// @brief shortcut
-      template<typename TString, size_t start, size_t end = TString::length>
-      using string_sub = decltype(string_sub_helper<start, end>(TString{}, std::make_index_sequence<TString::length>{}));
+      template<typename String, size_t start, size_t end = String::length>
+      using string_sub = decltype(string_sub_helper<start, end>(String{}, std::make_index_sequence<String::length>{}));
 
       /// @brief string find
-      template<typename TString, typename TSubString> struct string_find;
+      template<typename String, typename SubString> struct string_find;
 
       /// @brief string find
       template<char first, char... rest, char... substr>
@@ -283,57 +283,57 @@ namespace glcxx
       };
 
       /// @brief string rfind
-      template<typename TString, typename TSubString> struct string_rfind
+      template<typename String, typename SubString> struct string_rfind
       {
-            static constexpr size_t value = (TString::length == string_find<TString, TSubString>::value) ? TString::length
-               : TString::length - string_find<TString, TSubString>::value - 1;
+            static constexpr size_t value = (String::length == string_find<String, SubString>::value) ? String::length
+               : String::length - string_find<String, SubString>::value - 1;
       };
 
       /// @brief string single replace
-      template<typename TString, typename TOld, typename TNew>
+      template<typename String, typename Old, typename New>
       struct string_single_rep_impl
       {
-            using type = typename std::conditional<TString::length == string_find<TString, TOld>::value,
-                                                   TString,
-                                                   string_cat<string_sub<TString, 0, string_find<TString, TOld>::value>,
-                                                              TNew,
-                                                              string_sub<TString, string_find<TString, TOld>::value + TOld::length>>
+            using type = typename std::conditional<String::length == string_find<String, Old>::value,
+                                                   String,
+                                                   string_cat<string_sub<String, 0, string_find<String, Old>::value>,
+                                                              New,
+                                                              string_sub<String, string_find<String, Old>::value + Old::length>>
                                                    >::type;
       };
       /// @brief string single replace shortcut
-      template<typename TString, typename TOld, typename TNew>
-      using string_single_rep = typename string_single_rep_impl<TString, TOld, TNew>::type;
+      template<typename String, typename Old, typename New>
+      using string_single_rep = typename string_single_rep_impl<String, Old, New>::type;
 
       /// @brief string replace all impl
-      template<typename TString, typename TOld, typename TNew, bool noOccurances = false>
+      template<typename String, typename Old, typename New, bool NoOccurances = false>
       struct string_all_rep_impl
       {
-            using single_rep = string_single_rep<TString, TOld, TNew>;
-            using type = typename string_all_rep_impl<single_rep, TOld, TNew,
-                                                      std::is_same<TString, single_rep>::value>::type;
+            using single_rep = string_single_rep<String, Old, New>;
+            using type = typename string_all_rep_impl<single_rep, Old, New,
+                                                      std::is_same<String, single_rep>::value>::type;
       };
 
       /// @brief string replace all impl terminator
-      template<typename TString, typename TOld, typename TNew>
-      struct string_all_rep_impl<TString, TOld, TNew, true>
+      template<typename String, typename Old, typename New>
+      struct string_all_rep_impl<String, Old, New, true>
       {
-            using type = TString;
+            using type = String;
       };
 
       /// @brief string replace all shortcut
-      template<typename TString, typename TOld, typename TNew>
-      using string_all_rep = typename string_all_rep_impl<TString, TOld, TNew>::type;
+      template<typename String, typename Old, typename New>
+      using string_all_rep = typename string_all_rep_impl<String, Old, New>::type;
 
       /// @brief string from impl
-      template<typename T, T val> struct string_from_impl;
+      template<typename T, T Val> struct string_from_impl;
 
       /// @brief string from unsigned
-      template<size_t val> struct string_from_impl<size_t, val>
+      template<size_t Val> struct string_from_impl<size_t, Val>
       {
-            using type = string_cat<typename std::conditional<0==val/10,
+            using type = string_cat<typename std::conditional<0==Val/10,
                                                               string<>,
-                                                              typename string_from_impl<size_t, val/10>::type>::type,
-                                    string<'0' + (val%10)>>;
+                                                              typename string_from_impl<size_t, Val/10>::type>::type,
+                                    string<'0' + (Val%10)>>;
       };
       template<>
       struct string_from_impl<size_t, 0u>
@@ -361,8 +361,8 @@ namespace glcxx
       };
 
       /// @brief string toupper shortcut
-      template<typename TString>
-      using string_toupper = typename string_toupper_impl<TString>::type;
+      template<typename String>
+      using string_toupper = typename string_toupper_impl<String>::type;
    }
 }
 

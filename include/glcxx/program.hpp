@@ -27,20 +27,20 @@ namespace glcxx
          /// @brief selects program
          void select() const
          {
-            glcxx_gl(glUseProgram, mObject);
+            glcxx_gl(glUseProgram, _object);
          }
 
       protected:
          /// @brief program object id
-         GLuint mObject;
+         GLuint _object;
    };
 
    class program_base : public program_res_holder
    {
          /// @brief shaders, geometry shader is optional
-         shader mVertexShader;
-         shader mFragmentShader;
-         std::unique_ptr<shader> mGeometryShader;
+         shader _vertex_shader;
+         shader _fragment_shader;
+         std::unique_ptr<shader> _geometry_shader;
 
       public:
          /// @brief constructor
@@ -52,12 +52,12 @@ namespace glcxx
 
    namespace detail
    {
-      /// @brief value is true it T has valid instance of set<TName> member
-      template<typename TName, typename T>
+      /// @brief value is true it T has valid instance of set<Name> member
+      template<typename Name, typename T>
       struct has_named_set_method
       {
          private:
-            template<typename U, typename = decltype(&U::template set<TName>)>
+            template<typename U, typename = decltype(&U::template set<Name>)>
             static std::true_type test(int*);
             template<typename U>
             static std::false_type test(...);
@@ -67,52 +67,52 @@ namespace glcxx
       };
 
       /// @brief specialization for tuple searches for tuple member that has valid
-      /// set<TName> member
-      template<typename TName, typename T1, typename... TRest>
-      struct has_named_set_method<TName, std::tuple<T1, TRest...>>
+      /// set<Name> member
+      template<typename Name, typename T1, typename... Rest>
+      struct has_named_set_method<Name, std::tuple<T1, Rest...>>
       {
-            static constexpr size_t index = has_named_set_method<TName, T1>::value ? 0 : 1 + has_named_set_method<TName, std::tuple<TRest...>>::index;
-            static constexpr bool   value = (index != sizeof...(TRest) + 1);
+            static constexpr size_t index = has_named_set_method<Name, T1>::value ? 0 : 1 + has_named_set_method<Name, std::tuple<Rest...>>::index;
+            static constexpr bool   value = (index != sizeof...(Rest) + 1);
       };
 
       /// @brief terminator of specialization for tuple
-      template<typename TName>
-      struct has_named_set_method<TName, std::tuple<>>
+      template<typename Name>
+      struct has_named_set_method<Name, std::tuple<>>
       {
             static constexpr size_t index = 0;
             static constexpr bool   value = false;
       };
 
       /// @brief program impl
-      template<bool HasGeomShader, typename TProgramInputTuple>
+      template<bool HasGeomShader, typename ProgramInputTuple>
       class program_impl;
 
       /// @brief only tuple of program inputs is a valid parameter for program
-      template<bool HasGeomShader, typename... TProgramInput>
-      class program_impl<HasGeomShader, std::tuple<TProgramInput...>> : public program_base, public TProgramInput...
+      template<bool HasGeomShader, typename... ProgramInput>
+      class program_impl<HasGeomShader, std::tuple<ProgramInput...>> : public program_base, public ProgramInput...
       {
-            /// @brief returns input type which has valid set<TSetName> method
-            template<typename TSetName>
-            using input_type = typename std::tuple_element<has_named_set_method<TSetName, std::tuple<TProgramInput...>>::index,
-                                                           std::tuple<TProgramInput...>>::type;
+            /// @brief returns input type which has valid set<Name> method
+            template<typename Name>
+            using input_type = typename std::tuple_element<has_named_set_method<Name, std::tuple<ProgramInput...>>::index,
+                                                           std::tuple<ProgramInput...>>::type;
 
-            /// @brief returns argument type of set<TSetName> method found in input tuple
-            template<typename TSetName>
-            using set_arg_type = typename ct::function_traits<decltype(&input_type<TSetName>::template set<TSetName>)>::template arg_type<0>;
+            /// @brief returns argument type of set<Name> method found in input tuple
+            template<typename Name>
+            using set_arg_type = typename ct::function_traits<decltype(&input_type<Name>::template set<Name>)>::template arg_type<0>;
 
          public:
             /// @brief ctstring containing glsl declarations of all program inputs
             using declarations = ct::string_cat<cts("\n#ifdef VERTEX\n"),
-                                                typename std::conditional<shader_has_decl<tag::vertex, typename TProgramInput::decl_tag>::value,
-                                                                          typename TProgramInput::declaration,
+                                                typename std::conditional<shader_has_decl<tag::vertex, typename ProgramInput::decl_tag>::value,
+                                                                          typename ProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#elif defined GEOMETRY\n"),
-                                                typename std::conditional<shader_has_decl<tag::geometry, typename TProgramInput::decl_tag>::value,
-                                                                          typename TProgramInput::declaration,
+                                                typename std::conditional<shader_has_decl<tag::geometry, typename ProgramInput::decl_tag>::value,
+                                                                          typename ProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#else\n"),
-                                                typename std::conditional<shader_has_decl<tag::fragment, typename TProgramInput::decl_tag>::value,
-                                                                          typename TProgramInput::declaration,
+                                                typename std::conditional<shader_has_decl<tag::fragment, typename ProgramInput::decl_tag>::value,
+                                                                          typename ProgramInput::declaration,
                                                                           cts("")>::type...,
                                                 cts("#endif\n"),
                                                 typename std::conditional<HasGeomShader, cts("#define HAS_GEOMETRY\n"), cts("")>::type>;
@@ -120,7 +120,7 @@ namespace glcxx
             /// @brief constructor
             program_impl(const std::string& name, const std::string& glsl_version, const std::string& src)
                try : program_base(glsl_version, prepend_header_to_program(name, declarations::chars, src), HasGeomShader)
-                   , TProgramInput(mObject)...
+                   , ProgramInput(_object)...
             {}
             catch(glprogram_error& e) // add usefull info to exception and rethrow
             {
@@ -133,18 +133,18 @@ namespace glcxx
             void select() const
             {
                program_base::select();
-               glcxx_swallow(TProgramInput::select());
+               glcxx_swallow(ProgramInput::select());
             }
 
             /// @brief forward named set method to base class which has valid
             /// definition of it
             /// @note unfortunately it is impossible to write something like
-            /// using TProgramInput::set...; to bring all base setter into current
+            /// using ProgramInput::set...; to bring all base setter into current
             /// class' scope, so we need this forwarding function
-            template<typename TSetName>
-            void set(set_arg_type<TSetName> value)
+            template<typename Name>
+            void set(set_arg_type<Name> value)
             {
-               input_type<TSetName>::template set<TSetName>(value);
+               input_type<Name>::template set<Name>(value);
             }
       };
 
@@ -156,20 +156,20 @@ namespace glcxx
       };
       template<> struct is_geom<tag::geometry> { static constexpr bool value = true; };
 
-      /// @brief find all separate TNamedAttribs in TInputTuple, replace them with
+      /// @brief find all separate NamedAttribs in InputTuple, replace them with
       /// aggregated vao input
-      template<typename TInputTuple>
+      template<typename InputTuple>
       class program_input_traits
       {
-            /// @brief check if type is specialization of TNamedAttrib template
+            /// @brief check if type is specialization of NamedAttrib template
             template<typename T> struct specialization_of_named_attrib
                : ct::specialization_of<T, attrib_input> {};
 
-            /// @brief all TNamedAttribs
-            using vao_inputs = ct::tuple_filter<TInputTuple, specialization_of_named_attrib>;
+            /// @brief all NamedAttribs
+            using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_named_attrib>;
 
             /// @brief rest inputs
-            using rest_of_inputs = ct::tuple_filter<TInputTuple, specialization_of_named_attrib, true>;
+            using rest_of_inputs = ct::tuple_filter<InputTuple, specialization_of_named_attrib, true>;
 
             /// @brief rest inputs with tag stripped
             using rest_of_inputs_no_tags = ct::tuple_strip<tag::geometry, rest_of_inputs>;
@@ -185,32 +185,32 @@ namespace glcxx
       };
 
       /// @brief program with processed inputs
-      template<typename TInputTuple>
-      using program = program_impl<program_input_traits<TInputTuple>::has_geom_shader,
-                                   typename program_input_traits<TInputTuple>::resulting_inputs>;
+      template<typename InputTuple>
+      using program = program_impl<program_input_traits<InputTuple>::has_geom_shader,
+                                   typename program_input_traits<InputTuple>::resulting_inputs>;
    }
 
    /// @brief program
-   template<typename... TInputs>
-   class program : public detail::program<std::tuple<TInputs...>>
+   template<typename... Inputs>
+   class program : public detail::program<std::tuple<Inputs...>>
    {
          /// @brief original inputs
-         using input_tuple = std::tuple<TInputs...>;
+         using input_tuple = std::tuple<Inputs...>;
 
          /// @brief inherited constructor
          using detail::program<input_tuple>::program;
    };
 
    namespace detail {
-      template<typename TBaseProgram, typename... TAdditionalInputs> struct derive_program;
-      template<typename... TInputs, typename... TAdditionalInputs>
-      struct derive_program<glcxx::program<TInputs...>, TAdditionalInputs...>
+      template<typename BaseProgram, typename... AdditionalInputs> struct derive_program;
+      template<typename... Inputs, typename... AdditionalInputs>
+      struct derive_program<glcxx::program<Inputs...>, AdditionalInputs...>
       {
-            using type = glcxx::program<TInputs..., TAdditionalInputs...>;
+            using type = glcxx::program<Inputs..., AdditionalInputs...>;
       };
    }
-   template<typename TBaseProgram, typename... TAdditionalInputs>
-   using derive_program = typename detail::derive_program<TBaseProgram, TAdditionalInputs...>::type;
+   template<typename BaseProgram, typename... AdditionalInputs>
+   using derive_program = typename detail::derive_program<BaseProgram, AdditionalInputs...>::type;
 }
 
 #endif

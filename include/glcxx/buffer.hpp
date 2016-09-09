@@ -18,82 +18,82 @@ namespace glcxx
          buffer_base& operator=(const buffer_base& other) = delete;
 
          /// @brief buffer id
-         GLuint mID;
+         GLuint _id;
 
          /// @brief target
-         GLenum mTarget;
+         GLenum _target;
 
          /// @brief usage
-         GLenum mUsage;
+         GLenum _usage;
 
       public:
          /// @brief constructor
          buffer_base(const void* data, size_t size, GLenum usage, GLenum target)
-            : mTarget(target)
-            , mUsage(usage)
+            : _target(target)
+            , _usage(usage)
          {
-            glcxx_gl(glGenBuffers, 1, &mID);
+            glcxx_gl(glGenBuffers, 1, &_id);
             upload(data, size);
          }
 
          /// @brief free buffer
          ~buffer_base()
          {
-            glcxx_gl(glDeleteBuffers, 1, &mID);
+            glcxx_gl(glDeleteBuffers, 1, &_id);
          }
 
          /// @brief binds buffer
          void bind() const
          {
-            glcxx_gl(glBindBuffer, mTarget, mID);
+            glcxx_gl(glBindBuffer, _target, _id);
          }
 
          /// @brief unbinds buffer
          void unbind() const
          {
-            glcxx_gl(glBindBuffer, mTarget, 0);
+            glcxx_gl(glBindBuffer, _target, 0);
          }
 
          /// @brief uploads new data to buffer, usage = 0 means do not change usage
          void upload(const void* data, size_t size, GLenum usage = 0)
          {
             if (usage)
-               mUsage = usage;
+               _usage = usage;
             bind();
-            glcxx_gl(glBufferData, mTarget, size, data, mUsage);
+            glcxx_gl(glBufferData, _target, size, data, _usage);
             unbind();
          }
    };
 
    /// @brief typesafe buffer object
-   template<typename TData>
+   template<typename Data>
    class buffer : public buffer_base
    {
       public:
          /// @brief underlying data type
-         using data = TData;
+         using data = Data;
 
          /// @brief constructor
-         buffer(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
-            : buffer_base(data, size*sizeof(TData), usage, target)
+         buffer(const Data* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
+            : buffer_base(data, size*sizeof(Data), usage, target)
          {}
 
          /// @brief uploads new data to buffer, usage = 0 means do not change usage
-         void upload(const TData* data, size_t size, GLenum usage = 0)
+         void upload(const Data* data, size_t size, GLenum usage = 0)
          {
-            buffer_base::upload(data, size*sizeof(TData), usage);
+            buffer_base::upload(data, size*sizeof(Data), usage);
          }
    };
 
    /// @brief buffer ptr
-   template<typename TData>
-   using buffer_ptr = std::shared_ptr<buffer<TData>>;
+   template<typename Data>
+   using buffer_ptr = std::shared_ptr<buffer<Data>>;
 
    /// @brief make buffer
-   template<typename TData>
-   inline buffer_ptr<TData> make_buffer(const TData* data, size_t size, GLenum usage = GL_STATIC_DRAW)
+   template<typename Data>
+   inline buffer_ptr<Data> make_buffer(const Data* data, size_t size, GLenum usage = GL_STATIC_DRAW)
    {
-      return std::make_shared<buffer<TData>>(data, size, usage);
+      return std::make_shared<buffer<Data>>(data, size, usage);
    }
 
    /// @brief index buffer object, this buffer accepts ubyte, ushort and uint
@@ -101,13 +101,13 @@ namespace glcxx
    class index_buffer : public buffer_base
    {
          /// @brief size of buffer
-         GLsizei mSize;
+         GLsizei _size;
 
          /// @brief mode, e.g. GL_TRIANGLE_STRIP
-         GLenum mMode;
+         GLenum _mode;
 
          /// @brief type, e.g. GL_UNSIGNED_BYTE
-         GLenum mType;
+         GLenum _type;
 
       public:
          /// @brief constructor
@@ -119,9 +119,9 @@ namespace glcxx
                           // case for vertex buffers as their bindings are not part of
                           // vao's state
                           (glcxx_gl(glBindVertexArray, 0), GL_ELEMENT_ARRAY_BUFFER))
-            , mSize(size)
-            , mMode(mode)
-            , mType(glsl::type_id<T>::value)
+            , _size(size)
+            , _mode(mode)
+            , _type(glsl::type_id<T>::value)
          {
             constexpr GLenum id = glsl::type_id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
@@ -138,15 +138,15 @@ namespace glcxx
             // vertex buffers as their bindings are not part of vao's state
             glcxx_gl(glBindVertexArray, 0);
             buffer_base::upload(data, size*sizeof(T), usage);
-            mSize = size;
-            mMode = mode;
-            mType = id;
+            _size = size;
+            _mode = mode;
+            _type = id;
          }
 
          /// @brief draw with this index buffer
          void draw() const
          {
-            glcxx_gl(glDrawElements, mMode, mSize, mType, nullptr);
+            glcxx_gl(glDrawElements, _mode, _size, _type, nullptr);
          }
 
          /// @brief unbind index buffer
@@ -160,10 +160,10 @@ namespace glcxx
    using index_buffer_ptr = std::shared_ptr<index_buffer>;
 
    /// @brief make index buffer
-   template<typename... TArgs>
-   inline index_buffer_ptr make_index_buffer(TArgs&&... args)
+   template<typename... Args>
+   inline index_buffer_ptr make_index_buffer(Args&&... args)
    {
-      return std::make_shared<index_buffer>(std::forward<TArgs>(args)...);
+      return std::make_shared<index_buffer>(std::forward<Args>(args)...);
    }
 }
 

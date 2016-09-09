@@ -18,36 +18,36 @@ namespace glcxx
          texture& operator=(const texture& other) = delete;
 
          /// @brief texture id
-         GLuint mID;
+         GLuint _id;
 
       protected:
          /// @brief texture target
-         GLenum mTarget = 0;
+         GLenum _target = 0;
 
       public:
          /// @brief reads texture from file, uploads to gpu
          texture(GLenum target)
-            : mTarget(target)
+            : _target(target)
          {
-            glcxx_gl(glGenTextures, 1, &mID);
+            glcxx_gl(glGenTextures, 1, &_id);
          }
 
          /// @brief frees texture
          ~texture()
          {
-            glcxx_gl(glDeleteTextures, 1, &mID);
+            glcxx_gl(glDeleteTextures, 1, &_id);
          }
 
          /// @brief binds texture
          void bind() const
          {
-            glcxx_gl(glBindTexture, mTarget, mID);
+            glcxx_gl(glBindTexture, _target, _id);
          }
 
          /// @brief unbinds texture
          void unbind()
          {
-            glcxx_gl(glBindTexture, mTarget, 0);
+            glcxx_gl(glBindTexture, _target, 0);
          }
    };
 

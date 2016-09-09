@@ -10,28 +10,28 @@
 namespace glcxx
 {
    /// @brief base implementation for uniform program input
-   template<typename TUniformTraits>
+   template<typename UniformTraits>
    class uniform_input_base
    {
          /// @brief location of program input inside program
-         GLint mLocation;
+         GLint _location;
 
          /// @brief holds actual uniform
-         typename TUniformTraits::data mUniformData;
+         typename UniformTraits::data _uniform_data;
 
       public:
          /// @brief constructor
          uniform_input_base(GLint location)
-            : mLocation(location)
+            : _location(location)
          {}
 
          /// @brief set uniform as program input
-         void set(const typename TUniformTraits::data& value)
+         void set(const typename UniformTraits::data& value)
          {
-            if (mUniformData != value)
+            if (_uniform_data != value)
             {
-               mUniformData = value;
-               attach_uniform(mLocation, glsl_cast<typename TUniformTraits::glsl_data>(mUniformData));
+               _uniform_data = value;
+               attach_uniform(_location, glsl_cast<typename UniformTraits::glsl_data>(_uniform_data));
             }
          }
 
@@ -42,28 +42,28 @@ namespace glcxx
    };
 
    /// @brief holds state of program's uniform
-   template<typename TName, typename TUniformTraits, typename DeclTag = tag::vertex>
-   class uniform_input : public uniform_input_base<TUniformTraits>
+   template<typename Name, typename UniformTraits, typename DeclTag = tag::vertex>
+   class uniform_input : public uniform_input_base<UniformTraits>
    {
          /// @brief base implementation class
-         using base = uniform_input_base<TUniformTraits>;
+         using base = uniform_input_base<UniformTraits>;
 
       public:
          /// @brief declaration tag
          using decl_tag = DeclTag;
 
          /// @brief ctstring containing glsl declaration of variable
-         using declaration = typename TUniformTraits::template declaration<TName>;
+         using declaration = typename UniformTraits::template declaration<Name>;
 
          /// @brief constructor
          uniform_input(const GLuint program)
-            : base(get_uniform_loc(program, TName::chars))
+            : base(get_uniform_loc(program, Name::chars))
          {}
 
          /// @brief named set method
-         template<typename TInputName>
-         typename std::enable_if<std::is_same<TInputName, TName>::value>::type
-         set(const typename TUniformTraits::data& value)
+         template<typename InputName>
+         typename std::enable_if<std::is_same<InputName, Name>::value>::type
+         set(const typename UniformTraits::data& value)
          {
             base::set(value);
          }

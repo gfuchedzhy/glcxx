@@ -128,19 +128,19 @@ namespace glcxx
 
    /// cast cpu type to glsl type if they differ, if not - do nothing
    /// @brief cast simple types, e.g. int->float or ivec2->vec2
-   template<typename TGLSLData, typename TData>
-   inline typename std::conditional<std::is_same<TGLSLData, TData>::value, const TGLSLData&, TGLSLData>::type
-   glsl_cast(const TData& data)
+   template<typename GLSLData, typename Data>
+   inline typename std::conditional<std::is_same<GLSLData, Data>::value, const GLSLData&, GLSLData>::type
+   glsl_cast(const Data& data)
    {
       return data;
    }
 
    /// @brief cast arrays, e.g. ivec2[3]->vec2[3]
-   template<typename TGLSLData, typename TData, size_t N>
-   inline typename std::conditional<std::is_same<typename TGLSLData::value_type, TData>::value, const TGLSLData&, TGLSLData>::type
-   glsl_cast(const std::array<TData, N>& data)
+   template<typename GLSLData, typename Data, size_t N>
+   inline typename std::conditional<std::is_same<typename GLSLData::value_type, Data>::value, const GLSLData&, GLSLData>::type
+   glsl_cast(const std::array<Data, N>& data)
    {
-      TGLSLData glslData;
+      GLSLData glslData;
       std::copy(data.begin(), data.end(), glslData.begin());
       return glslData;
    }
@@ -181,7 +181,7 @@ namespace glcxx
       template<typename T> using basic_type_name = typename detail::basic_type_name<T>::type;
 
       /// @brief traits for glsl types
-      template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class THolder>
+      template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class Holder>
       struct type_traits;
 
       template<typename TypeTo, size_t EXTRA>
@@ -232,11 +232,11 @@ namespace glcxx
       };
 
       /// @brief shortcut
-      template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class THolder>
-      using type_name = typename type_traits<TypeTo, EXTRA, THolder>::type_name;
+      template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class Holder>
+      using type_name = typename type_traits<TypeTo, EXTRA, Holder>::type_name;
 
       /// @brief traits class for input variable to shader attribute/uniform
-      /// @tparam THolder glm template holding values, like glm::tvec3 or glm::tmat4
+      /// @tparam Holder glm template holding values, like glm::tvec3 or glm::tmat4
       /// @tparam TypeFrom type on cpu side
       /// @tparam TypeTo cpp type equivalent to glsl type which should be used on gpu side
       /// @tparam isUniform if true this is a uniform, otherwise it is an attribute
@@ -245,7 +245,7 @@ namespace glcxx
       /// vec4 type on gpu side
       /// @tparam N if N is 1 this is traits class for single value, if N > 1 this
       /// is array, e.g. vec3 varname[2]
-      template<template<typename, glm::precision> class THolder, typename TypeFrom, typename TypeTo, bool IsUniform, size_t EXTRA, size_t N>
+      template<template<typename, glm::precision> class Holder, typename TypeFrom, typename TypeTo, bool IsUniform, size_t EXTRA, size_t N>
       struct input_var_traits : std::array<TypeFrom, N>
       {
             static_assert(N >= 1, "glsl type size should be at least 1");
@@ -255,10 +255,10 @@ namespace glcxx
 
             /// @brief basic type,  e.g. glm::vec2, or float for glm::tvec1
             template<typename T>
-            using basic_type = typename std::conditional<std::is_same<THolder<T, glm::defaultp>,
+            using basic_type = typename std::conditional<std::is_same<Holder<T, glm::defaultp>,
                                                                       glm::tvec1<T, glm::defaultp>>::value,
                                                          T,
-                                                         THolder<T, glm::defaultp>>::type;
+                                                         Holder<T, glm::defaultp>>::type;
 
             /// @brief data type, basic type or array of basic types
             using data = typename std::conditional<1==N, basic_type<TypeFrom>, std::array<basic_type<TypeFrom>, N>>::type;
@@ -270,20 +270,20 @@ namespace glcxx
             static constexpr size_t size = N;
 
             /// @brief ctstring containing glsl declaration of variable
-            template<typename TName>
+            template<typename Name>
             using declaration = ct::string_cat<typename std::conditional<IsUniform, cts("uniform "), cts("in ")>::type,
-                                               type_name<TypeTo, EXTRA, THolder>, cts(" "),
-                                               TName,
+                                               type_name<TypeTo, EXTRA, Holder>, cts(" "),
+                                               Name,
                                                typename std::conditional<1==size, cts(""),
                                                                          ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
                                                cts(";\n")>;
 
             /// @brief attach for attributes
-            template<typename TDummy = int> // to enable sfinae
-            static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, TDummy>::type dummy = 0)
+            template<typename Dummy = int> // to enable sfinae
+            static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, Dummy>::type dummy = 0)
             {
-               constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, THolder>::locations_num;
-               constexpr size_t components_num = type_traits<TypeTo, EXTRA, THolder>::components_num;
+               constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
+               constexpr size_t components_num = type_traits<TypeTo, EXTRA, Holder>::components_num;
                for (size_t n = 0; n < N; ++n)
                {
                   for (size_t i = 0; i < locations_num; ++i)
@@ -302,10 +302,10 @@ namespace glcxx
             }
 
             /// @brief detach for attributes
-            template<typename TDummy = int> // to enable sfinae
-            static void detach(GLint location, typename std::enable_if<is_attribute, TDummy>::type dummy = 0)
+            template<typename Dummy = int> // to enable sfinae
+            static void detach(GLint location, typename std::enable_if<is_attribute, Dummy>::type dummy = 0)
             {
-               constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, THolder>::locations_num;
+               constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
                for (size_t n = 0; n < N; ++n)
                {
                   for (size_t i = 0; i < locations_num; ++i)
@@ -319,17 +319,17 @@ namespace glcxx
    }
 
    /// @brief shortcuts
-   template<template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-   using attrib = glsl::input_var_traits<THolder, TypeFrom, TypeTo, false, EXTRA, 1>;
+   template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
+   using attrib = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, EXTRA, 1>;
 
-   template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-   using attrib_arr = glsl::input_var_traits<THolder, TypeFrom, TypeTo, false, EXTRA, N>;
+   template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
+   using attrib_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, EXTRA, N>;
 
-   template<template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-   using uniform = glsl::input_var_traits<THolder, TypeFrom, TypeTo, true, EXTRA, 1>;
+   template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
+   using uniform = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, EXTRA, 1>;
 
-   template<size_t N, template<typename, glm::precision> class THolder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-   using uniform_arr = glsl::input_var_traits<THolder, TypeFrom, TypeTo, true, EXTRA, N>;
+   template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
+   using uniform_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, EXTRA, N>;
 }
 
 #endif

@@ -19,7 +19,7 @@ namespace glcxx
 
       protected:
          /// @brief shader object id
-         GLuint mObject = 0;
+         GLuint _object = 0;
 
       public:
          /// @brief constructor
@@ -32,7 +32,7 @@ namespace glcxx
    class shader : public shader_base
    {
          /// @brief program this shader is attached to
-         GLuint mProgramObject;
+         GLuint _program_object;
 
       public:
          /// @brief constructor
