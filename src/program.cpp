@@ -64,4 +64,8 @@ glcxx::program_base::program_base(const std::string& glsl_version, const std::st
       }
       throw shader_linking_error(std::string("program linking failed:\n") + error_msg.get());
    }
+
+   // select created program so that uniform inputs could attach default
+   // constructed values
+   select();
 }

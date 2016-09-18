@@ -38,7 +38,9 @@ namespace glcxx
          /// @brief constructor
          uniform_input_base(GLint location)
             : _location(location)
-         {}
+         {
+            attach_uniform(_location, glsl_cast<typename UniformTraits::glsl_data>(_uniform_data));
+         }
 
          /// @brief set uniform as program input
          void set(const typename UniformTraits::data& value)
