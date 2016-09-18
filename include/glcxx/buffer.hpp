@@ -116,12 +116,7 @@ namespace glcxx
          /// @brief constructor
          template<typename T>
          index_buffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
-            : buffer_base(data, size*sizeof(T), usage,
-                          // before binding index buffer for upload vao should be unbound
-                          // to preserve vao's internal state, note that this in not the
-                          // case for vertex buffers as their bindings are not part of
-                          // vao's state
-                          (vao_base::unbind(), GL_ELEMENT_ARRAY_BUFFER))
+            : buffer_base(data, size*sizeof(T), usage, GL_ELEMENT_ARRAY_BUFFER)
             , _size(size)
             , _mode(mode)
             , _type(glsl::type_id<T>::value)
@@ -136,10 +131,6 @@ namespace glcxx
          {
             constexpr GLenum id = glsl::type_id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
-            // before binding index buffer for upload vao should be unbound to
-            // preserve vao's internal state, note that this in not the case for
-            // vertex buffers as their bindings are not part of vao's state
-            vao_base::unbind();
             buffer_base::upload(data, size*sizeof(T), usage);
             _size = size;
             _mode = mode;

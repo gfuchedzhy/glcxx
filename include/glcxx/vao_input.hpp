@@ -70,6 +70,7 @@ namespace glcxx
          {
             bind(vao);
             vao.draw_elements();
+            vao_base::unbind();
          }
 
          /// @brief draw arrays
@@ -78,6 +79,7 @@ namespace glcxx
          {
             bind(vao);
             glDrawArrays(mode, 0, size);
+            vao_base::unbind();
          }
 
          /// @brief if vao_input is empty, allow drawing without vao, with just
@@ -86,9 +88,6 @@ namespace glcxx
          void draw_elements(const index_buffer& ib,
                             typename std::enable_if<is_empty, Dummy>::type dummy = 0) const
          {
-            // before binding index buffer for draw, unbind currently bound vao
-            // to preserve its internal state
-            vao_base::unbind();
             ib.bind();
             ib.draw();
          }
