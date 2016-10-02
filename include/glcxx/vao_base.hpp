@@ -25,69 +25,69 @@
 
 namespace glcxx
 {
-   /// @brief base vao class, resource holder
-   class vao_base
-   {
-         /// @brief friend declaration
-         template<typename> friend class vao_input_impl;
+    /// @brief base vao class, resource holder
+    class vao_base
+    {
+        /// @brief friend declaration
+        template<typename> friend class vao_input_impl;
 
-         /// @brief non copyable
-         vao_base(const vao_base&) = delete;
+        /// @brief non copyable
+        vao_base(const vao_base&) = delete;
 
-         /// @brief vao id
-         GLuint _id = 0;
+        /// @brief vao id
+        GLuint _id = 0;
 
-         /// @brief program id this vao is enabled for
-         mutable GLuint _program_id = 0;
+        /// @brief program id this vao is enabled for
+        mutable GLuint _program_id = 0;
 
-      public:
-         /// @brief constructor
-         vao_base()
-         {
+    public:
+        /// @brief constructor
+        vao_base()
+        {
             glGenVertexArrays(1, &_id);
-         }
+        }
 
-         /// @brief move constructor
-         vao_base(vao_base&& other) noexcept
+        /// @brief move constructor
+        vao_base(vao_base&& other) noexcept
             : _id(other._id)
             , _program_id(other._program_id)
-         {
+        {
             other._program_id = 0;
             other._id = 0;
-         }
+        }
 
-         /// @brief destructor
-         ~vao_base()
-         {
+        /// @brief destructor
+        ~vao_base()
+        {
             if (_id)
-               glDeleteVertexArrays(1, &_id);
-         }
+                glDeleteVertexArrays(1, &_id);
+        }
 
-         friend void swap(vao_base& x, vao_base& y)
-         {
+        friend void swap(vao_base& x, vao_base& y)
+        {
             std::swap(x._id, y._id);
             std::swap(x._program_id, y._program_id);
-         }
+        }
 
-         /// @brief assignment
-         vao_base& operator=(vao_base other) noexcept
-         {
+        /// @brief assignment
+        vao_base& operator=(vao_base other) noexcept
+        {
             swap(*this, other);
             return *this;
-         }
+        }
 
-         /// @brief binds vao
-         void bind() const
-         {
+        /// @brief binds vao
+        void bind() const
+        {
             glBindVertexArray(_id);
-         }
+        }
 
-         /// @brief unbinds vao
-         static void unbind()
-         {
+        /// @brief unbinds vao
+        static void unbind()
+        {
             glBindVertexArray(0);
-         }
-   };
+        }
+    };
 }
 
 #endif

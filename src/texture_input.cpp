@@ -21,24 +21,24 @@
 
 void glcxx::texture_input_base::set(const texture_ptr& value)
 {
-   if (_texture != value)
-   {
-      if (_texture)
-      {
-         glActiveTexture(GL_TEXTURE0 + _sampler_id);
-         _texture->unbind();
-      }
-      _texture = value;
-      attach();
-   }
+    if (_texture != value)
+    {
+        if (_texture)
+        {
+            glActiveTexture(GL_TEXTURE0 + _sampler_id);
+            _texture->unbind();
+        }
+        _texture = value;
+        attach();
+    }
 }
 
 void glcxx::texture_input_base::attach() const
 {
-   if (_texture)
-   {
-      glActiveTexture(GL_TEXTURE0 + _sampler_id);
-      _texture->bind();
-      attach_uniform(_location, _sampler_id);
-   }
+    if (_texture)
+    {
+        glActiveTexture(GL_TEXTURE0 + _sampler_id);
+        _texture->bind();
+        attach_uniform(_location, _sampler_id);
+    }
 }

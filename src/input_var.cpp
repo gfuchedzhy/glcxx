@@ -21,16 +21,16 @@
 
 GLint glcxx::get_uniform_loc(GLuint program, const char* name)
 {
-   const auto location = glGetUniformLocation(program, name);
-   if (-1 == location)
-      throw input_location_error(std::string("uniform ") + name + " location wasn't found");
-   return location;
+    const auto location = glGetUniformLocation(program, name);
+    if (-1 == location)
+        throw input_location_error(std::string("uniform ") + name + " location wasn't found");
+    return location;
 }
 
 GLint glcxx::get_attrib_loc(GLuint program, const char* name)
 {
-   const auto location = glGetAttribLocation(program, name);
-   if (-1 == location)
-      throw input_location_error(std::string("attribute ") + name + " location wasn't found");
-   return location;
+    const auto location = glGetAttribLocation(program, name);
+    if (-1 == location)
+        throw input_location_error(std::string("attribute ") + name + " location wasn't found");
+    return location;
 }

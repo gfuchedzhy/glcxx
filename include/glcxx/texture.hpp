@@ -25,49 +25,49 @@
 
 namespace glcxx
 {
-   /// @brief texture resource holder
-   class texture
-   {
-         /// @brief disabled stuff
-         texture(const texture&) = delete;
-         texture& operator=(const texture& other) = delete;
+    /// @brief texture resource holder
+    class texture
+    {
+        /// @brief disabled stuff
+        texture(const texture&) = delete;
+        texture& operator=(const texture& other) = delete;
 
-         /// @brief texture id
-         GLuint _id;
+        /// @brief texture id
+        GLuint _id;
 
-      protected:
-         /// @brief texture target
-         GLenum _target = 0;
+    protected:
+        /// @brief texture target
+        GLenum _target = 0;
 
-      public:
-         /// @brief reads texture from file, uploads to gpu
-         texture(GLenum target)
+    public:
+        /// @brief reads texture from file, uploads to gpu
+        texture(GLenum target)
             : _target(target)
-         {
+        {
             glGenTextures(1, &_id);
-         }
+        }
 
-         /// @brief frees texture
-         ~texture()
-         {
+        /// @brief frees texture
+        ~texture()
+        {
             glDeleteTextures(1, &_id);
-         }
+        }
 
-         /// @brief binds texture
-         void bind() const
-         {
+        /// @brief binds texture
+        void bind() const
+        {
             glBindTexture(_target, _id);
-         }
+        }
 
-         /// @brief unbinds texture
-         void unbind()
-         {
+        /// @brief unbinds texture
+        void unbind()
+        {
             glBindTexture(_target, 0);
-         }
-   };
+        }
+    };
 
-   /// @brief texture ptr
-   using texture_ptr = std::shared_ptr<texture>;
+    /// @brief texture ptr
+    using texture_ptr = std::shared_ptr<texture>;
 }
 
 #endif

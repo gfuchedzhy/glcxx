@@ -24,74 +24,74 @@
 
 namespace glcxx
 {
-   template<typename AttribTraits>
-   class buffer_input_base
-   {
-         /// @brief attribute location
-         GLint _location;
+    template<typename AttribTraits>
+    class buffer_input_base
+    {
+        /// @brief attribute location
+        GLint _location;
 
-         /// @brief holds actual buffer
-         using buffer = buffer_ptr<typename AttribTraits::data>;
-         buffer _buffer;
+        /// @brief holds actual buffer
+        using buffer = buffer_ptr<typename AttribTraits::data>;
+        buffer _buffer;
 
-      public:
-         /// @brief constructor
-         buffer_input_base(GLint location)
+    public:
+        /// @brief constructor
+        buffer_input_base(GLint location)
             : _location(location)
-         {}
+        {}
 
-         /// @brief set new buffer as program input
-         void set(const buffer& value)
-         {
+        /// @brief set new buffer as program input
+        void set(const buffer& value)
+        {
             if (_buffer != value)
             {
-               // detach old input, attach new one
-               if (_buffer)
-                  AttribTraits::detach(_location);
-               _buffer = value;
-               select();
+                // detach old input, attach new one
+                if (_buffer)
+                    AttribTraits::detach(_location);
+                _buffer = value;
+                select();
             }
-         }
+        }
 
-         /// @brief called after program was selected, attach buffer
-         void select() const
-         {
+        /// @brief called after program was selected, attach buffer
+        void select() const
+        {
             if (_buffer)
             {
-               _buffer->bind();
-               AttribTraits::attach(_location);
-               _buffer->unbind();
+                _buffer->bind();
+                AttribTraits::attach(_location);
+                _buffer->unbind();
             }
-         }
-   };
+        }
+    };
 
-   /// @brief holds state of program's uniform
-   template<typename Name, typename AttribTraits>
-   class buffer_input : public buffer_input_base<AttribTraits>
-   {
-         /// @brief base implementation class
-         using base = buffer_input_base<AttribTraits>;
+    /// @brief holds state of program's uniform
+    template<typename Name, typename AttribTraits>
+    class buffer_input : public buffer_input_base<AttribTraits>
+    {
+        /// @brief base implementation class
+        using base = buffer_input_base<AttribTraits>;
 
-      public:
-         /// @brief VBOs are always vertex shader inputs
-         using decl_tag = tag::vertex;
+    public:
+        /// @brief VBOs are always vertex shader inputs
+        using decl_tag = tag::vertex;
 
-         /// @brief ctstring containing glsl declaration of variable
-         using declaration = typename AttribTraits::template declaration<Name>;
+        /// @brief ctstring containing glsl declaration of variable
+        using declaration = typename AttribTraits::template declaration<Name>;
 
-         /// @brief constructor
-         buffer_input(const GLuint program)
+        /// @brief constructor
+        buffer_input(const GLuint program)
             : base(get_attrib_loc(program, Name::chars))
-         {}
+        {}
 
-         /// @brief named set method
-         template<typename InputName>
-         typename std::enable_if<std::is_same<InputName, Name>::value>::type
-         set(const buffer_ptr<typename AttribTraits::data>& value)
-         {
+        /// @brief named set method
+        template<typename InputName>
+        typename std::enable_if<std::is_same<InputName, Name>::value>::type
+        set(const buffer_ptr<typename AttribTraits::data>& value)
+        {
             base::set(value);
-         }
-   };
+        }
+    };
 }
 
 #endif

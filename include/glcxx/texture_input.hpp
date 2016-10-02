@@ -24,63 +24,63 @@
 
 namespace glcxx
 {
-   /// @brief base implementation for texture_input
-   class texture_input_base
-   {
-         /// @brief location of program input inside program
-         GLint _location;
+    /// @brief base implementation for texture_input
+    class texture_input_base
+    {
+        /// @brief location of program input inside program
+        GLint _location;
 
-         /// @brief holds actual texture
-         texture_ptr _texture;
+        /// @brief holds actual texture
+        texture_ptr _texture;
 
-         /// @brief sampler id
-         GLint _sampler_id;
+        /// @brief sampler id
+        GLint _sampler_id;
 
-      public:
-         /// @brief constructor
-         texture_input_base(const GLint location, const GLint sampler_id)
+    public:
+        /// @brief constructor
+        texture_input_base(const GLint location, const GLint sampler_id)
             : _location(location)
             , _sampler_id(sampler_id)
-         {}
+        {}
 
-         /// @brief set new texture object as program input
-         void set(const texture_ptr& value);
+        /// @brief set new texture object as program input
+        void set(const texture_ptr& value);
 
-         /// @brief called after program was selected
-         void select() const
-         {
+        /// @brief called after program was selected
+        void select() const
+        {
             attach();
-         }
+        }
 
-      private: // impl
-         /// @brief attach texture
-         void attach() const;
-   };
+    private: // impl
+        /// @brief attach texture
+        void attach() const;
+    };
 
-   /// @brief holds state of program's texture object
-   template<typename Name, GLint SamplerID = 0, typename DeclTag = tag::fragment>
-   struct texture_input : public texture_input_base
-   {
-      public:
-         /// @brief declaration tag
-         using decl_tag = DeclTag;
+    /// @brief holds state of program's texture object
+    template<typename Name, GLint SamplerID = 0, typename DeclTag = tag::fragment>
+    struct texture_input : public texture_input_base
+    {
+    public:
+        /// @brief declaration tag
+        using decl_tag = DeclTag;
 
-         /// @brief ctstring containing glsl declaration of texture uniform
-         using declaration = ct::string_cat<cts("uniform sampler2D "), Name, cts(";\n")>;
+        /// @brief ctstring containing glsl declaration of texture uniform
+        using declaration = ct::string_cat<cts("uniform sampler2D "), Name, cts(";\n")>;
 
-         /// @brief constructor
-         texture_input(const GLuint program)
+        /// @brief constructor
+        texture_input(const GLuint program)
             : texture_input_base(get_uniform_loc(program, Name::chars), SamplerID)
-         {}
+        {}
 
-         /// @brief named set method
-         template<typename InputName>
-         typename std::enable_if<std::is_same<InputName, Name>::value>::type
-         set(const texture_ptr& value)
-         {
+        /// @brief named set method
+        template<typename InputName>
+        typename std::enable_if<std::is_same<InputName, Name>::value>::type
+        set(const texture_ptr& value)
+        {
             texture_input_base::set(value);
-         }
-   };
+        }
+    };
 }
 
 #endif

@@ -20,18 +20,18 @@
 #include "glcxx/buffer.hpp"
 
 glcxx::buffer_base::buffer_base(const void* data, size_t size, GLenum usage, GLenum target)
-   : _target(target)
-   , _usage(usage)
+    : _target(target)
+    , _usage(usage)
 {
-   glGenBuffers(1, &_id);
-   upload(data, size);
+    glGenBuffers(1, &_id);
+    upload(data, size);
 }
 
 void glcxx::buffer_base::upload(const void* data, size_t size, GLenum usage)
 {
-   if (usage)
-      _usage = usage;
-   bind();
-   glBufferData(_target, size, data, _usage);
-   unbind();
+    if (usage)
+        _usage = usage;
+    bind();
+    glBufferData(_target, size, data, _usage);
+    unbind();
 }

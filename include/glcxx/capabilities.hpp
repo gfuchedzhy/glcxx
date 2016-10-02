@@ -24,69 +24,69 @@
 
 namespace glcxx
 {
-   /// @brief RAII style blending switch
-   struct enable_blending_guard
-   {
-         /// @brief default blending factor
-         static constexpr GLenum default_src_factor = GL_SRC_ALPHA;
-         static constexpr GLenum default_dst_factor = GL_ONE_MINUS_SRC_ALPHA;
+    /// @brief RAII style blending switch
+    struct enable_blending_guard
+    {
+        /// @brief default blending factor
+        static constexpr GLenum default_src_factor = GL_SRC_ALPHA;
+        static constexpr GLenum default_dst_factor = GL_ONE_MINUS_SRC_ALPHA;
 
-         /// @brief set default blending factors
-         static void set_default_factors()
-         {
+        /// @brief set default blending factors
+        static void set_default_factors()
+        {
             glBlendFunc(default_src_factor, default_dst_factor);
-         }
+        }
 
-         /// @brief constructor
-         enable_blending_guard(GLenum sfactor = default_src_factor, GLenum dfactor = default_dst_factor, bool enable = true)
-         {
+        /// @brief constructor
+        enable_blending_guard(GLenum sfactor = default_src_factor, GLenum dfactor = default_dst_factor, bool enable = true)
+        {
             if (enable)
             {
-               glEnable(GL_BLEND);
-               if (sfactor != default_src_factor || dfactor != default_dst_factor)
-                  glBlendFunc(sfactor, dfactor);
+                glEnable(GL_BLEND);
+                if (sfactor != default_src_factor || dfactor != default_dst_factor)
+                    glBlendFunc(sfactor, dfactor);
             }
-         }
+        }
 
-         /// @brief destructor
-         ~enable_blending_guard()
-         {
+        /// @brief destructor
+        ~enable_blending_guard()
+        {
             glDisable(GL_BLEND);
             set_default_factors();
-         }
-   };
+        }
+    };
 
-   /// @brief RAII style depth test switch
-   struct disable_depth_test_guard
-   {
-         /// @brief constructor
-         disable_depth_test_guard()
-         {
+    /// @brief RAII style depth test switch
+    struct disable_depth_test_guard
+    {
+        /// @brief constructor
+        disable_depth_test_guard()
+        {
             glDisable(GL_DEPTH_TEST);
-         }
+        }
 
-         /// @brief destructor
-         ~disable_depth_test_guard()
-         {
+        /// @brief destructor
+        ~disable_depth_test_guard()
+        {
             glEnable(GL_DEPTH_TEST);
-         }
-   };
+        }
+    };
 
-   /// @brief RAII style depth mask switch
-   struct disable_depth_mask_guard
-   {
-         /// @brief constructor
-         disable_depth_mask_guard()
-         {
+    /// @brief RAII style depth mask switch
+    struct disable_depth_mask_guard
+    {
+        /// @brief constructor
+        disable_depth_mask_guard()
+        {
             glDepthMask(GL_FALSE);
-         }
+        }
 
-         /// @brief destructor
-         ~disable_depth_mask_guard()
-         {
+        /// @brief destructor
+        ~disable_depth_mask_guard()
+        {
             glDepthMask(GL_TRUE);
-         }
-   };
+        }
+    };
 }
 
 #endif
