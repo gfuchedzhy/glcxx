@@ -284,7 +284,7 @@ namespace glcxx
 
             /// @brief attach for attributes
             template<typename Dummy = int> // to enable sfinae
-            static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, Dummy>::type dummy = 0)
+            static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
                 constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
                 constexpr size_t components_num = type_traits<TypeTo, EXTRA, Holder>::components_num;
@@ -306,7 +306,7 @@ namespace glcxx
 
             /// @brief detach for attributes
             template<typename Dummy = int> // to enable sfinae
-            static void detach(GLint location, typename std::enable_if<is_attribute, Dummy>::type dummy = 0)
+            static void detach(GLint location, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
                 constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
                 for (size_t n = 0; n < N; ++n)

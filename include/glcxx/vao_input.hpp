@@ -66,7 +66,7 @@ namespace glcxx
 
         /// @brief draw using index buffer from vao
         template<typename... T>
-            void draw_elements(const indexed_vao<T...>& vao) const
+        void draw_elements(const indexed_vao<T...>& vao) const
         {
             bind(vao);
             vao.draw_elements();
@@ -86,7 +86,7 @@ namespace glcxx
         /// index buffer
         template<typename Dummy = int> // to enable sfinae
         void draw_elements(const index_buffer& ib,
-                           typename std::enable_if<is_empty, Dummy>::type dummy = 0) const
+                           typename std::enable_if<is_empty, Dummy>::type = 0) const
         {
             ib.bind();
             ib.draw();
@@ -94,8 +94,8 @@ namespace glcxx
 
         /// @brief if vao_input is empty, allow drawing without vao at all
         template<typename Dummy = int> // to enable sfinae
-            void draw_arrays(GLsizei size, GLenum mode,
-                             typename std::enable_if<is_empty, Dummy>::type dummy = 0) const
+        void draw_arrays(GLsizei size, GLenum mode,
+                         typename std::enable_if<is_empty, Dummy>::type = 0) const
         {
             glDrawArrays(mode, 0, size);
         }
