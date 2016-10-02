@@ -7,7 +7,7 @@ function(glcxx_generate_shader shader cpp)
 
   file(READ ${shader} shader_content)
   file(WRITE ${cpp}
-    "/* generated from ${shader}; do not edit */\n"
+    "// generated from ${shader}; do not edit\n"
     "namespace glcxx {\n"
     "\tnamespace ct {\n"
     "\t\ttemplate<char...c> struct string;\n\t}\n\n"
