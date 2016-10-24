@@ -46,7 +46,7 @@ namespace glcxx
             static constexpr bool value = !ct::tuple_contains<Tuple, T>::value;
         };
 
-      public:
+     public:
         /// @brief vao holds VBOs, which are always vertex shader inputs
         using decl_tag = tag::vertex;
 
@@ -83,7 +83,8 @@ namespace glcxx
         }
 
         /// @brief if vao_input is empty, allow drawing without vao, with just
-        /// index buffer
+        /// index buffer, use this only if using buffer_inputs instead of
+        /// vao_inputs
         template<typename Dummy = int> // to enable sfinae
         void draw_elements(const index_buffer& ib,
                            typename std::enable_if<is_empty, Dummy>::type = 0) const
@@ -92,7 +93,8 @@ namespace glcxx
             ib.draw();
         }
 
-        /// @brief if vao_input is empty, allow drawing without vao at all
+        /// @brief if vao_input is empty, allow drawing without vao at all, use
+        /// this only if using buffer_inputs instead of vao_inputs
         template<typename Dummy = int> // to enable sfinae
         void draw_arrays(GLsizei size, GLenum mode,
                          typename std::enable_if<is_empty, Dummy>::type = 0) const
@@ -100,7 +102,7 @@ namespace glcxx
             glDrawArrays(mode, 0, size);
         }
 
-      private:
+     private:
         /// @brief bind indexed vao to current program
         template<typename... Name, typename... Data>
         void bind(const indexed_vao<std::pair<Name, Data>...>& vao) const
