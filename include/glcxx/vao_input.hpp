@@ -73,18 +73,42 @@ namespace glcxx
             vao_base::unbind();
         }
 
+        /// @brief draw using index buffer from vao
+        template<typename... T>
+        void draw_elements_instanced(const indexed_vao<T...>& vao, const GLsizei instance_count) const
+        {
+            bind(vao);
+            vao.draw_elements_instanced(instance_count);
+            vao_base::unbind();
+        }
+
         /// @brief draw arrays
         template<typename... T>
-        void draw_arrays(const vao<T...>& vao, GLenum mode, GLint first, GLsizei size) const
+        void draw_arrays(const vao<T...>& vao,
+                         const GLenum mode,
+                         const GLint first,
+                         const GLsizei size) const
         {
             bind(vao);
             glDrawArrays(mode, first, size);
             vao_base::unbind();
         }
 
-        /// @brief if vao_input is empty, allow drawing without vao, with just
-        /// index buffer, use this only if using buffer_inputs instead of
-        /// vao_inputs
+        /// @brief draw arrays
+        template<typename... T>
+        void draw_arrays_instanced(const vao<T...>& vao,
+                                   const GLenum mode,
+                                   const GLint first,
+                                   const GLsizei size,
+                                   const GLsizei instance_count) const
+        {
+            bind(vao);
+            glDrawArraysInstanced(mode, first, size, instance_count);
+            vao_base::unbind();
+        }
+
+        /// @brief if vao_input is empty, allow drawing without vao, use these
+        /// methods only if using buffer_inputs instead of vao_inputs
         template<typename Dummy = int> // to enable sfinae
         void draw_elements(const index_buffer& ib,
                            typename std::enable_if<is_empty, Dummy>::type = 0) const
@@ -93,13 +117,31 @@ namespace glcxx
             ib.draw();
         }
 
-        /// @brief if vao_input is empty, allow drawing without vao at all, use
-        /// this only if using buffer_inputs instead of vao_inputs
         template<typename Dummy = int> // to enable sfinae
-        void draw_arrays(GLenum mode, GLint first, GLsizei size,
+        void draw_elements_instanced(const index_buffer& ib, const GLsizei instance_count,
+                                     typename std::enable_if<is_empty, Dummy>::type = 0) const
+        {
+            ib.bind();
+            ib.draw_instanced(instance_count);
+        }
+
+        template<typename Dummy = int> // to enable sfinae
+        void draw_arrays(const GLenum mode,
+                         const GLint first,
+                         const GLsizei size,
                          typename std::enable_if<is_empty, Dummy>::type = 0) const
         {
             glDrawArrays(mode, first, size);
+        }
+
+        template<typename Dummy = int> // to enable sfinae
+        void draw_arrays_instanced(const GLenum mode,
+                                   const GLint first,
+                                   const GLsizei size,
+                                   const GLsizei instance_count,
+                                   typename std::enable_if<is_empty, Dummy>::type = 0) const
+        {
+            glDrawArraysInstanced(mode, first, size, instance_count);
         }
 
      private:

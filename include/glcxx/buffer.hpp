@@ -143,6 +143,12 @@ namespace glcxx
             glDrawElements(_mode, _size, _type, nullptr);
         }
 
+        /// @brief draw with this index buffer
+        void draw_instanced(const GLsizei instance_count) const
+        {
+            glDrawElementsInstanced(_mode, _size, _type, nullptr, instance_count);
+        }
+
         /// @brief unbind index buffer
         static void unbind()
         {

@@ -80,6 +80,16 @@ namespace glcxx
                 p->draw();
             }
 
+            /// @brief draw using index buffer
+            template<bool HasIndexBuffer_ = HasIndexBuffer> // for SFINAE
+            typename std::enable_if<HasIndexBuffer_>::type
+            draw_elements_instanced(const GLsizei instance_count) const
+            {
+                const index_buffer_ptr& p = std::get<traits<cts("indices")>::index>(_buffers);
+                assert(p);
+                p->draw_instanced(instance_count);
+            }
+
             /// @brief upload data to vbo, if doesn't exist, create it
             template<typename BufferName>
             void upload(const typename traits<BufferName>::buffer_ptr::element_type::data* data, size_t size, GLenum usage = 0)
