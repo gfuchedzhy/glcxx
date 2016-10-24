@@ -75,10 +75,10 @@ namespace glcxx
 
         /// @brief draw arrays
         template<typename... T>
-        void draw_arrays(const vao<T...>& vao, GLsizei size, GLenum mode) const
+        void draw_arrays(const vao<T...>& vao, GLenum mode, GLint first, GLsizei size) const
         {
             bind(vao);
-            glDrawArrays(mode, 0, size);
+            glDrawArrays(mode, first, size);
             vao_base::unbind();
         }
 
@@ -96,10 +96,10 @@ namespace glcxx
         /// @brief if vao_input is empty, allow drawing without vao at all, use
         /// this only if using buffer_inputs instead of vao_inputs
         template<typename Dummy = int> // to enable sfinae
-        void draw_arrays(GLsizei size, GLenum mode,
+        void draw_arrays(GLenum mode, GLint first, GLsizei size,
                          typename std::enable_if<is_empty, Dummy>::type = 0) const
         {
-            glDrawArrays(mode, 0, size);
+            glDrawArrays(mode, first, size);
         }
 
      private:
