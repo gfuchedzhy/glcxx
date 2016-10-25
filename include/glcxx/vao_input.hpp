@@ -46,6 +46,13 @@ namespace glcxx
             static constexpr bool value = !ct::tuple_contains<Tuple, T>::value;
         };
 
+        /// @brief locations for all VBOs inside vao
+        std::array<GLint, sizeof...(AttribName)> _locations;
+
+        /// @brief program id to check in runtime if input vao is ready to be
+        /// bound for this program or it should be reattached for this program
+        GLuint _program_id;
+
      public:
         /// @brief vao holds VBOs, which are always vertex shader inputs
         using decl_tag = tag::vertex;
@@ -155,12 +162,10 @@ namespace glcxx
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
-            if (_program_id != vao._program_id)
+            if (vao.program_id(_program_id))
             {
-                vao._program_id = _program_id;
                 vao.template bind_buffer<cts("indices")>();
-                glcxx_swallow(vao.template bind_buffer<AttribName>() &&
-                              (AttribTraits::attach(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]), true));
+                glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
             }
         }
 
@@ -174,21 +179,9 @@ namespace glcxx
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
-            if (_program_id != vao._program_id)
-            {
-                vao._program_id = _program_id;
-                glcxx_swallow(vao.template bind_buffer<AttribName>() &&
-                              (AttribTraits::attach(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]), true));
-            }
+            if (vao.program_id(_program_id))
+                glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
         }
-
-      private:
-        /// @brief locations for all VBOs inside vao
-        std::array<GLint, sizeof...(AttribName)> _locations;
-
-        /// @brief program id to check in runtime if input vao is ready to be
-        /// bound for this program or it should be reattached for this program
-        GLuint _program_id;
     };
 }
 

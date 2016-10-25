@@ -30,6 +30,9 @@ namespace glcxx
         /// @brief attribute location
         GLint _location;
 
+        /// @brief buffer input offset
+        std::ptrdiff_t _offset = 0;
+
         /// @brief holds actual buffer
         using buffer = buffer_ptr<typename AttribTraits::data>;
         buffer _buffer;
@@ -41,14 +44,15 @@ namespace glcxx
         {}
 
         /// @brief set new buffer as program input
-        void set(const buffer& value)
+        void set(const buffer& value, const std::ptrdiff_t offset = 0)
         {
-            if (_buffer != value)
+            if (_buffer != value || _offset != offset)
             {
                 // detach old input, attach new one
                 if (_buffer)
                     AttribTraits::detach(_location);
                 _buffer = value;
+                _offset = offset;
                 select();
             }
         }
@@ -59,7 +63,7 @@ namespace glcxx
             if (_buffer)
             {
                 _buffer->bind();
-                AttribTraits::attach(_location);
+                AttribTraits::attach(_location, static_cast<const typename AttribTraits::data*>(nullptr) + _offset);
                 _buffer->unbind();
             }
         }

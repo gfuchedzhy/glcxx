@@ -42,6 +42,9 @@ namespace glcxx
             /// @brief buffer tuple
             buffers _buffers;
 
+            /// @brief buffer offsets
+            std::array<std::ptrdiff_t, sizeof...(Data)> _buffer_offsets = {};
+
             /// @brief traits for searching buffers in buffer tuple
             template<typename BufferName>
             struct traits
@@ -53,22 +56,37 @@ namespace glcxx
         public:
             /// @brief set vbo or index buffer into vao
             template<typename BufferName>
-            void set(typename traits<BufferName>::buffer_ptr vbo)
+            void set(typename traits<BufferName>::buffer_ptr vbo, const ptrdiff_t offset = 0)
             {
-                std::get<traits<BufferName>::index>(_buffers) = std::move(vbo);
+                constexpr size_t index = traits<BufferName>::index;
+                std::get<index>(_buffers) = std::move(vbo);
+                if (index != sizeof...(Data) && _buffer_offsets[index] != offset)
+                {
+                    _buffer_offsets[index] = offset;
+                    program_id(0); // reset program id to reattach buffers with new offset
+                }
             }
 
-            /// @brief bind buffer return true if bound
+            /// @brief bind buffer
             template<typename BufferName>
-            bool bind_buffer() const
+            void bind_buffer() const
             {
                 const auto& p = std::get<traits<BufferName>::index>(_buffers);
-                if (p)
-                {
-                    p->bind();
-                    return true;
-                }
-                return false;
+                assert(p);
+                p->bind();
+            }
+
+            /// @brief attach vertex buffer
+            template<typename AttribTraits, typename BufferName>
+            void attach_buffer(const GLint location) const
+            {
+                bind_buffer<BufferName>();
+
+                constexpr size_t index = traits<BufferName>::index;
+                static_assert(std::is_same<typename std::tuple_element<index, std::tuple<Data...>>::type,
+                                           typename AttribTraits::data>::value,
+                              "buffer incompatible with attribute trait");
+                AttribTraits::attach(location, static_cast<const typename AttribTraits::data*>(nullptr) + _buffer_offsets[index]);
             }
 
             /// @brief draw using index buffer

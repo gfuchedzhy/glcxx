@@ -28,9 +28,6 @@ namespace glcxx
     /// @brief base vao class, resource holder
     class vao_base
     {
-        /// @brief friend declaration
-        template<typename> friend class vao_input_impl;
-
         /// @brief non copyable
         vao_base(const vao_base&) = delete;
 
@@ -67,6 +64,15 @@ namespace glcxx
         {
             std::swap(x._id, y._id);
             std::swap(x._program_id, y._program_id);
+        }
+
+        /// @brief update program id this vao was bound to, return true if it
+        /// was really changed
+        bool program_id(const GLuint program_id) const
+        {
+            const bool ret = program_id != _program_id;
+            _program_id = program_id;
+            return ret;
         }
 
         /// @brief assignment
