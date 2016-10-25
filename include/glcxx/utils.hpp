@@ -36,7 +36,7 @@ namespace glcxx
     namespace detail {
         using swallow_type = int[];
     }
-#define glcxx_swallow(expression) (void)::glcxx::detail::swallow_type{0, ((expression), 0)...}
+#define glcxx_swallow(...) (void)::glcxx::detail::swallow_type{0, ((__VA_ARGS__), 0)...}
 
     /// @brief ct stands for compile time
     namespace ct
