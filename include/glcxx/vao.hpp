@@ -43,7 +43,7 @@ namespace glcxx
             buffers _buffers;
 
             /// @brief buffer offsets
-            std::array<std::ptrdiff_t, sizeof...(Data)> _buffer_offsets = {};
+            std::array<std::ptrdiff_t, std::tuple_size<buffers>::value> _buffer_offsets = {};
 
             /// @brief traits for searching buffers in buffer tuple
             template<typename BufferName>
@@ -60,11 +60,9 @@ namespace glcxx
             {
                 constexpr size_t index = traits<BufferName>::index;
                 std::get<index>(_buffers) = std::move(vbo);
-                if (index != sizeof...(Data) && _buffer_offsets[index] != offset)
-                {
-                    _buffer_offsets[index] = offset;
-                    program_id(0); // reset program id to reattach buffers with new offset
-                }
+                _buffer_offsets[index] = offset;
+                // reset program id to reattach buffers
+                program_id(0);
             }
 
             /// @brief bind buffer
@@ -83,7 +81,7 @@ namespace glcxx
                 bind_buffer<BufferName>();
 
                 constexpr size_t index = traits<BufferName>::index;
-                static_assert(std::is_same<typename std::tuple_element<index, std::tuple<Data...>>::type,
+                static_assert(std::is_same<typename traits<BufferName>::buffer_ptr::element_type::data,
                                            typename AttribTraits::data>::value,
                               "buffer incompatible with attribute trait");
                 AttribTraits::attach(location, static_cast<const typename AttribTraits::data*>(nullptr) + _buffer_offsets[index]);
