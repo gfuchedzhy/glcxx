@@ -72,6 +72,9 @@ namespace glcxx
     template<typename Data>
     class buffer : public buffer_base
     {
+        /// @brief buffer element number
+        GLsizei _size;
+
     public:
         /// @brief underlying data type
         using data = Data;
@@ -79,13 +82,18 @@ namespace glcxx
         /// @brief constructor
         buffer(const Data* data, size_t size, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
             : buffer_base(data, size*sizeof(Data), usage, target)
+            , _size(size)
         {}
 
         /// @brief uploads new data to buffer, usage = 0 means do not change usage
         void upload(const Data* data, size_t size, GLenum usage = 0)
         {
             buffer_base::upload(data, size*sizeof(Data), usage);
+            _size = size;
         }
+
+        /// @brief returns element number
+        GLsizei size() const { return _size; }
     };
 
     /// @brief buffer ptr
