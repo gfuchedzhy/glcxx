@@ -310,13 +310,18 @@ namespace glcxx
             {
                 constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
                 for (size_t n = 0; n < N; ++n)
-                {
                     for (size_t i = 0; i < locations_num; ++i)
-                    {
-                        const size_t locationOffset = i + n*locations_num;
-                        glDisableVertexAttribArray(location + locationOffset);
-                    }
-                }
+                        glDisableVertexAttribArray(location + i + n*locations_num);
+            }
+
+            /// @brief attach for attributes
+            template<typename Dummy = int> // to enable sfinae
+            static void divisor(GLint location, GLuint divisor, typename std::enable_if<is_attribute, Dummy>::type = 0)
+            {
+                constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
+                for (size_t n = 0; n < N; ++n)
+                    for (size_t i = 0; i < locations_num; ++i)
+                        glVertexAttribDivisor(location + i + n*locations_num, divisor);
             }
         };
     }
