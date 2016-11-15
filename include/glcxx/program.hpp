@@ -199,34 +199,32 @@ namespace glcxx
 
         /// @brief program with processed inputs
         template<typename InputTuple>
-        using program = program_impl<program_input_traits<InputTuple>::has_geom_shader,
-                                     typename program_input_traits<InputTuple>::resulting_inputs>;
-    }
-
-    /// @brief program
-    template<typename... Inputs>
-    class program : public detail::program<std::tuple<Inputs...>>
-    {
-        /// @brief original inputs
-        using input_tuple = std::tuple<Inputs...>;
-
-        // @brief base class
-        using base = detail::program<input_tuple>;
-
-        /// @brief inherited constructor
-        using base::base;
-    };
-
-    namespace detail {
-        template<typename BaseProgram, typename... AdditionalInputs> struct derive_program;
-        template<typename... Inputs, typename... AdditionalInputs>
-        struct derive_program<glcxx::program<Inputs...>, AdditionalInputs...>
+        struct program : public program_impl<program_input_traits<InputTuple>::has_geom_shader,
+                                             typename program_input_traits<InputTuple>::resulting_inputs>
         {
-            using type = glcxx::program<Inputs..., AdditionalInputs...>;
+            // @brief base class
+            using base = program_impl<program_input_traits<InputTuple>::has_geom_shader,
+                                      typename program_input_traits<InputTuple>::resulting_inputs>;
+
+            /// @brief inherited constructor
+            using base::base;
+        };
+
+        template<typename BaseProgram, typename AdditionalInputTuple> struct derive_program;
+        template<typename... Inputs, typename AdditionalInputTuple>
+        struct derive_program<program<std::tuple<Inputs...>>, AdditionalInputTuple>
+        {
+            using type = program<ct::tuple_cat<std::tuple<Inputs...>, AdditionalInputTuple>>;
         };
     }
+
+    /// @brief program shortcut
+    template<typename... Inputs>
+    using program = detail::program<std::tuple<Inputs...>>;
+
+    /// @brief derive program shortcut
     template<typename BaseProgram, typename... AdditionalInputs>
-    using derive_program = typename detail::derive_program<BaseProgram, AdditionalInputs...>::type;
+    using derive_program = typename detail::derive_program<BaseProgram, std::tuple<AdditionalInputs...>>::type;
 }
 
 #endif
