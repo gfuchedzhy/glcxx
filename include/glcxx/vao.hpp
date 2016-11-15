@@ -42,8 +42,17 @@ namespace glcxx
             /// @brief buffer tuple
             buffers _buffers;
 
+            /// @brief instance count
+            GLsizei _instance_count = -1;
+
+            // @todo make next fields optional, as they might not be used all
+            // the time
+
             /// @brief buffer offsets
             std::array<std::ptrdiff_t, std::tuple_size<buffers>::value> _buffer_offsets = {};
+
+            /// @brief attribute divisors
+            std::array<GLuint, sizeof...(Data)> _buffer_divisors = {};
 
             /// @brief traits for searching buffers in buffer tuple
             template<typename BufferName>
@@ -54,6 +63,10 @@ namespace glcxx
             };
 
         public:
+            /// @brief get/set instance count
+            auto instance_count() const { return _instance_count; }
+            void instance_count(GLsizei v) { _instance_count = v; }
+
             /// @brief set vbo or index buffer into vao
             template<typename BufferName>
             void set(typename traits<BufferName>::buffer_ptr vbo)
@@ -70,6 +83,19 @@ namespace glcxx
             {
                 constexpr size_t index = traits<BufferName>::index;
                 _buffer_offsets[index] = offset;
+
+                // index buffer offset if usual vbo, not an index buffer
+                if (index < sizeof...(Data))
+                    reset_to_program(0); // reset program id to reattach buffers
+            }
+
+            /// @brief set vbo for attributes into vao
+            template<typename BufferName>
+            void divisor(const GLuint divisor_)
+            {
+                constexpr size_t index = traits<BufferName>::index;
+                static_assert(index < sizeof...(Data), "wrong buffer name");
+                _buffer_divisors[index] = divisor_;
                 // reset program id to reattach buffers
                 reset_to_program(0);
             }
@@ -94,25 +120,18 @@ namespace glcxx
                                            typename AttribTraits::data>::value,
                               "buffer incompatible with attribute trait");
                 AttribTraits::attach(location, static_cast<const typename AttribTraits::data*>(nullptr) + _buffer_offsets[index]);
-            }
-
-            /// @brief draw using index buffer
-            template<bool HasIndexBuffer_ = HasIndexBuffer> // for SFINAE
-            typename std::enable_if<HasIndexBuffer_>::type draw_elements() const
-            {
-                const index_buffer_ptr& p = std::get<traits<cts("indices")>::index>(_buffers);
-                assert(p);
-                p->draw();
+                AttribTraits::divisor(location, _buffer_divisors[index]);
             }
 
             /// @brief draw using index buffer
             template<bool HasIndexBuffer_ = HasIndexBuffer> // for SFINAE
             typename std::enable_if<HasIndexBuffer_>::type
-            draw_elements_instanced(const GLsizei instance_count) const
+            draw_elements() const
             {
-                const index_buffer_ptr& p = std::get<traits<cts("indices")>::index>(_buffers);
+                constexpr size_t index = traits<cts("indices")>::index;
+                const index_buffer_ptr& p = std::get<index>(_buffers);
                 assert(p);
-                p->draw_instanced(instance_count);
+                p->draw(_buffer_offsets[index], _instance_count);
             }
 
             /// @brief upload data to vbo, if doesn't exist, create it

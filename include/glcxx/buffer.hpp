@@ -111,7 +111,10 @@ namespace glcxx
     /// indices, also it saves mode, e.g. GL_TRIANGLE_STRIP
     class index_buffer : public buffer_base
     {
-        /// @brief size of buffer
+        /// @brief buffer element size
+        GLsizei _sizeof;
+
+        /// @brief buffer element number
         GLsizei _size;
 
         /// @brief mode, e.g. GL_TRIANGLE_STRIP
@@ -125,6 +128,7 @@ namespace glcxx
         template<typename T>
         index_buffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
             : buffer_base(data, size*sizeof(T), usage, GL_ELEMENT_ARRAY_BUFFER)
+            , _sizeof(sizeof(T))
             , _size(size)
             , _mode(mode)
             , _type(glsl::type_id<T>::value)
@@ -140,21 +144,19 @@ namespace glcxx
             constexpr GLenum id = glsl::type_id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
             buffer_base::upload(data, size*sizeof(T), usage);
+            _sizeof = sizeof(T);
             _size = size;
             _mode = mode;
             _type = id;
         }
 
         /// @brief draw with this index buffer
-        void draw() const
+        void draw(const std::ptrdiff_t offset, const GLsizei instance_count) const
         {
-            glDrawElements(_mode, _size, _type, nullptr);
-        }
-
-        /// @brief draw with this index buffer
-        void draw_instanced(const GLsizei instance_count) const
-        {
-            glDrawElementsInstanced(_mode, _size, _type, nullptr, instance_count);
+            if (-1 == instance_count)
+                glDrawElements(_mode, _size, _type, static_cast<const char*>(nullptr) + _sizeof*offset);
+            else
+                glDrawElementsInstanced(_mode, _size, _type, static_cast<const char*>(nullptr) + _sizeof*offset, instance_count);
         }
 
         /// @brief unbind index buffer
