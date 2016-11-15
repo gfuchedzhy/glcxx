@@ -210,11 +210,28 @@ namespace glcxx
             using base::base;
         };
 
-        template<typename BaseProgram, typename AdditionalInputTuple> struct derive_program;
+        /// @brief meta functor returning true if 2 inputs have same name
+        template<typename T1, typename T2> struct is_same_name {
+            static constexpr bool value = std::is_same<typename T1::name, typename T2::name>::value;
+        };
+        // geometry tag doesn't have name, so just return false
+        template<typename T2> struct is_same_name<tag::geometry, T2> { static constexpr bool value = false; };
+        template<typename T1> struct is_same_name<T1, tag::geometry> { static constexpr bool value = false; };
+        template<> struct is_same_name<tag::geometry, tag::geometry> { static constexpr bool value = false; };
+
+        template<typename BaseProgram, typename AdditionalInputTuple> class derive_program;
         template<typename... Inputs, typename AdditionalInputTuple>
-        struct derive_program<program<std::tuple<Inputs...>>, AdditionalInputTuple>
+        class derive_program<program<std::tuple<Inputs...>>, AdditionalInputTuple>
         {
-            using type = program<ct::tuple_cat<std::tuple<Inputs...>, AdditionalInputTuple>>;
+            // filter out Inputs that are overriden with same name in AdditionalInputTuple
+            using filtered_inputs = ct::tuple_cat<
+                typename std::conditional<
+                    ct::tuple_any_of<AdditionalInputTuple, is_same_name, Inputs>::value,
+                    std::tuple<>,
+                    std::tuple<Inputs>>::type...>;
+
+          public:
+            using type = program<ct::tuple_cat<filtered_inputs, AdditionalInputTuple>>;
         };
     }
 

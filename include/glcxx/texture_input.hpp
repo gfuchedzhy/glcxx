@@ -62,6 +62,9 @@ namespace glcxx
     struct texture_input : public texture_input_base
     {
     public:
+        /// @brief name
+        using name = Name;
+
         /// @brief declaration tag
         using decl_tag = DeclTag;
 

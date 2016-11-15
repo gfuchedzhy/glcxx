@@ -66,6 +66,9 @@ namespace glcxx
         using base = uniform_input_base<UniformTraits>;
 
     public:
+        /// @brief name
+        using name = Name;
+
         /// @brief declaration tag
         using decl_tag = DeclTag;
 

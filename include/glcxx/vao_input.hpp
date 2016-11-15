@@ -28,7 +28,10 @@ namespace glcxx
     /// vao_input_impl, which combines all attributes in single vao, vao_input is
     /// used for program declarations only
     template<typename Name, typename AttribTraits>
-    struct vao_input {};
+    struct vao_input {
+        /// @brief name
+        using name = Name;
+    };
 
     /// @brief holds state of program's vao
     template<typename AttribInputTuple> class vao_input_impl;
