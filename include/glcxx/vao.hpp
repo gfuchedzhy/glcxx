@@ -61,7 +61,7 @@ namespace glcxx
                 constexpr size_t index = traits<BufferName>::index;
                 std::get<index>(_buffers) = std::move(vbo);
                 // reset program id to reattach buffers
-                program_id(0);
+                reset_to_program(0);
             }
 
             /// @brief set vbo for attributes into vao
@@ -71,7 +71,7 @@ namespace glcxx
                 constexpr size_t index = traits<BufferName>::index;
                 _buffer_offsets[index] = offset;
                 // reset program id to reattach buffers
-                program_id(0);
+                reset_to_program(0);
             }
 
             /// @brief bind buffer

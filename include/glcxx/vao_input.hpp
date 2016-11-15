@@ -162,7 +162,7 @@ namespace glcxx
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
-            if (vao.program_id(_program_id))
+            if (vao.reset_to_program(_program_id))
             {
                 vao.template bind_buffer<cts("indices")>();
                 glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
@@ -179,7 +179,7 @@ namespace glcxx
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
-            if (vao.program_id(_program_id))
+            if (vao.reset_to_program(_program_id))
                 glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
         }
     };

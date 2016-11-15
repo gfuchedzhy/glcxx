@@ -68,7 +68,7 @@ namespace glcxx
 
         /// @brief update program id this vao was bound to, return true if it
         /// was really changed
-        bool program_id(const GLuint program_id) const
+        bool reset_to_program(const GLuint program_id) const
         {
             const bool ret = program_id != _program_id;
             _program_id = program_id;
