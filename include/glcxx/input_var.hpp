@@ -80,6 +80,26 @@ namespace glcxx
 
     /// @brief overloads for matrices
     template<glm::precision P>
+    inline void attach_uniform(GLint location, const glm::tmat2x2<float, P>& val)
+    {
+        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(val));
+    }
+    template<size_t N, glm::precision P>
+    inline void attach_uniform(GLint location, const std::array<glm::tmat2x2<float, P>, N>& val)
+    {
+        glUniformMatrix3fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
+    }
+    template<glm::precision P>
+    inline void attach_uniform(GLint location, const glm::tmat3x3<float, P>& val)
+    {
+        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(val));
+    }
+    template<size_t N, glm::precision P>
+    inline void attach_uniform(GLint location, const std::array<glm::tmat3x3<float, P>, N>& val)
+    {
+        glUniformMatrix3fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
+    }
+    template<glm::precision P>
     inline void attach_uniform(GLint location, const glm::tmat4x4<float, P>& val)
     {
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(val));
@@ -224,6 +244,24 @@ namespace glcxx
             static constexpr size_t locations_num = 1u;
             static_assert(EXTRA == 0, "vec4 can't have extra components");
             using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec4")>;
+        };
+
+        template<typename TypeTo, size_t EXTRA>
+        struct type_traits<TypeTo, EXTRA, glm::tmat2x2>
+        {
+            static constexpr size_t components_num = 2u;
+            static constexpr size_t locations_num = 2u;
+            static_assert(0==EXTRA, "extra components doesn't make sense for matrices");
+            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat2")>;
+        };
+
+        template<typename TypeTo, size_t EXTRA>
+        struct type_traits<TypeTo, EXTRA, glm::tmat3x3>
+        {
+            static constexpr size_t components_num = 3u;
+            static constexpr size_t locations_num = 3u;
+            static_assert(0==EXTRA, "extra components doesn't make sense for matrices");
+            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat3")>;
         };
 
         template<typename TypeTo, size_t EXTRA>
