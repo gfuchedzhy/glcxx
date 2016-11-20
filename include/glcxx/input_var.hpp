@@ -205,89 +205,70 @@ namespace glcxx
         template<typename T> using basic_type_name = typename detail::basic_type_name<T>::type;
 
         /// @brief traits for glsl types
-        template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class Holder>
+        template<typename TypeTo, template<typename, glm::precision> class Holder>
         struct type_traits;
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tvec1>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tvec1> {
             static constexpr size_t components_num = 1u;
             static constexpr size_t locations_num = 1u;
-            static_assert(EXTRA <= 3, "too many extra components given");
-            using type_name = typename std::conditional<0==EXTRA,
-                                                        basic_type_name<TypeTo>,
-                                                        ct::string_cat<type_prefix<TypeTo>, cts("vec"), ct::string<'1'+EXTRA>>>::type;
+            using type_name = basic_type_name<TypeTo>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tvec2>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tvec2> {
             static constexpr size_t components_num = 2u;
             static constexpr size_t locations_num = 1u;
-            static_assert(EXTRA <= 2, "too many extra components given");
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec"), ct::string<'2'+EXTRA>>;
+            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec2")>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tvec3>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tvec3> {
             static constexpr size_t components_num = 3u;
             static constexpr size_t locations_num = 1u;
-            static_assert(EXTRA <= 1, "too many extra components given");
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec"), ct::string<'3'+EXTRA>>;
+            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec3")>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tvec4>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tvec4> {
             static constexpr size_t components_num = 4u;
             static constexpr size_t locations_num = 1u;
-            static_assert(EXTRA == 0, "vec4 can't have extra components");
             using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec4")>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tmat2x2>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tmat2x2> {
             static constexpr size_t components_num = 2u;
             static constexpr size_t locations_num = 2u;
-            static_assert(0==EXTRA, "extra components doesn't make sense for matrices");
             using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat2")>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tmat3x3>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tmat3x3> {
             static constexpr size_t components_num = 3u;
             static constexpr size_t locations_num = 3u;
-            static_assert(0==EXTRA, "extra components doesn't make sense for matrices");
             using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat3")>;
         };
 
-        template<typename TypeTo, size_t EXTRA>
-        struct type_traits<TypeTo, EXTRA, glm::tmat4x4>
-        {
+        template<typename TypeTo>
+        struct type_traits<TypeTo, glm::tmat4x4> {
             static constexpr size_t components_num = 4u;
             static constexpr size_t locations_num = 4u;
-            static_assert(0==EXTRA, "extra components doesn't make sense for matrices");
             using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat4")>;
         };
 
         /// @brief shortcut
-        template<typename TypeTo, size_t EXTRA, template<typename, glm::precision> class Holder>
-        using type_name = typename type_traits<TypeTo, EXTRA, Holder>::type_name;
+        template<typename TypeTo, template<typename, glm::precision> class Holder>
+        using type_name = typename type_traits<TypeTo, Holder>::type_name;
 
         /// @brief traits class for input variable to shader attribute/uniform
         /// @tparam Holder glm template holding values, like glm::tvec3 or glm::tmat4
         /// @tparam TypeFrom type on cpu side
         /// @tparam TypeTo cpp type equivalent to glsl type which should be used on gpu side
         /// @tparam isUniform if true this is a uniform, otherwise it is an attribute
-        /// @tparam EXTRA number of extra components on gpu side, only valid for
-        /// glm::tvecx types, for example tvec3 declared with EXTRA=1 will result in
-        /// vec4 type on gpu side
         /// @tparam N if N is 1 this is traits class for single value, if N > 1 this
         /// is array, e.g. vec3 varname[2]
-        template<template<typename, glm::precision> class Holder, typename TypeFrom, typename TypeTo, bool IsUniform, size_t EXTRA, size_t N>
+        template<template<typename, glm::precision> class Holder, typename TypeFrom, typename TypeTo, bool IsUniform, size_t N>
         struct input_var_traits : std::array<TypeFrom, N>
         {
             static_assert(N >= 1, "glsl type size should be at least 1");
@@ -314,7 +295,7 @@ namespace glcxx
             /// @brief ctstring containing glsl declaration of variable
             template<typename Name>
             using declaration = ct::string_cat<typename std::conditional<IsUniform, cts("uniform "), cts("in ")>::type,
-                                               type_name<TypeTo, EXTRA, Holder>, cts(" "),
+                                               type_name<TypeTo, Holder>, cts(" "),
                                                Name,
                                                typename std::conditional<1==size, cts(""),
                                                                          ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
@@ -324,8 +305,8 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
-                constexpr size_t components_num = type_traits<TypeTo, EXTRA, Holder>::components_num;
+                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
+                constexpr size_t components_num = type_traits<TypeTo, Holder>::components_num;
                 for (size_t n = 0; n < N; ++n)
                 {
                     for (size_t i = 0; i < locations_num; ++i)
@@ -346,7 +327,7 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void detach(GLint location, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
+                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
                 for (size_t n = 0; n < N; ++n)
                     for (size_t i = 0; i < locations_num; ++i)
                         glDisableVertexAttribArray(location + i + n*locations_num);
@@ -356,7 +337,7 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void divisor(GLint location, GLuint divisor, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, EXTRA, Holder>::locations_num;
+                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
                 for (size_t n = 0; n < N; ++n)
                     for (size_t i = 0; i < locations_num; ++i)
                         glVertexAttribDivisor(location + i + n*locations_num, divisor);
@@ -365,17 +346,17 @@ namespace glcxx
     }
 
     /// @brief shortcuts
-    template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-    using attrib = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, EXTRA, 1>;
+    template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
+    using attrib = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, 1>;
 
-    template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-    using attrib_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, EXTRA, N>;
+    template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
+    using attrib_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, N>;
 
-    template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-    using uniform = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, EXTRA, 1>;
+    template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
+    using uniform = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, 1>;
 
-    template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float, size_t EXTRA = 0>
-    using uniform_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, EXTRA, N>;
+    template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
+    using uniform_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, N>;
 }
 
 #endif
