@@ -205,61 +205,61 @@ namespace glcxx
         template<typename T> using basic_type_name = typename detail::basic_type_name<T>::type;
 
         /// @brief traits for glsl types
-        template<typename TypeTo, template<typename, glm::precision> class Holder>
+        template<typename ShaderType>
         struct type_traits;
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tvec1> {
+        template<typename BasicType>
+        struct type_traits<glm::tvec1<BasicType>> {
             static constexpr size_t components_num = 1u;
             static constexpr size_t locations_num = 1u;
-            using type_name = basic_type_name<TypeTo>;
+            using type_name = basic_type_name<BasicType>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tvec2> {
+        template<typename BasicType>
+        struct type_traits<glm::tvec2<BasicType>> {
             static constexpr size_t components_num = 2u;
             static constexpr size_t locations_num = 1u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec2")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("vec2")>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tvec3> {
+        template<typename BasicType>
+        struct type_traits<glm::tvec3<BasicType>> {
             static constexpr size_t components_num = 3u;
             static constexpr size_t locations_num = 1u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec3")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("vec3")>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tvec4> {
+        template<typename BasicType>
+        struct type_traits<glm::tvec4<BasicType>> {
             static constexpr size_t components_num = 4u;
             static constexpr size_t locations_num = 1u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("vec4")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("vec4")>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tmat2x2> {
+        template<typename BasicType>
+        struct type_traits<glm::tmat2x2<BasicType>> {
             static constexpr size_t components_num = 2u;
             static constexpr size_t locations_num = 2u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat2")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("mat2")>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tmat3x3> {
+        template<typename BasicType>
+        struct type_traits<glm::tmat3x3<BasicType>> {
             static constexpr size_t components_num = 3u;
             static constexpr size_t locations_num = 3u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat3")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("mat3")>;
         };
 
-        template<typename TypeTo>
-        struct type_traits<TypeTo, glm::tmat4x4> {
+        template<typename BasicType>
+        struct type_traits<glm::tmat4x4<BasicType>> {
             static constexpr size_t components_num = 4u;
             static constexpr size_t locations_num = 4u;
-            using type_name = ct::string_cat<type_prefix<TypeTo>, cts("mat4")>;
+            using type_name = ct::string_cat<type_prefix<BasicType>, cts("mat4")>;
         };
 
         /// @brief shortcut
-        template<typename TypeTo, template<typename, glm::precision> class Holder>
-        using type_name = typename type_traits<TypeTo, Holder>::type_name;
+        template<typename ShaderType>
+        using type_name = typename type_traits<ShaderType>::type_name;
 
         /// @brief traits class for input variable to shader attribute/uniform
         /// @tparam Holder glm template holding values, like glm::tvec3 or glm::tmat4
@@ -295,7 +295,7 @@ namespace glcxx
             /// @brief ctstring containing glsl declaration of variable
             template<typename Name>
             using declaration = ct::string_cat<typename std::conditional<IsUniform, cts("uniform "), cts("in ")>::type,
-                                               type_name<TypeTo, Holder>, cts(" "),
+                                               type_name<Holder<TypeTo, glm::defaultp>>, cts(" "),
                                                Name,
                                                typename std::conditional<1==size, cts(""),
                                                                          ct::string_cat<cts("["), ct::string_from<size_t, size>, cts("]")>>::type,
@@ -305,8 +305,8 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void attach(GLint location, const data* ptr = nullptr, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
-                constexpr size_t components_num = type_traits<TypeTo, Holder>::components_num;
+                constexpr size_t locations_num  = type_traits<Holder<TypeTo, glm::defaultp>>::locations_num;
+                constexpr size_t components_num = type_traits<Holder<TypeTo, glm::defaultp>>::components_num;
                 for (size_t n = 0; n < N; ++n)
                 {
                     for (size_t i = 0; i < locations_num; ++i)
@@ -327,7 +327,7 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void detach(GLint location, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
+                constexpr size_t locations_num  = type_traits<Holder<TypeTo, glm::defaultp>>::locations_num;
                 for (size_t n = 0; n < N; ++n)
                     for (size_t i = 0; i < locations_num; ++i)
                         glDisableVertexAttribArray(location + i + n*locations_num);
@@ -337,7 +337,7 @@ namespace glcxx
             template<typename Dummy = int> // to enable sfinae
             static void divisor(GLint location, GLuint divisor, typename std::enable_if<is_attribute, Dummy>::type = 0)
             {
-                constexpr size_t locations_num  = type_traits<TypeTo, Holder>::locations_num;
+                constexpr size_t locations_num  = type_traits<Holder<TypeTo, glm::defaultp>>::locations_num;
                 for (size_t n = 0; n < N; ++n)
                     for (size_t i = 0; i < locations_num; ++i)
                         glVertexAttribDivisor(location + i + n*locations_num, divisor);
