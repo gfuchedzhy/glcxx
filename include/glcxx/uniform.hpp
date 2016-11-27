@@ -33,6 +33,10 @@ namespace glcxx
         glUniform1##suffix(location, val);                              \
     }                                                                   \
     inline void                                                         \
+    attach_uniform(GLint location, const glm::tvec1<type>& val) {       \
+        glUniform1##suffix(location, val.x);                            \
+    }                                                                   \
+    inline void                                                         \
     attach_uniform(GLint location, const glm::tvec2<type>& val) {       \
         glUniform2##suffix(location, val.x, val.y);                     \
     }                                                                   \
