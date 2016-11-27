@@ -70,20 +70,28 @@ namespace glcxx {
         namespace detail {
             /// @brief compile time prefixes for shader types
             template<typename T> struct prefix_impl;
-            template<> struct prefix_impl<bool>         { using type = cts("b");};
-            template<> struct prefix_impl<int>          { using type = cts("i");};
-            template<> struct prefix_impl<unsigned int> { using type = cts("u");};
-            template<> struct prefix_impl<float>        { using type = cts(""); };
-            template<> struct prefix_impl<double>       { using type = cts("d");};
+            template<> struct prefix_impl<bool>           { using type = cts("b");};
+            template<> struct prefix_impl<int>            { using type = cts("i");};
+            template<> struct prefix_impl<unsigned int>   { using type = cts("u");};
+            template<> struct prefix_impl<short>          { using type = cts("i");};
+            template<> struct prefix_impl<unsigned short> { using type = cts("u");};
+            template<> struct prefix_impl<char>           { using type = cts("i");};
+            template<> struct prefix_impl<unsigned char>  { using type = cts("u");};
+            template<> struct prefix_impl<float>          { using type = cts(""); };
+            template<> struct prefix_impl<double>         { using type = cts("d");};
             template<typename T> using prefix = typename prefix_impl<T>::type;
 
             /// @brief basic shader type names
             template<typename T> struct basic_name_impl;
-            template<> struct basic_name_impl<bool>         { using type = cts("bool");};
-            template<> struct basic_name_impl<int>          { using type = cts("int");};
-            template<> struct basic_name_impl<unsigned int> { using type = cts("uint");};
-            template<> struct basic_name_impl<float>        { using type = cts("float");};
-            template<> struct basic_name_impl<double>       { using type = cts("double");};
+            template<> struct basic_name_impl<bool>           { using type = cts("bool");};
+            template<> struct basic_name_impl<int>            { using type = cts("int");};
+            template<> struct basic_name_impl<unsigned int>   { using type = cts("uint");};
+            template<> struct basic_name_impl<short>          { using type = cts("int");};
+            template<> struct basic_name_impl<unsigned short> { using type = cts("uint");};
+            template<> struct basic_name_impl<char>           { using type = cts("int");};
+            template<> struct basic_name_impl<unsigned char>  { using type = cts("uint");};
+            template<> struct basic_name_impl<float>          { using type = cts("float");};
+            template<> struct basic_name_impl<double>         { using type = cts("double");};
             template<typename T> using basic_name = typename basic_name_impl<T>::type;
         }
 
