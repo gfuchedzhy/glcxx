@@ -44,13 +44,15 @@ namespace glcxx
         /// @brief instance count
         GLsizei _instance_count = -1;
 
-        /// @brief traits to get attribs by name
+        /// @return attribute index by name
         template<typename AttribName>
-        struct traits
-        {
-            static constexpr size_t index = ct::tuple_find<std::tuple<Name...>, AttribName>::value;
-            using data = typename std::tuple_element<index, std::tuple<Data...>>::type;
+        struct attrib_index {
+            static constexpr size_t value = ct::tuple_find<std::tuple<Name...>, AttribName>::value;
         };
+
+        /// @brief shader type of attribute by name
+        template<typename AttribName>
+        using attrib_shader_type = typename std::tuple_element<attrib_index<AttribName>::value, std::tuple<Data...>>::type;
 
     public:
         /// @brief get/set instance count
@@ -74,9 +76,9 @@ namespace glcxx
                  const GLsizei offset = 0,
                  const bool normalize = true)
         {
-            constexpr size_t index = traits<AttribName>::index;
+            constexpr size_t index = attrib_index<AttribName>::value;
             static_assert(index < attrib_num, "attribute with given name wasn't found");
-            static_assert(is_glsl_convertible<T, typename traits<AttribName>::data>::value, "types are not convertible");
+            static_assert(is_glsl_convertible<T, attrib_shader_type<AttribName>>::value, "types are not convertible");
 
             if (_attribs[index].set(std::move(buf), divisor, offset, normalize)) // changed?
                 program(0);
@@ -90,9 +92,9 @@ namespace glcxx
                  const GLsizei offset = 0,
                  const bool normalize = true)
         {
-            constexpr size_t index = traits<AttribName>::index;
+            constexpr size_t index = attrib_index<AttribName>::value;
             static_assert(index < attrib_num, "attribute with given name wasn't found");
-            static_assert(is_glsl_convertible<U, typename traits<AttribName>::data>::value, "types are not convertible");
+            static_assert(is_glsl_convertible<U, attrib_shader_type<AttribName>>::value, "types are not convertible");
 
             if (_attribs[index].set(std::move(buf), member, divisor, offset, normalize)) // changed?
                 program(0);
@@ -112,9 +114,9 @@ namespace glcxx
         template<typename ShaderType, typename AttribName>
         void attach_attrib(const GLint location) const
         {
-            constexpr size_t index = traits<AttribName>::index;
+            constexpr size_t index = attrib_index<AttribName>::value;
             static_assert(index < attrib_num, "attribute with given name wasn't found");
-            static_assert(std::is_same<ShaderType, typename traits<AttribName>::data>::value,
+            static_assert(std::is_same<ShaderType, attrib_shader_type<AttribName>>::value,
                           "attrib is incompatible with provided shader type");
 
             _attribs[index].template attach_unsafe<ShaderType>(location);
@@ -131,9 +133,9 @@ namespace glcxx
         template<typename AttribName, typename T>
         void upload(const T* data, size_t size, GLenum usage = 0)
         {
-            constexpr size_t index = traits<AttribName>::index;
+            constexpr size_t index = attrib_index<AttribName>::value;
             static_assert(index < attrib_num, "attribute with given name wasn't found");
-            static_assert(is_glsl_convertible<T, typename traits<AttribName>::data>::value, "types are not convertible");
+            static_assert(is_glsl_convertible<T, attrib_shader_type<AttribName>>::value, "types are not convertible");
             if (_attribs[index].upload(data, size, usage))
                 program(0);
         }
