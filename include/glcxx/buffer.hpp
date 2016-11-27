@@ -131,9 +131,9 @@ namespace glcxx
             , _sizeof(sizeof(T))
             , _size(size)
             , _mode(mode)
-            , _type(glsl::type_id<T>::value)
+            , _type(shader_type::id<T>::value)
         {
-            constexpr GLenum id = glsl::type_id<T>::value;
+            constexpr GLenum id = shader_type::id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
         }
 
@@ -141,7 +141,7 @@ namespace glcxx
         template<typename T>
         void upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
         {
-            constexpr GLenum id = glsl::type_id<T>::value;
+            constexpr GLenum id = shader_type::id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
             buffer_base::upload(data, size*sizeof(T), usage);
             _sizeof = sizeof(T);
