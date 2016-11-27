@@ -90,74 +90,82 @@ namespace glcxx {
         /// @brief traits for shader types
         template<typename ShaderType> struct traits {
             static constexpr GLenum id = shader_type::id<ShaderType>::value;
-            static constexpr size_t components_num = 1u;
-            static constexpr size_t locations_num = 1u;
+            static constexpr GLint components_num = 1;
+            static constexpr GLint locations_num = 1;
+            using basic_type = ShaderType;
             using name = detail::basic_name<ShaderType>;
-        };
-
-        // todo remove
-        template<typename BasicType>
-        struct traits<glm::tvec1<BasicType>> {
-            static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 1u;
-            static constexpr size_t locations_num = 1u;
-            using name = detail::basic_name<BasicType>;
         };
 
         /// specializations
         template<typename BasicType>
+        struct traits<glm::tvec1<BasicType>> {
+            static constexpr GLenum id = traits<BasicType>::id;
+            static constexpr GLint components_num = 1;
+            static constexpr GLint locations_num = 1;
+            using basic_type = BasicType;
+            using name = detail::basic_name<BasicType>;
+        };
+
+        template<typename BasicType>
         struct traits<glm::tvec2<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 2u;
-            static constexpr size_t locations_num = 1u;
+            static constexpr GLint components_num = 2;
+            static constexpr GLint locations_num = 1;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("vec2")>;
         };
 
         template<typename BasicType>
         struct traits<glm::tvec3<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 3u;
-            static constexpr size_t locations_num = 1u;
+            static constexpr GLint components_num = 3;
+            static constexpr GLint locations_num = 1;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("vec3")>;
         };
 
         template<typename BasicType>
         struct traits<glm::tvec4<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 4u;
-            static constexpr size_t locations_num = 1u;
+            static constexpr GLint components_num = 4;
+            static constexpr GLint locations_num = 1;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("vec4")>;
         };
 
         template<typename BasicType>
         struct traits<glm::tmat2x2<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 2u;
-            static constexpr size_t locations_num = 2u;
+            static constexpr GLint components_num = 2;
+            static constexpr GLint locations_num = 2;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("mat2")>;
         };
 
         template<typename BasicType>
         struct traits<glm::tmat3x3<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 3u;
-            static constexpr size_t locations_num = 3u;
+            static constexpr GLint components_num = 3;
+            static constexpr GLint locations_num = 3;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("mat3")>;
         };
 
         template<typename BasicType>
         struct traits<glm::tmat4x4<BasicType>> {
             static constexpr GLenum id = traits<BasicType>::id;
-            static constexpr size_t components_num = 4u;
-            static constexpr size_t locations_num = 4u;
+            static constexpr GLint components_num = 4;
+            static constexpr GLint locations_num = 4;
+            using basic_type = BasicType;
             using name = ct::string_cat<detail::prefix<BasicType>, cts("mat4")>;
         };
 
         template<typename ShaderType, size_t N>
         struct traits<std::array<ShaderType, N>> {
             static constexpr GLenum id = traits<ShaderType>::id;
-            static constexpr size_t components_num = traits<ShaderType>::components_num;
-            static constexpr size_t locations_num = N*traits<ShaderType>::locations_num;
+            static constexpr GLint components_num = traits<ShaderType>::components_num;
+            static constexpr GLint locations_num = N*traits<ShaderType>::locations_num;
+            using basic_type = typename traits<ShaderType>::basic_type;
             using name = ct::string_cat<typename traits<ShaderType>::name, cts("["), ct::string_from<size_t, N>, cts("]")>;
         };
 
@@ -166,24 +174,74 @@ namespace glcxx {
         using name = typename traits<ShaderType>::name;
     }
 
-    /// cast host type to shader type if they differ, if not - do nothing
-    /// @brief cast simple types, e.g. int->float or ivec2->vec2
-    template<typename ShaderType, typename HostType>
-    inline typename std::conditional<std::is_same<ShaderType, HostType>::value, const ShaderType&, ShaderType>::type
-    glsl_cast(const HostType& data)
-    {
-        return data;
+    namespace detail {
+        /// @brief fwd declaration of glsl_cast helper struct
+        template<typename ShaderType> struct glsl_cast;
+
+        /// @brief returns true if From is glsl convertible to To
+        template<typename From, typename To>
+        class is_glsl_convertible
+        {
+            static void test(...);
+            template<typename U>
+            static auto test(const U&) -> decltype(glsl_cast<To>::cast(std::declval<U>()));
+        public:
+            static constexpr bool value = !std::is_same<void, decltype(test(std::declval<From>()))>::value;
+        };
+
+        /// implementation of glsl_cast helper struct
+        template<typename ShaderType>
+        struct glsl_cast
+        {
+            // identical types, do nothing
+            static inline const auto& cast(const ShaderType& data)
+            {
+                return data;
+            }
+
+            // statically cast if possible
+            template<typename HostType>
+            static inline auto cast(const HostType& data)
+                -> decltype(static_cast<ShaderType>(data))
+            {
+                return static_cast<ShaderType>(data);
+            }
+        };
+
+        template<typename ShaderType, size_t N>
+        struct glsl_cast<std::array<ShaderType, N>> {
+            using to_type = std::array<ShaderType, N>;
+
+            // identical types, do nothing
+            static inline const auto& cast(const to_type& data)
+            {
+                return data;
+            }
+
+            // cast N elements of host array into shader array if possible
+            template<typename HostType, size_t M>
+            static inline auto cast(const std::array<HostType, M>& data)
+                -> std::enable_if_t<(N<=M && is_glsl_convertible<HostType, ShaderType>::value), to_type>
+            {
+                to_type ret;
+                for (size_t i = 0; i < N; ++i)
+                    ret[i] = glsl_cast<ShaderType>::cast(data[i]);
+                return ret;
+            }
+        };
     }
 
-    /// @brief cast arrays, e.g. ivec2[3]->vec2[3]
-    template<typename ShaderType, typename HostUnderlyingType, size_t N>
-    inline typename std::conditional<std::is_same<typename ShaderType::value_type, HostUnderlyingType>::value, const ShaderType&, ShaderType>::type
-    glsl_cast(const std::array<HostUnderlyingType, N>& data)
+    /// @brief cast host type to shader type if they differ, if not - do nothing
+    template<typename ShaderType, typename HostType>
+    inline auto glsl_cast(const HostType& data)
+        -> decltype(detail::glsl_cast<ShaderType>::cast(data))
     {
-        ShaderType shader_data;
-        std::copy(data.begin(), data.end(), shader_data.begin());
-        return shader_data;
+        return detail::glsl_cast<ShaderType>::cast(data);
     }
+
+    /// @brief return true if From is glsl convertible to To
+    template<typename From, typename To>
+    struct is_glsl_convertible : detail::is_glsl_convertible<From, To> {};
 }
 
 #endif

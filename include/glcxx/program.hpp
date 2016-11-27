@@ -22,6 +22,7 @@
 
 #include "glcxx/shader.hpp"
 #include "glcxx/vao_input.hpp"
+#include "glcxx/except.hpp"
 
 namespace glcxx
 {

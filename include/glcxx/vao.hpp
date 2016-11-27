@@ -21,165 +21,140 @@
 #define GLCXX_VAO_HPP
 
 #include "glcxx/vao_base.hpp"
-#include "glcxx/buffer.hpp"
+#include "glcxx/attrib.hpp"
 
 namespace glcxx
 {
-    namespace detail
-    {
-        /// @brief vao holding specific attributes
-        template<bool HasIndexBuffer, typename...NamedAttrib> class vao;
+    /// @brief vao holding specific attributes
+    template<typename...NamedAttrib> class vao;
 
-        /// @brief specialization
-        template<bool HasIndexBuffer, typename... Name, typename... Data>
-        class vao<HasIndexBuffer, std::pair<Name, Data>...> : public vao_base
+    /// @brief specialization
+    template<typename... Name, typename... Data>
+    class vao<std::pair<Name, Data>...> : public vao_base
+    {
+        /// @brief index buffer
+        index_buffer_ptr _indices;
+
+        /// @brief number of attributes provided by this vao
+        static constexpr size_t attrib_num = sizeof...(Data);
+
+        /// @brief attributes
+        std::array<attrib, attrib_num> _attribs;
+
+        /// @brief instance count
+        GLsizei _instance_count = -1;
+
+        /// @brief traits to get attribs by name
+        template<typename AttribName>
+        struct traits
         {
-            /// @brief buffer tuple
-            using buffers = ct::tuple_cat<std::tuple<buffer_ptr<Data>...>, // VBOs
-                                          // optional index buffer
-                                          typename std::conditional<HasIndexBuffer, std::tuple<index_buffer_ptr>, std::tuple<>>::type>;
-
-            /// @brief buffer tuple
-            buffers _buffers;
-
-            /// @brief instance count
-            GLsizei _instance_count = -1;
-
-            // @todo make next fields optional, as they might not be used all
-            // the time
-
-            /// @brief buffer offsets
-            std::array<std::ptrdiff_t, std::tuple_size<buffers>::value> _buffer_offsets = {};
-
-            /// @brief attribute divisors
-            std::array<GLuint, sizeof...(Data)> _buffer_divisors = {};
-
-            /// @brief traits for searching buffers in buffer tuple
-            template<typename BufferName>
-            struct traits
-            {
-                static constexpr size_t index = ct::tuple_find<std::tuple<Name..., cts("indices")>, BufferName>::value;
-                using buffer_ptr = typename std::tuple_element<index, buffers>::type;
-            };
-
-        public:
-            /// @brief get/set instance count
-            auto instance_count() const { return _instance_count; }
-            void instance_count(GLsizei v) { _instance_count = v; }
-
-            /// @brief set vbo or index buffer into vao
-            template<typename BufferName>
-            void set(typename traits<BufferName>::buffer_ptr vbo)
-            {
-                constexpr size_t index = traits<BufferName>::index;
-                std::get<index>(_buffers) = std::move(vbo);
-                // reset program id to reattach buffers
-                reset_to_program(0);
-            }
-
-            /// @brief set vbo for attributes into vao
-            template<typename BufferName>
-            void offset(const ptrdiff_t offset)
-            {
-                constexpr size_t index = traits<BufferName>::index;
-                _buffer_offsets[index] = offset;
-
-                // index buffer offset if usual vbo, not an index buffer
-                if (index < sizeof...(Data))
-                    reset_to_program(0); // reset program id to reattach buffers
-            }
-
-            /// @brief set vbo for attributes into vao
-            template<typename BufferName>
-            void divisor(const GLuint divisor_)
-            {
-                constexpr size_t index = traits<BufferName>::index;
-                static_assert(index < sizeof...(Data), "wrong buffer name");
-                _buffer_divisors[index] = divisor_;
-                // reset program id to reattach buffers
-                reset_to_program(0);
-            }
-
-            /// @brief bind buffer
-            template<typename BufferName>
-            void bind_buffer() const
-            {
-                const auto& p = std::get<traits<BufferName>::index>(_buffers);
-                assert(p);
-                p->bind();
-            }
-
-            /// @brief attach vertex buffer
-            template<typename AttribTraits, typename BufferName>
-            void attach_buffer(const GLint location) const
-            {
-                bind_buffer<BufferName>();
-
-                constexpr size_t index = traits<BufferName>::index;
-                static_assert(std::is_same<typename traits<BufferName>::buffer_ptr::element_type::data,
-                                           typename AttribTraits::data>::value,
-                              "buffer incompatible with attribute trait");
-                AttribTraits::attach(location, static_cast<const typename AttribTraits::data*>(nullptr) + _buffer_offsets[index]);
-                AttribTraits::divisor(location, _buffer_divisors[index]);
-            }
-
-            /// @brief draw using index buffer
-            template<bool HasIndexBuffer_ = HasIndexBuffer> // for SFINAE
-            typename std::enable_if<HasIndexBuffer_>::type
-            draw_elements() const
-            {
-                constexpr size_t index = traits<cts("indices")>::index;
-                const index_buffer_ptr& p = std::get<index>(_buffers);
-                assert(p);
-                p->draw(_buffer_offsets[index], _instance_count);
-            }
-
-            /// @brief upload data to vbo, if doesn't exist, create it
-            template<typename BufferName>
-            void upload(const typename traits<BufferName>::buffer_ptr::element_type::data* data, size_t size, GLenum usage = 0)
-            {
-                auto& ptr = std::get<traits<BufferName>::index>(_buffers);
-                if (ptr)
-                    ptr->upload(data, size, usage);
-                else
-                    ptr = make_buffer(data, size, usage ? usage : GL_STATIC_DRAW);
-            }
-
-            /// @brief upload data to index buffer, if doesn't exist, create it
-            template<typename BufferName, typename T>
-            typename std::enable_if<HasIndexBuffer && std::is_same<BufferName, cts("indices")>::value>::type
-            upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
-            {
-                index_buffer_ptr& ptr = std::get<traits<cts("indices")>::index>(_buffers);
-                if (ptr)
-                    ptr->upload(data, size, mode, usage);
-                else
-                    ptr = make_index_buffer(data, size, mode, usage ? usage : GL_STATIC_DRAW);
-            }
+            static constexpr size_t index = ct::tuple_find<std::tuple<Name...>, AttribName>::value;
+            using data = typename std::tuple_element<index, std::tuple<Data...>>::type;
         };
-    }
 
-    /// @brief shortcut types
-    template<typename... NamedAttrib>
-    using vao = detail::vao<false, NamedAttrib...>;
-    template<typename... NamedAttrib>
-    using indexed_vao = detail::vao<true, NamedAttrib...>;
+    public:
+        /// @brief get/set instance count
+        auto instance_count() const { return _instance_count; }
+        void instance_count(GLsizei v) { _instance_count = v; }
 
-    /// @brief make new vao with given buffers, version for vao without index buffer
-    template<typename...Name, typename... BufferPtr>
-    inline auto make_vao(BufferPtr&&... buf)
-    {
-        vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
-        glcxx_swallow(vao.template set<Name>(std::forward<BufferPtr>(buf)));
-        return vao;
-    }
+        /// @brief set index buffer
+        void indices(index_buffer_ptr buf)
+        {
+            if (_indices != buf)
+            {
+                _indices = std::move(buf);
+                program(0);
+            }
+        }
+
+        /// @brief set attrib
+        template<typename AttribName, typename T>
+        void set(buffer_ptr<T> buf,
+                 const GLuint divisor = 0u,
+                 const GLsizei offset = 0,
+                 const bool normalize = true)
+        {
+            constexpr size_t index = traits<AttribName>::index;
+            static_assert(index < attrib_num, "attribute with given name wasn't found");
+            static_assert(is_glsl_convertible<T, typename traits<AttribName>::data>::value, "types are not convertible");
+
+            if (_attribs[index].set(std::move(buf), divisor, offset, normalize)) // changed?
+                program(0);
+        }
+
+        /// @brief set attrib
+        template<typename AttribName, typename T, typename U>
+        void set(buffer_ptr<T> buf,
+                 U T::*member,
+                 const GLuint divisor = 0u,
+                 const GLsizei offset = 0,
+                 const bool normalize = true)
+        {
+            constexpr size_t index = traits<AttribName>::index;
+            static_assert(index < attrib_num, "attribute with given name wasn't found");
+            static_assert(is_glsl_convertible<U, typename traits<AttribName>::data>::value, "types are not convertible");
+
+            if (_attribs[index].set(std::move(buf), member, divisor, offset, normalize)) // changed?
+                program(0);
+        }
+
+        /// @brief bind index buffer if exists, otherwise unbind previously
+        /// bound index buffer
+        void attach_indices() const
+        {
+            if (_indices)
+                _indices->bind();
+            else
+                index_buffer::unbind();
+        }
+
+        /// @brief attach vertex buffer
+        template<typename ShaderType, typename AttribName>
+        void attach_attrib(const GLint location) const
+        {
+            constexpr size_t index = traits<AttribName>::index;
+            static_assert(index < attrib_num, "attribute with given name wasn't found");
+            static_assert(std::is_same<ShaderType, typename traits<AttribName>::data>::value,
+                          "attrib is incompatible with provided shader type");
+
+            _attribs[index].template attach_unsafe<ShaderType>(location);
+        }
+
+        /// @brief draw using index buffer
+        void draw_elements() const
+        {
+            assert(_indices);
+            _indices->draw(_instance_count);
+        }
+
+        /// @brief upload data to attribute vbo, if doesn't exist, create it
+        template<typename AttribName, typename T>
+        void upload(const T* data, size_t size, GLenum usage = 0)
+        {
+            constexpr size_t index = traits<AttribName>::index;
+            static_assert(index < attrib_num, "attribute with given name wasn't found");
+            static_assert(is_glsl_convertible<T, typename traits<AttribName>::data>::value, "types are not convertible");
+            if (_attribs[index].upload(data, size, usage))
+                program(0);
+        }
+
+        /// @brief upload data to index buffer, if doesn't exist, create it
+        template<typename T>
+        void upload_indices(const T* data, size_t size, GLenum mode, GLenum usage = 0)
+        {
+            if (_indices)
+                _indices->upload(data, size, mode, usage);
+            else
+                _indices = make_index_buffer(data, size, mode, usage ? usage : GL_STATIC_DRAW);
+        }
+    };
 
     /// @brief make new vao with given buffers, version for vao with index buffer
     template<typename...Name, typename IndexBufferPtr, typename... BufferPtr>
     inline auto make_indexed_vao(IndexBufferPtr&& indices, BufferPtr&&... buf)
     {
-        indexed_vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
-        vao.template set<cts("indices")>(std::forward<IndexBufferPtr>(indices));
+        vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
+        vao.indices(std::forward<IndexBufferPtr>(indices));
         glcxx_swallow(vao.template set<Name>(std::forward<BufferPtr>(buf)));
         return vao;
     }

@@ -24,18 +24,14 @@
 
 namespace glcxx
 {
-    template<typename AttribTraits>
+    template<typename Attrib>
     class buffer_input_base
     {
         /// @brief attribute location
         GLint _location;
 
-        /// @brief buffer input offset
-        std::ptrdiff_t _offset = 0;
-
-        /// @brief holds actual buffer
-        using buffer = buffer_ptr<typename AttribTraits::data>;
-        buffer _buffer;
+        /// @brief holds buffer and its layout
+        attrib _attrib;
 
     public:
         /// @brief constructor
@@ -43,45 +39,56 @@ namespace glcxx
             : _location(location)
         {}
 
-        /// @brief set new buffer as program input
-        void set(const buffer& value, const std::ptrdiff_t offset = 0)
+        /// @brief set new buffer and its layout as program input
+        /// @param offset buffer offset in units of T type
+        template<typename T>
+        void set(buffer_ptr<T> buf,
+                 const GLuint divisor = 0u,
+                 const GLsizei offset = 0,
+                 const bool normalize = true)
         {
-            if (_buffer != value || _offset != offset)
-            {
-                // detach old input, attach new one
-                if (_buffer)
-                    AttribTraits::detach(_location);
-                _buffer = value;
-                _offset = offset;
+            static_assert(is_glsl_convertible<T, Attrib>::value, "types are not convertible");
+            if (_attrib.set(std::move(buf), divisor, offset, normalize)) // changed?
                 select();
-            }
         }
 
-        /// @brief called after program was selected, attach buffer
+        /// @brief set new buffer and its layout as program input
+        /// @param offset buffer offset in units of T type
+        template<typename T, typename U> inline bool
+        reset(buffer_ptr<T> buf,
+              U T::*member,
+              const GLuint divisor = 0u,
+              const GLsizei offset = 0,
+              const bool normalize = true)
+        {
+            static_assert(is_glsl_convertible<U, Attrib>::value, "types are not convertible");
+            if (_attrib.set(std::move(buf), member, divisor, offset, normalize)) // changed?
+                select();
+        }
+
+        /// @brief called after program was selected
         void select() const
         {
-            if (_buffer)
-            {
-                _buffer->bind();
-                AttribTraits::attach(_location, static_cast<const typename AttribTraits::data*>(nullptr) + _offset);
-                _buffer->unbind();
-            }
+            _attrib.attach_unsafe<Attrib>(_location);
         }
     };
 
     /// @brief holds state of program's uniform
-    template<typename Name, typename AttribTraits>
-    class buffer_input : public buffer_input_base<AttribTraits>
+    template<typename Name, typename Attrib>
+    class buffer_input : public buffer_input_base<Attrib>
     {
         /// @brief base implementation class
-        using base = buffer_input_base<AttribTraits>;
+        using base = buffer_input_base<Attrib>;
 
     public:
+        /// @brief name
+        using name = Name;
+
         /// @brief VBOs are always vertex shader inputs
         using decl_tag = tag::vertex;
 
         /// @brief ctstring containing glsl declaration of variable
-        using declaration = typename AttribTraits::template declaration<Name>;
+        using declaration = attrib::declaration<Attrib, Name>;
 
         /// @brief constructor
         buffer_input(const GLuint program)
@@ -89,9 +96,9 @@ namespace glcxx
         {}
 
         /// @brief named set method
-        template<typename InputName>
+        template<typename InputName, typename T>
         typename std::enable_if<std::is_same<InputName, Name>::value>::type
-        set(const buffer_ptr<typename AttribTraits::data>& value)
+        set(const buffer_ptr<T>& value)
         {
             base::set(value);
         }

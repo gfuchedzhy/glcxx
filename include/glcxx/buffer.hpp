@@ -20,8 +20,8 @@
 #ifndef GLCXX_BUFFER_HPP
 #define GLCXX_BUFFER_HPP
 
-#include "glcxx/input_var.hpp"
 #include "glcxx/vao_base.hpp"
+#include "glcxx/shader_type.hpp"
 #include <memory>
 
 namespace glcxx
@@ -96,6 +96,9 @@ namespace glcxx
         GLsizei size() const { return _size; }
     };
 
+    /// @brief base buffer ptr
+    using buffer_base_ptr = std::shared_ptr<buffer_base>;
+
     /// @brief buffer ptr
     template<typename Data>
     using buffer_ptr = std::shared_ptr<buffer<Data>>;
@@ -111,9 +114,6 @@ namespace glcxx
     /// indices, also it saves mode, e.g. GL_TRIANGLE_STRIP
     class index_buffer : public buffer_base
     {
-        /// @brief buffer element size
-        GLsizei _sizeof;
-
         /// @brief buffer element number
         GLsizei _size;
 
@@ -128,7 +128,6 @@ namespace glcxx
         template<typename T>
         index_buffer(const T* data, size_t size, GLenum mode, GLenum usage = GL_STATIC_DRAW)
             : buffer_base(data, size*sizeof(T), usage, GL_ELEMENT_ARRAY_BUFFER)
-            , _sizeof(sizeof(T))
             , _size(size)
             , _mode(mode)
             , _type(shader_type::id<T>::value)
@@ -144,19 +143,18 @@ namespace glcxx
             constexpr GLenum id = shader_type::id<T>::value;
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
             buffer_base::upload(data, size*sizeof(T), usage);
-            _sizeof = sizeof(T);
             _size = size;
             _mode = mode;
             _type = id;
         }
 
         /// @brief draw with this index buffer
-        void draw(const std::ptrdiff_t offset, const GLsizei instance_count) const
+        void draw(const GLsizei instance_count) const
         {
             if (-1 == instance_count)
-                glDrawElements(_mode, _size, _type, static_cast<const char*>(nullptr) + _sizeof*offset);
+                glDrawElements(_mode, _size, _type, nullptr);
             else
-                glDrawElementsInstanced(_mode, _size, _type, static_cast<const char*>(nullptr) + _sizeof*offset, instance_count);
+                glDrawElementsInstanced(_mode, _size, _type, nullptr, instance_count);
         }
 
         /// @brief unbind index buffer

@@ -17,7 +17,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "glcxx/input_var.hpp"
+#include "glcxx/attrib.hpp"
+#include "glcxx/except.hpp"
 
 GLint glcxx::get_attrib_loc(GLuint program, const char* name)
 {

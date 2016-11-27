@@ -34,8 +34,25 @@ namespace glcxx
         /// @brief vao id
         GLuint _id = 0;
 
-        /// @brief program id this vao is enabled for
+        /// @brief program id this vao is attached to
         mutable GLuint _program_id = 0;
+
+        // only vao input is allowed to change program
+        template<typename AttribInputTuple>
+        friend class vao_input_impl;
+
+    protected:
+        /// @brief return which program vao is currently attached to
+        GLuint program() const
+        {
+            return _program_id;
+        }
+
+        /// @brief set program this vao is attached to
+        void program(const GLuint program_id) const
+        {
+            _program_id = program_id;
+        }
 
     public:
         /// @brief constructor
@@ -64,15 +81,6 @@ namespace glcxx
         {
             std::swap(x._id, y._id);
             std::swap(x._program_id, y._program_id);
-        }
-
-        /// @brief update program id this vao was bound to, return true if it
-        /// was really changed
-        bool reset_to_program(const GLuint program_id) const
-        {
-            const bool ret = program_id != _program_id;
-            _program_id = program_id;
-            return ret;
         }
 
         /// @brief assignment

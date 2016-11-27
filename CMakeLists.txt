@@ -32,7 +32,7 @@ include_directories(${GLCXX_INCLUDE_DIRS})
 add_library(glcxx
   src/buffer.cpp
   src/except.cpp
-  src/input_var.cpp
+  src/attrib.cpp
   src/uniform.cpp
   src/program.cpp
   src/shader.cpp

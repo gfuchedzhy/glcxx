@@ -38,6 +38,26 @@ namespace glcxx
     }
 #define glcxx_swallow(...) (void)::glcxx::detail::swallow_type{0, ((__VA_ARGS__), 0)...}
 
+    /// @return byte offset of a class member
+    namespace detail {
+        template<typename T> class member_offset
+        {
+            static const T c_val {}; // relies on type being default constructible
+        public:
+            template<typename U>
+            static inline std::ptrdiff_t get(U T::*member)
+            {
+                return reinterpret_cast<const char*>(&(c_val.*member))
+                    -  reinterpret_cast<const char*>(&c_val);
+            }
+        };
+    }
+
+    template<typename T, typename U>
+    static inline auto member_offset(U T::*member) {
+        return detail::member_offset<T>::get(member);
+    }
+
     /// @brief ct stands for compile time
     namespace ct
     {

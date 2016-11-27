@@ -24,10 +24,10 @@
 
 namespace glcxx
 {
-    /// @brief vao_input contains traits only, actual input class is
-    /// vao_input_impl, which combines all attributes in single vao, vao_input is
-    /// used for program declarations only
-    template<typename Name, typename AttribTraits>
+    /// @brief vao_input is basically a tag type, actual input class is
+    /// vao_input_impl, which combines all attributes in single vao, vao_input
+    /// is used for program declarations only
+    template<typename Name, typename Type>
     struct vao_input {
         /// @brief name
         using name = Name;
@@ -37,12 +37,9 @@ namespace glcxx
     template<typename AttribInputTuple> class vao_input_impl;
 
     /// @brief specialization for tuple
-    template<typename... AttribName, typename... AttribTraits>
-    class vao_input_impl<std::tuple<vao_input<AttribName, AttribTraits>...>>
+    template<typename... AttribName, typename... Attrib>
+    class vao_input_impl<std::tuple<vao_input<AttribName, Attrib>...>>
     {
-        /// @brief true if no inputs for vao
-        static constexpr bool is_empty = 0 == sizeof...(AttribTraits);
-
         /// @brief return true if Tuple doesn't contain T
         template<typename T, typename Tuple> struct doesnt_contain
         {
@@ -61,7 +58,7 @@ namespace glcxx
         using decl_tag = tag::vertex;
 
         /// @brief ctstring containing glsl declaration of attributes
-        using declaration = ct::string_cat<typename AttribTraits::template declaration<AttribName>...>;
+        using declaration = ct::string_cat<attrib::declaration<Attrib, AttribName>...>;
 
         /// @brief constructor
         vao_input_impl(const GLuint program)
@@ -76,7 +73,7 @@ namespace glcxx
 
         /// @brief draw using index buffer from vao
         template<typename... T>
-        void draw_elements(const indexed_vao<T...>& vao) const
+        void draw_elements(const vao<T...>& vao) const
         {
             if (0 != vao.instance_count())
             {
@@ -106,35 +103,22 @@ namespace glcxx
         }
 
      private:
-        /// @brief bind indexed vao to current program
-        template<typename... Name, typename... Data>
-        void bind(const indexed_vao<std::pair<Name, Data>...>& vao) const
-        {
-            using vao_tuple = std::tuple<std::pair<Name, Data>...>;
-            using required_vao_tuple = std::tuple<std::pair<AttribName, typename AttribTraits::data>...>;
-            static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain, vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
-
-            vao.bind();
-            // if was attached to different program or wasn't attached at all
-            if (vao.reset_to_program(_program_id))
-            {
-                vao.template bind_buffer<cts("indices")>();
-                glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
-            }
-        }
-
-        /// @brief bind non indexed vao to current program
+        /// @brief bind vao to current program
         template<typename... Name, typename... Data>
         void bind(const vao<std::pair<Name, Data>...>& vao) const
         {
             using vao_tuple = std::tuple<std::pair<Name, Data>...>;
-            using required_vao_tuple = std::tuple<std::pair<AttribName, typename AttribTraits::data>...>;
+            using required_vao_tuple = std::tuple<std::pair<AttribName, Attrib>...>;
             static_assert(!ct::tuple_any_of<required_vao_tuple, doesnt_contain, vao_tuple>::value, "not all or not matching type inputs for program was provided by given vao");
 
             vao.bind();
             // if was attached to different program or wasn't attached at all
-            if (vao.reset_to_program(_program_id))
-                glcxx_swallow(vao.template attach_buffer<AttribTraits, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
+            if (vao.program() != _program_id)
+            {
+                vao.program(_program_id);
+                vao.attach_indices();
+                glcxx_swallow(vao.template attach_attrib<Attrib, AttribName>(_locations[ct::tuple_find<std::tuple<AttribName...>, AttribName>::value]));
+            }
         }
     };
 }
