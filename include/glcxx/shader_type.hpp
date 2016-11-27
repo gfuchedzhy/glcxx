@@ -165,6 +165,25 @@ namespace glcxx {
         template<typename ShaderType>
         using name = typename traits<ShaderType>::name;
     }
+
+    /// cast host type to shader type if they differ, if not - do nothing
+    /// @brief cast simple types, e.g. int->float or ivec2->vec2
+    template<typename ShaderType, typename HostType>
+    inline typename std::conditional<std::is_same<ShaderType, HostType>::value, const ShaderType&, ShaderType>::type
+    glsl_cast(const HostType& data)
+    {
+        return data;
+    }
+
+    /// @brief cast arrays, e.g. ivec2[3]->vec2[3]
+    template<typename ShaderType, typename HostUnderlyingType, size_t N>
+    inline typename std::conditional<std::is_same<typename ShaderType::value_type, HostUnderlyingType>::value, const ShaderType&, ShaderType>::type
+    glsl_cast(const std::array<HostUnderlyingType, N>& data)
+    {
+        ShaderType shader_data;
+        std::copy(data.begin(), data.end(), shader_data.begin());
+        return shader_data;
+    }
 }
 
 #endif

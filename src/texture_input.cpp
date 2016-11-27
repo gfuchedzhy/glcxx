@@ -18,6 +18,7 @@
 // SOFTWARE.
 
 #include "glcxx/texture_input.hpp"
+#include "glcxx/uniform.hpp"
 
 void glcxx::texture_input_base::set(const texture_ptr& value)
 {

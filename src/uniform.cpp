@@ -17,12 +17,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "glcxx/input_var.hpp"
+#include "glcxx/uniform.hpp"
+#include "glcxx/except.hpp"
 
-GLint glcxx::get_attrib_loc(GLuint program, const char* name)
+GLint glcxx::get_uniform_loc(GLuint program, const char* name)
 {
-    const auto location = glGetAttribLocation(program, name);
+    const auto location = glGetUniformLocation(program, name);
     if (-1 == location)
-        throw input_location_error(std::string("attribute ") + name + " location wasn't found");
+        throw input_location_error(std::string("uniform ") + name + " location wasn't found");
     return location;
 }

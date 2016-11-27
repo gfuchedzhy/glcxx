@@ -33,6 +33,7 @@ add_library(glcxx
   src/buffer.cpp
   src/except.cpp
   src/input_var.cpp
+  src/uniform.cpp
   src/program.cpp
   src/shader.cpp
   src/texture_input.cpp)

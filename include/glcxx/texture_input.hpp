@@ -21,6 +21,7 @@
 #define GLCXX_TEXTURE_INPUT_HPP
 
 #include "glcxx/texture.hpp"
+#include "glcxx/shader_type.hpp"
 
 namespace glcxx
 {

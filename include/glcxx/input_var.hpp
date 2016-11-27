@@ -28,111 +28,8 @@
 
 namespace glcxx
 {
-    /// @brief functions to attach uniforms, replace huge amount of different c
-    /// functions with properly overloaded fucntions, as their ammount is huge,
-    /// use macro to reduce repitition
-#define DECLARE_ATTACH_UNIFORM_FUNCTIONS(type, functionSuffix)          \
-    inline void attach_uniform(GLint location, type val)                \
-    {                                                                   \
-        glUniform1##functionSuffix(location, val);                      \
-    }                                                                   \
-    template<glm::precision P>                                          \
-    inline void attach_uniform(GLint location, const glm::tvec2<type, P>& val) \
-    {                                                                   \
-        glUniform2##functionSuffix(location, val.x, val.y);             \
-    }                                                                   \
-    template<glm::precision P>                                          \
-    inline void attach_uniform(GLint location, const glm::tvec3<type, P>& val) \
-    {                                                                   \
-        glUniform3##functionSuffix(location, val.x, val.y, val.z);      \
-    }                                                                   \
-    template<glm::precision P>                                          \
-    inline void attach_uniform(GLint location, const glm::tvec4<type, P>& val) \
-    {                                                                   \
-        glUniform4##functionSuffix(location, val.x, val.y, val.z, val.w);\
-    }                                                                   \
-    template<size_t N>                                                  \
-    inline void attach_uniform(GLint location, const std::array<type, N>& val) \
-    {                                                                   \
-        glUniform1##functionSuffix##v(location, N, glm::value_ptr(val[0])); \
-    }                                                                   \
-    template<size_t N, glm::precision P>                                \
-    inline void attach_uniform(GLint location, const std::array<glm::tvec2<type, P>, N>& val) \
-    {                                                                   \
-        glUniform2##functionSuffix##v(location, N, glm::value_ptr(val[0])); \
-    }                                                                   \
-    template<size_t N, glm::precision P>                                \
-    inline void attach_uniform(GLint location, const std::array<glm::tvec3<type, P>, N>& val) \
-    {                                                                   \
-        glUniform3##functionSuffix##v(location, glm::value_ptr(val[0]));\
-    }                                                                   \
-    template<size_t N, glm::precision P>                                \
-    inline void attach_uniform(GLint location, const std::array<glm::tvec4<type, P>, N>& val) \
-    {                                                                   \
-        glUniform4##functionSuffix##v(location, glm::value_ptr(val[0]));\
-    }
-
-    /// @brief actual function definitions
-    DECLARE_ATTACH_UNIFORM_FUNCTIONS(float, f);
-    DECLARE_ATTACH_UNIFORM_FUNCTIONS(int, i);
-    DECLARE_ATTACH_UNIFORM_FUNCTIONS(unsigned int, ui);
-
-    /// @brief overloads for matrices
-    template<glm::precision P>
-    inline void attach_uniform(GLint location, const glm::tmat2x2<float, P>& val)
-    {
-        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(val));
-    }
-    template<size_t N, glm::precision P>
-    inline void attach_uniform(GLint location, const std::array<glm::tmat2x2<float, P>, N>& val)
-    {
-        glUniformMatrix3fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
-    }
-    template<glm::precision P>
-    inline void attach_uniform(GLint location, const glm::tmat3x3<float, P>& val)
-    {
-        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(val));
-    }
-    template<size_t N, glm::precision P>
-    inline void attach_uniform(GLint location, const std::array<glm::tmat3x3<float, P>, N>& val)
-    {
-        glUniformMatrix3fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
-    }
-    template<glm::precision P>
-    inline void attach_uniform(GLint location, const glm::tmat4x4<float, P>& val)
-    {
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(val));
-    }
-    template<size_t N, glm::precision P>
-    inline void attach_uniform(GLint location, const std::array<glm::tmat4x4<float, P>, N>& val)
-    {
-        glUniformMatrix4fv(location, N, GL_FALSE, glm::value_ptr(val[0]));
-    }
-
-    /// @brief get uniform location
-    GLint get_uniform_loc(GLuint program, const char* name);
-
     /// @brief get attribute location
     GLint get_attrib_loc(GLuint program, const char* name);
-
-    /// cast cpu type to glsl type if they differ, if not - do nothing
-    /// @brief cast simple types, e.g. int->float or ivec2->vec2
-    template<typename GLSLData, typename Data>
-    inline typename std::conditional<std::is_same<GLSLData, Data>::value, const GLSLData&, GLSLData>::type
-    glsl_cast(const Data& data)
-    {
-        return data;
-    }
-
-    /// @brief cast arrays, e.g. ivec2[3]->vec2[3]
-    template<typename GLSLData, typename Data, size_t N>
-    inline typename std::conditional<std::is_same<typename GLSLData::value_type, Data>::value, const GLSLData&, GLSLData>::type
-    glsl_cast(const std::array<Data, N>& data)
-    {
-        GLSLData glslData;
-        std::copy(data.begin(), data.end(), glslData.begin());
-        return glslData;
-    }
 
     namespace glsl
     {
@@ -226,12 +123,6 @@ namespace glcxx
 
     template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
     using attrib_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, false, N>;
-
-    template<template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
-    using uniform = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, 1>;
-
-    template<size_t N, template<typename, glm::precision> class Holder, typename TypeFrom = float, typename TypeTo = float>
-    using uniform_arr = glsl::input_var_traits<Holder, TypeFrom, TypeTo, true, N>;
 }
 
 #endif

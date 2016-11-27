@@ -21,7 +21,7 @@
 #define GLCXX_TEXTURE_HPP
 
 #include <memory>
-#include "glcxx/input_var.hpp"
+#include "glcxx/gl.hpp"
 
 namespace glcxx
 {
