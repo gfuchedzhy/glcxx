@@ -22,6 +22,7 @@
 
 #include "glcxx/vao_base.hpp"
 #include "glcxx/attrib.hpp"
+#include <array>
 
 namespace glcxx
 {

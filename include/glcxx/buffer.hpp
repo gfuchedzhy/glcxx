@@ -23,6 +23,7 @@
 #include "glcxx/vao_base.hpp"
 #include "glcxx/shader_type.hpp"
 #include <memory>
+#include <vector>
 
 namespace glcxx
 {

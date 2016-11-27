@@ -58,7 +58,7 @@ namespace glcxx
         using decl_tag = tag::vertex;
 
         /// @brief ctstring containing glsl declaration of attributes
-        using declaration = ct::string_cat<attrib::declaration<Attrib, AttribName>...>;
+        using declaration = ct::string_cat<attrib_declaration<Attrib, AttribName>...>;
 
         /// @brief constructor
         vao_input_impl(const GLuint program)

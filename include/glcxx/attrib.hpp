@@ -28,6 +28,10 @@ namespace glcxx
     /// @brief get attribute location
     GLint get_attrib_loc(GLuint program, const char* name);
 
+    /// @brief ctstring containing glsl declaration of attribute
+    template<typename ShaderType, typename Name>
+    using attrib_declaration = ct::string_cat<cts("in "), typename shader_type::traits<ShaderType>::name, cts(" "), Name, cts(";\n")>;
+
     /// @brief glVertexAttribPointer for float based shader type
     template<typename ShaderType>
     static inline auto gl_vertex_attrib_pointer(const GLint location,
@@ -93,7 +97,7 @@ namespace glcxx
               const GLsizei offset,
               const bool normalize)
         {
-            const auto byte_offset = offset*sizeof(T);
+            const GLsizei byte_offset = offset*sizeof(T);
             if (_buffer != buf ||
                 _divisor != divisor ||
                 _byte_offset != byte_offset ||
@@ -119,7 +123,7 @@ namespace glcxx
             const GLsizei offset,
             const bool normalize)
         {
-            const auto byte_offset = member_offset(member) + offset*sizeof(T);
+            const GLsizei byte_offset = member_offset(member) + offset*sizeof(T);
             if (_buffer != buf ||
                 _divisor != divisor ||
                 _byte_offset != byte_offset ||
@@ -195,10 +199,6 @@ namespace glcxx
                     glDisableVertexAttribArray(location + i);
             }
         }
-
-        /// @brief ctstring containing glsl declaration of attribute
-        template<typename ShaderType, typename Name>
-        using declaration = ct::string_cat<cts("in "), typename shader_type::traits<ShaderType>::name, cts(" "), Name, cts(";\n")>;
     };
 }
 
