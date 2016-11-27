@@ -85,11 +85,33 @@ namespace glcxx
             , _size(size)
         {}
 
+        /// @brief constructor
+        buffer(const std::vector<Data>& v, GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
+            : buffer(v.data(), v.size(), usage, target)
+        {}
+
+        /// @brief constructor
+        template<size_t N>
+        buffer(const Data (&arr)[N], GLenum usage = GL_STATIC_DRAW, GLenum target = GL_ARRAY_BUFFER)
+            : buffer(arr, N, usage, target)
+        {}
+
         /// @brief uploads new data to buffer, usage = 0 means do not change usage
         void upload(const Data* data, size_t size, GLenum usage = 0)
         {
             buffer_base::upload(data, size*sizeof(Data), usage);
             _size = size;
+        }
+
+        /// @brief uploads new data to buffer, usage = 0 means do not change usage
+        void upload(const std::vector<Data>& v, GLenum usage = 0) {
+            upload(v.data(), v.size(), usage);
+        }
+
+        /// @brief uploads new data to buffer, usage = 0 means do not change usage
+        template<size_t N>
+        void upload(const Data (&arr)[N], GLenum usage = 0) {
+            upload(arr, N, usage);
         }
 
         /// @brief returns element number
@@ -108,6 +130,20 @@ namespace glcxx
     inline buffer_ptr<Data> make_buffer(const Data* data, size_t size, GLenum usage = GL_STATIC_DRAW)
     {
         return std::make_shared<buffer<Data>>(data, size, usage);
+    }
+
+    /// @brief make buffer
+    template<typename Data>
+    inline buffer_ptr<Data> make_buffer(const std::vector<Data>& v, GLenum usage = GL_STATIC_DRAW)
+    {
+        return std::make_shared<buffer<Data>>(v, usage);
+    }
+
+    /// @brief make buffer
+    template<typename Data, size_t N>
+    inline buffer_ptr<Data> make_buffer(const Data (&arr)[N], GLenum usage = GL_STATIC_DRAW)
+    {
+        return std::make_shared<buffer<Data>>(arr, usage);
     }
 
     /// @brief index buffer object, this buffer accepts ubyte, ushort and uint
@@ -136,6 +172,18 @@ namespace glcxx
             static_assert(GL_UNSIGNED_BYTE == id || GL_UNSIGNED_SHORT == id || GL_UNSIGNED_INT == id, "unsupported index type provided");
         }
 
+        /// @brief constructor
+        template<typename T>
+        index_buffer(const std::vector<T>& v, GLenum mode, GLenum usage = GL_STATIC_DRAW)
+            : index_buffer(v.data(), v.size(), mode, usage)
+        {}
+
+        /// @brief constructor
+        template<typename T, size_t N>
+        index_buffer(const T (&arr)[N], GLenum mode, GLenum usage = GL_STATIC_DRAW)
+            : index_buffer(arr, N, mode, usage)
+        {}
+
         /// @brief uploads new data to buffer
         template<typename T>
         void upload(const T* data, size_t size, GLenum mode, GLenum usage = 0)
@@ -146,6 +194,18 @@ namespace glcxx
             _size = size;
             _mode = mode;
             _type = id;
+        }
+
+        /// @brief uploads new data to buffer
+        template<typename T>
+        void upload(const std::vector<T>& v, GLenum mode, GLenum usage = 0) {
+            upload(v.data(), v.size(), mode, usage);
+        }
+
+        /// @brief uploads new data to buffer
+        template<typename T, size_t N>
+        void upload(const T (&arr)[N], GLenum mode, GLenum usage = 0) {
+            upload(arr, N, mode, usage);
         }
 
         /// @brief draw with this index buffer

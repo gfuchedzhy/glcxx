@@ -140,6 +140,18 @@ namespace glcxx
                 program(0);
         }
 
+        /// @brief upload data to attribute vbo, if doesn't exist, create it
+        template<typename AttribName, typename T>
+        void upload(const std::vector<T>& v, GLenum usage = 0) {
+            upload<AttribName>(v.data(), v.size(), usage);
+        }
+
+        /// @brief upload data to attribute vbo, if doesn't exist, create it
+        template<typename AttribName, typename T, size_t N>
+        void upload(const T (&arr)[N], GLenum usage = 0) {
+            upload<AttribName>(arr, N, usage);
+        }
+
         /// @brief upload data to index buffer, if doesn't exist, create it
         template<typename T>
         void upload_indices(const T* data, size_t size, GLenum mode, GLenum usage = 0)
@@ -148,6 +160,18 @@ namespace glcxx
                 _indices->upload(data, size, mode, usage);
             else
                 _indices = make_index_buffer(data, size, mode, usage ? usage : GL_STATIC_DRAW);
+        }
+
+        /// @brief upload data to index buffer, if doesn't exist, create it
+        template<typename T>
+        void upload_indices(const std::vector<T>& v, GLenum mode, GLenum usage = 0) {
+            upload_indices(v.data(), v.size(), mode, usage);
+        }
+
+        /// @brief upload data to index buffer, if doesn't exist, create it
+        template<typename T, size_t N>
+        void upload_indices(const T (&arr)[N], GLenum mode, GLenum usage = 0) {
+            upload_indices(arr, N, mode, usage);
         }
     };
 
