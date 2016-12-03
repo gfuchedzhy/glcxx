@@ -77,16 +77,10 @@ namespace glcxx
                 glDeleteVertexArrays(1, &_id);
         }
 
-        friend void swap(vao_base& x, vao_base& y)
-        {
-            std::swap(x._id, y._id);
-            std::swap(x._program_id, y._program_id);
-        }
-
         /// @brief assignment
-        vao_base& operator=(vao_base other) noexcept
-        {
-            swap(*this, other);
+        vao_base& operator=(vao_base other) noexcept {
+            std::swap(_id, other._id);
+            std::swap(_program_id, other._program_id);
             return *this;
         }
 
