@@ -154,7 +154,7 @@ namespace glcxx
 
         /// @brief named set method
         template<typename InputName>
-        typename std::enable_if<std::is_same<InputName, Name>::value>::type
+        std::enable_if_t<std::is_same<InputName, Name>::value>
         set(const HostType& value)
         {
             base::set(value);
