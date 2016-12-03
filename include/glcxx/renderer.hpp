@@ -55,7 +55,7 @@ namespace glcxx
         /// @brief searches given program by name in compile time, selects
         /// requested one and returns it
         template<typename ProgramName>
-        auto& get_program();
+        auto& program();
 
     private:
         /// @brief program list, @todo unique_ptr can be removed without providing
@@ -70,7 +70,7 @@ namespace glcxx
 
 template<typename... Name, typename... Program>
 template<typename ProgramName>
-auto& glcxx::renderer<std::pair<Name, Program>...>::get_program()
+auto& glcxx::renderer<std::pair<Name, Program>...>::program()
 {
     constexpr size_t index = ct::tuple_find<std::tuple<Name...>, ProgramName>::value;
     static_assert(sizeof...(Program) != index, "program name not found");
