@@ -31,6 +31,9 @@ namespace glcxx
     struct vao_input {
         /// @brief name
         using name = Name;
+
+        /// @brief vao holds VBOs, which are always vertex shader inputs
+        using decl_tag = tag::vertex;
     };
 
     /// @brief holds state of program's vao

@@ -75,7 +75,7 @@ namespace glcxx
 
     /// @brief holds state of program's uniform
     template<typename Name, typename Attrib>
-    class buffer_input : public buffer_input_base<Attrib>
+    class buffer_input : private buffer_input_base<Attrib>
     {
         /// @brief base implementation class
         using base = buffer_input_base<Attrib>;

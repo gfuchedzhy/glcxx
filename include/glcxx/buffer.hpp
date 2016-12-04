@@ -149,7 +149,7 @@ namespace glcxx
 
     /// @brief index buffer object, this buffer accepts ubyte, ushort and uint
     /// indices, also it saves mode, e.g. GL_TRIANGLE_STRIP
-    class index_buffer : public buffer_base
+    class index_buffer : private buffer_base
     {
         /// @brief buffer element number
         GLsizei _size;
@@ -217,6 +217,8 @@ namespace glcxx
             else
                 glDrawElementsInstanced(_mode, _size, _type, nullptr, instance_count);
         }
+
+        using buffer_base::bind;
 
         /// @brief unbind index buffer
         static void unbind()

@@ -44,7 +44,7 @@ namespace glcxx
         ~shader_base();
     };
 
-    class shader : public shader_base
+    class shader : private shader_base
     {
         /// @brief program this shader is attached to
         GLuint _program_object;

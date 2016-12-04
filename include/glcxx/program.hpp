@@ -51,7 +51,7 @@ namespace glcxx
         GLuint _object;
     };
 
-    class program_base : public program_res_holder
+    class program_base : protected program_res_holder
     {
         /// @brief shaders, geometry shader is optional
         shader _vertex_shader;
@@ -105,8 +105,12 @@ namespace glcxx
 
         /// @brief only tuple of program inputs is a valid parameter for program
         template<bool HasGeomShader, typename... ProgramInput>
-        class program_impl<HasGeomShader, std::tuple<ProgramInput...>> : public program_base, public ProgramInput...
+        class program_impl<HasGeomShader, std::tuple<ProgramInput...>> : private program_base, private ProgramInput...
         {
+            // first program input should be vao_input
+            using vao_input = typename std::tuple_element<0, std::tuple<ProgramInput...>>::type;
+            static_assert(ct::specialization_of<vao_input, vao_input_impl>::value, "first program input should be vao_input");
+
             /// @brief returns input type which has valid set<Name> method
             template<typename Name>
             using input_type = typename std::tuple_element<has_named_set_method<Name, std::tuple<ProgramInput...>>::index,
@@ -158,10 +162,14 @@ namespace glcxx
             /// using ProgramInput::set...; to bring all base setter into current
             /// class' scope, so we need this forwarding function
             template<typename Name>
-                void set(set_arg_type<Name> value)
+            void set(set_arg_type<Name> value)
             {
                 input_type<Name>::template set<Name>(value);
             }
+
+            // bring few vao_input methods into current scope
+            using vao_input::draw_elements;
+            using vao_input::draw_arrays;
         };
 
         /// @brief return true if program input requires geometry shader, either it
@@ -180,31 +188,26 @@ namespace glcxx
             template<typename T> struct specialization_of_vao_input
                 : ct::specialization_of<T, vao_input> {};
 
-            /// @brief all NamedAttribs
-            using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_vao_input>;
-
-            /// @brief rest inputs
-            using rest_of_inputs = ct::tuple_filter<InputTuple, specialization_of_vao_input, true>;
-
-            /// @brief rest inputs with tag stripped
-            using rest_of_inputs_no_tags = ct::tuple_strip<tag::geometry, rest_of_inputs>;
-
         public:
             /// @brief true if has geometry shader
-            static constexpr bool has_geom_shader = ct::tuple_any_of<rest_of_inputs, is_geom>::value;
+            static constexpr bool has_geom_shader = ct::tuple_any_of<InputTuple, is_geom>::value;
 
-            /// @brief resulting program inputs
-            using resulting_inputs = ct::tuple_cat<std::tuple<vao_input_impl<vao_inputs>>, rest_of_inputs_no_tags>;
+            /// @brief gather vao_inputs in one tuple
+            using vao_inputs = ct::tuple_filter<InputTuple, specialization_of_vao_input>;
+
+            /// @brief and the rest
+            using non_vao_inputs = ct::tuple_strip<tag::geometry, ct::tuple_filter<InputTuple, specialization_of_vao_input, true>>;
+
+            /// @brief program_impl definition for given input tuple
+            using program_impl = class program_impl<has_geom_shader, ct::tuple_cat<std::tuple<vao_input_impl<vao_inputs>>, non_vao_inputs>>;
         };
 
         /// @brief program with processed inputs
         template<typename InputTuple>
-        struct program : public program_impl<program_input_traits<InputTuple>::has_geom_shader,
-                                             typename program_input_traits<InputTuple>::resulting_inputs>
+        struct program : public program_input_traits<InputTuple>::program_impl
         {
             // @brief base class
-            using base = program_impl<program_input_traits<InputTuple>::has_geom_shader,
-                                      typename program_input_traits<InputTuple>::resulting_inputs>;
+            using base = typename program_input_traits<InputTuple>::program_impl;
 
             /// @brief inherited constructor
             using base::base;

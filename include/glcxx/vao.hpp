@@ -31,7 +31,7 @@ namespace glcxx
 
     /// @brief specialization
     template<typename... Name, typename... Data>
-    class vao<std::pair<Name, Data>...> : public vao_base
+    class vao<std::pair<Name, Data>...> : private vao_base
     {
         /// @brief index buffer
         index_buffer_ptr _indices;
@@ -56,6 +56,9 @@ namespace glcxx
         using attrib_shader_type = typename std::tuple_element<attrib_index<AttribName>::value, std::tuple<Data...>>::type;
 
     public:
+        using vao_base::bind;
+        using vao_base::program;
+
         /// @brief get/set instance count
         auto instance_count() const { return _instance_count; }
         void instance_count(GLsizei v) { _instance_count = v; }

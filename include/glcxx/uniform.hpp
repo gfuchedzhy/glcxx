@@ -123,16 +123,11 @@ namespace glcxx
                 attach_uniform(_location, glsl_cast<ShaderType>(_uniform_data));
             }
         }
-
-        /// @brief called after program was selected, nothing to do as uniforms
-        /// remains attached during program selection change
-        void select() const
-        {}
     };
 
     /// @brief holds state of program's uniform
     template<typename Name, typename ShaderType, typename DeclTag = tag::vertex, typename HostType = ShaderType>
-    class uniform : public uniform_base<ShaderType, HostType>
+    class uniform : private uniform_base<ShaderType, HostType>
     {
         /// @brief base implementation class
         using base = uniform_base<ShaderType, HostType>;
@@ -159,6 +154,11 @@ namespace glcxx
         {
             base::set(value);
         }
+
+        /// @brief called after program was selected, nothing to do as uniforms
+        /// remains attached during program selection change
+        void select() const
+        {}
     };
 }
 
