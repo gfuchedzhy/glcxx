@@ -39,10 +39,7 @@ namespace glcxx
 
     public:
         /// @brief constructor
-        texture_input_base(const GLint location, const GLint sampler_id)
-            : _location(location)
-            , _sampler_id(sampler_id)
-        {}
+        texture_input_base(const GLint location, const GLint sampler_id);
 
         /// @brief set new texture object as program input
         void set(const texture_ptr& value);

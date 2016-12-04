@@ -20,6 +20,13 @@
 #include "glcxx/texture_input.hpp"
 #include "glcxx/uniform.hpp"
 
+glcxx::texture_input_base::texture_input_base(const GLint location, const GLint sampler_id)
+    : _location(location)
+    , _sampler_id(sampler_id)
+{
+    attach_uniform(_location, _sampler_id);
+}
+
 void glcxx::texture_input_base::set(const texture_ptr& value)
 {
     if (_texture != value)
@@ -40,6 +47,5 @@ void glcxx::texture_input_base::attach() const
     {
         glActiveTexture(GL_TEXTURE0 + _sampler_id);
         _texture->bind();
-        attach_uniform(_location, _sampler_id);
     }
 }
