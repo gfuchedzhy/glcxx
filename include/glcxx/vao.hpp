@@ -181,7 +181,7 @@ namespace glcxx
 
     /// @brief make new vao with given buffers, version for vao with index buffer
     template<typename...Name, typename IndexBufferPtr, typename... BufferPtr>
-    inline auto make_indexed_vao(IndexBufferPtr&& indices, BufferPtr&&... buf)
+    inline auto make_vao(IndexBufferPtr&& indices, BufferPtr&&... buf)
     {
         vao<std::pair<Name, typename std::remove_reference<BufferPtr>::type::element_type::data>...> vao;
         vao.indices(std::forward<IndexBufferPtr>(indices));
