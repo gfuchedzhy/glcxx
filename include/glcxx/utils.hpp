@@ -42,7 +42,8 @@ namespace glcxx
     namespace detail {
         template<typename T> class member_offset
         {
-            static const T c_val {}; // relies on type being default constructible
+            static constexpr T c_val {}; // relies on type being default constructible
+
         public:
             template<typename U>
             static inline std::ptrdiff_t get(U T::*member)
@@ -51,6 +52,10 @@ namespace glcxx
                     -  reinterpret_cast<const char*>(&c_val);
             }
         };
+
+        /// @brief this definition is required for odr-usage
+        template<typename T>
+        constexpr T member_offset<T>::c_val;
     }
 
     template<typename T, typename U>
