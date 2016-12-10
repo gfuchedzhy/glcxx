@@ -144,7 +144,7 @@ namespace glcxx
     template<typename Data, size_t N>
     inline buffer_ptr<Data> make_buffer(const Data (&arr)[N], GLenum usage = GL_STATIC_DRAW)
     {
-        return std::make_shared<buffer<Data>>(arr, usage);
+        return std::make_shared<buffer<Data>>(arr, N, usage);
     }
 
     /// @brief index buffer object, this buffer accepts ubyte, ushort and uint
