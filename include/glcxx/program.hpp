@@ -109,7 +109,7 @@ namespace glcxx
         {
             // first program input should be vao_input
             using vao_input = typename std::tuple_element<0, std::tuple<ProgramInput...>>::type;
-            static_assert(ct::specialization_of<vao_input, vao_input_impl>::value, "first program input should be vao_input");
+            static_assert(ct::specialization_of<vao_input, ::glcxx::vao_input_impl>::value, "first program input should be vao_input");
 
             /// @brief returns input type which has valid set<Name> method
             template<typename Name>
@@ -199,15 +199,15 @@ namespace glcxx
             using non_vao_inputs = ct::tuple_strip<tag::geometry, ct::tuple_filter<InputTuple, specialization_of_vao_input, true>>;
 
             /// @brief program_impl definition for given input tuple
-            using program_impl = class program_impl<has_geom_shader, ct::tuple_cat<std::tuple<vao_input_impl<vao_inputs>>, non_vao_inputs>>;
+            using program_impl_t = program_impl<has_geom_shader, ct::tuple_cat<std::tuple<vao_input_impl<vao_inputs>>, non_vao_inputs>>;
         };
 
         /// @brief program with processed inputs
         template<typename InputTuple>
-        struct program : public program_input_traits<InputTuple>::program_impl
+        struct program : public program_input_traits<InputTuple>::program_impl_t
         {
             // @brief base class
-            using base = typename program_input_traits<InputTuple>::program_impl;
+            using base = typename program_input_traits<InputTuple>::program_impl_t;
 
             /// @brief inherited constructor
             using base::base;
