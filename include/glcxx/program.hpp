@@ -63,7 +63,7 @@ namespace glcxx
         program_base(const std::string& glsl_version, const std::string& src, bool has_geom_shader);
 
         /// @brief prepends program name based #defines and declarations to src
-        static std::string prepend_header_to_program(std::string name, const char* declarations, const std::string& src);
+        static std::string prepend_header_to_program(const std::string& name, const char* declarations, const std::string& src);
     };
 
     namespace detail

@@ -31,14 +31,17 @@ glcxx::program_res_holder::~program_res_holder()
     glDeleteProgram(_object);
 }
 
-std::string glcxx::program_base::prepend_header_to_program(std::string name, const char* declarations, const std::string& src)
+std::string glcxx::program_base::prepend_header_to_program(const std::string& name, const char* declarations, const std::string& src)
 {
-    std::string& result = name;
-    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
-    result.erase(0, result.find('_'));
-    size_t start_pos = 0;
-    while((start_pos = result.find('_', start_pos)) != std::string::npos)
-        result.replace(start_pos, 1, "\n#define ");
+    std::string result;
+    auto bk_ins = std::back_inserter(result);
+
+    for (auto prev = std::find(name.begin(), name.end(), '_'); prev != name.end(); ) {
+        auto next = find(prev + 1, name.end(), '_');
+        result.append("\n#define ");
+        std::transform(prev + 1, next, bk_ins, ::toupper);
+        prev = next;
+    }
     result += declarations + src;
     return result;
 }
