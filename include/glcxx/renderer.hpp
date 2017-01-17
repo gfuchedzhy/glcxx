@@ -48,7 +48,7 @@ namespace glcxx
 
     public:
         /// @brief initializes all programs of this renderer
-        renderer(const std::string& glsl_version, const std::string& common_decl)
+        renderer(const std::string& glsl_version = "", const std::string& common_decl = "")
             : _programs(std::make_unique<Program>(Name::chars, glsl_version, common_decl + get_program_src<base_name<Name>>())...)
         {}
 
