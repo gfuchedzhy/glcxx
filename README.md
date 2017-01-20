@@ -6,7 +6,7 @@ communication with OpenGL and simplifies its usage a lot.
 This library is very experimental. I wanted to explore some advanced C++
 techniques in context of OpenGL applications. And this is what came out of it.
 
-## Overview by examples
+## Overview by example
 ### Basics
 You have to understand how OpenGL works, what vbo, vao and other OpenGL concepts
 are in order to understand what is the point of this library.
@@ -168,6 +168,11 @@ to
 colored.set<cts("color")>({1, 0, 0});
 ```
 
+So, here's typical task, you want new uniform for your program. What do you do?
+You add it to program definition, so that glcxx knows about it. You use it in
+shader itself, no need to define it there. You set it before draw using
+appropriate set function that is already created for you. That's it!
+
 Let's now add different color for each vertex.
 ```c++
 // new program
@@ -320,7 +325,7 @@ if (newcolor != current_color_uniform_value) {
 ```
 
 So caching, compile-time resolution of uniform string name and selection of
-proper glUniform* function is done for us automatically.
+proper ```glUniform*``` function is done for us automatically.
 
 What about attributes?
 ```c++
@@ -347,7 +352,7 @@ rectangle of distinct color at every current vertex position using instancing.
 using simple_colored_attr = glcxx::derive_program<
     simple_program,
     glcxx::vao_input<cts("color"), glm::vec4>,
-	// we need one more attribute for dimensions of our rectangles
+    // we need one more attribute for dimensions of our rectangles
     glcxx::vao_input<cts("size"), glm::vec2>
 >;
 
@@ -364,7 +369,7 @@ instanced_vao.indices(index_buf);
 instanced_vao.set<cts("pos")>(pos_color_buf, &pos_color_t::pos, 1);
 instanced_vao.set<cts("color")>(pos_color_buf, &pos_color_t::color, 1);
 
-// there's 4 rectangles to draw
+// there are 4 rectangles to draw
 instanced_vao.instance_count(4);
 
 // size of each rectangle
@@ -408,15 +413,15 @@ instanced_vao.set<cts("color")>(pos_color_buf, &pos_color_t::color);
 
 ### Geometry shader
 Let's do same thing with geometry shader. We will change our third program again
-to draw same same 4 squares but using geometry shader instead of instancing.
+to draw same 4 squares but using geometry shader instead of instancing.
 
 ```c++
 using simple_colored_attr = glcxx::derive_program<
     simple_program,
     glcxx::vao_input<cts("color"), glm::vec4>,
 
-	// we could use vec2 as a uniform for size, but for the sake of example,
-	// we will use uniform array of vec2 for bottom-left and top-right vertex
+    // we could use vec2 as a uniform for size, but for the sake of example,
+    // we will use uniform array of vec2 for bottom-left and top-right vertex
     glcxx::uniform<cts("size"), std::array<glm::vec2, 4>, glcxx::tag::geometry>
 >;
 ```
