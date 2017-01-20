@@ -156,6 +156,12 @@ namespace glcxx
             upload<AttribName>(arr, N, usage);
         }
 
+        /// @brief upload data to attribute vbo, if doesn't exist, create it
+        template<typename AttribName, typename T, size_t N>
+        void upload(const std::array<T, N> &arr, GLenum usage = 0) {
+            upload<AttribName>(arr.data(), N, usage);
+        }
+
         /// @brief upload data to index buffer, if doesn't exist, create it
         template<typename T>
         void upload_indices(const T* data, size_t size, GLenum mode, GLenum usage = 0)
