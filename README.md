@@ -169,9 +169,10 @@ colored.set<cts("color")>({1, 0, 0});
 ```
 
 So, here's typical task, you want new uniform for your program. What do you do?
-You add it to program definition, so that glcxx knows about it. You use it in
-shader itself, no need to define it there. You set it before draw using
-appropriate set function that is already created for you. That's it!
+You add it to program declaration, so that glcxx knows about it. You use it in
+shader itself, no need to declare it there. You set it before draw call using
+appropriate set function that is already created and tagged with uniform name
+for you by glcxx. That's it!
 
 Let's now add different color for each vertex.
 ```c++
@@ -217,10 +218,11 @@ auto& colored_attr = renderer.program<cts("simple_colored_attr")>();
 colored_attr.draw_elements(pos_color_vao);
 ```
 
-Shader:
+A little more extended shader:
 ```c
 #if defined VERTEX
 #if defined ATTR
+// pass color to fragment shader
 out vec4 v_color;
 #endif
 void main() {
@@ -393,7 +395,7 @@ Shader:
 ```
 Draw:
 ```c++
-// draw, same function to draw, beacause vao object already
+// using same function to draw, beacause vao object already
 // knows that we are using instancing
 auto& colored_attr = renderer.program<cts("simple_colored_attr")>();
 colored_attr.draw_elements(instanced_vao);
@@ -405,7 +407,9 @@ colored_attr.draw_elements(instanced_vao);
 
 How about 4 rectangles with each vertex of different color?
 ```c++
-// just remove divisor for colors!
+// just remove divisor for colors! Although it only works because number
+// of rectangles to draw happen to be the same as number of vertices in
+// rectangle, but hey, this is a tutorial, we can do whatever we want :)
 instanced_vao.set<cts("color")>(pos_color_buf, &pos_color_t::color);
 ```
 
